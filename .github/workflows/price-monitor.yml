@@ -1,0 +1,110 @@
+name: Autonomous Price Monitor
+
+on:
+  schedule:
+    # Runs every Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:  # Manual trigger button in GitHub
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  check-prices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run price monitor
+        run: python scripts/check_prices.py --apply
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if git diff --quiet pricing.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit updated pricing data
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "Dataset Cadaster Bot"
+          git config user.email "bot@dataset-cadaster.local"
+          git add pricing.json scripts/price_check_report.json
+          git commit -m "auto: weekly price check $(date +%Y-%m-%d)"
+          git push
+
+      - name: Create issue if prices changed
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('scripts/price_check_report.json', 'utf8'));
+
+            if (report.changes.length === 0) return;
+
+            let body = `## Automated Price Change Detection\n\n`;
+            body += `**Check date:** ${report.checkDate.slice(0,10)}\n`;
+            body += `**Providers checked:** ${report.checked}\n`;
+            body += `**Changes detected:** ${report.changed}\n\n`;
+            body += `### Changes\n\n`;
+
+            for (const change of report.changes) {
+              body += `#### ${change.provider} (\`${change.datasetId}\`)\n`;
+              if (change.extractedPrices.length > 0) {
+                body += `Extracted prices: ${change.extractedPrices.join(', ')}\n`;
+              }
+              body += `URLs monitored: ${change.urls.join(', ')}\n\n`;
+            }
+
+            if (report.errors_detail.length > 0) {
+              body += `### Errors\n\n`;
+              for (const err of report.errors_detail) {
+                body += `- \`${err.datasetId}\`: ${err.url} → ${err.status} ${err.error}\n`;
+              }
+            }
+
+            body += `\n---\n_Generated automatically by Dataset Cadaster Price Monitor_`;
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Price changes detected (${report.checkDate.slice(0,10)})`,
+              body: body,
+              labels: ['price-update', 'automated']
+            });
+
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Lychee link checker on datasets.json
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >
+            --no-progress
+            --accept 200,301,302,403
+            --timeout 30
+            --max-retries 2
+            --exclude-mail
+            datasets.json
+          output: scripts/link_check_report.md
+          fail: false
+
+      - name: Upload link report
+        uses: actions/upload-artifact@v4
+        with:
+          name: link-check-report
+          path: scripts/link_check_report.md

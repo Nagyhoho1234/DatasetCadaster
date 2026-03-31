@@ -1,0 +1,296 @@
+{
+  "version": "1.0.0",
+  "lastAutoCheck": "2026-03-31",
+  "nextCheckDue": "2026-04-07",
+  "providers": [
+    {
+      "datasetId": "maxar-worldview-3",
+      "provider": "Maxar",
+      "pricingModel": "per-area",
+      "currency": "USD",
+      "tiers": [
+        {
+          "label": "Archive (>90 days)",
+          "unit": "km2",
+          "min": 14,
+          "max": 24,
+          "minOrder": "25 km2"
+        },
+        {
+          "label": "New tasking",
+          "unit": "km2",
+          "min": 24,
+          "max": 65,
+          "minOrder": "100 km2"
+        }
+      ],
+      "pricingUrl": "https://www.maxar.com/products/imagery",
+      "monitorUrls": [
+        "https://www.maxar.com/products/imagery"
+      ],
+      "lastVerified": "2026-03-31",
+      "lastChanged": "2024-12-05",
+      "confidence": "published",
+      "pageHash": "30cfedc77aa508ea"
+    },
+    {
+      "datasetId": "pleiades-neo",
+      "provider": "Airbus",
+      "pricingModel": "per-area",
+      "currency": "USD",
+      "tiers": [
+        {
+          "label": "Archive",
+          "unit": "km2",
+          "min": 10,
+          "max": 26,
+          "minOrder": "25 km2"
+        },
+        {
+          "label": "New tasking",
+          "unit": "km2",
+          "min": 26,
+          "max": 63,
+          "minOrder": "100 km2"
+        }
+      ],
+      "pricingUrl": "https://www.intelligence-airbusds.com/imagery/oneatlas/",
+      "monitorUrls": [
+        "https://www.intelligence-airbusds.com/imagery/oneatlas/"
+      ],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "published",
+      "pageHash": "6252b8d1dff2213d"
+    },
+    {
+      "datasetId": "spot-6-7",
+      "provider": "Airbus",
+      "pricingModel": "per-area",
+      "currency": "USD",
+      "tiers": [
+        {
+          "label": "Archive",
+          "unit": "km2",
+          "min": 2.5,
+          "max": 6,
+          "minOrder": "100 km2"
+        }
+      ],
+      "pricingUrl": "https://www.intelligence-airbusds.com/imagery/oneatlas/",
+      "monitorUrls": [
+        "https://www.intelligence-airbusds.com/imagery/oneatlas/"
+      ],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "published",
+      "pageHash": "6252b8d1dff2213d"
+    },
+    {
+      "datasetId": "planetscope",
+      "provider": "Planet Labs",
+      "pricingModel": "subscription",
+      "currency": "USD",
+      "tiers": [
+        {
+          "label": "Explorer (basic)",
+          "unit": "year",
+          "min": 2700,
+          "max": null,
+          "minOrder": null
+        },
+        {
+          "label": "Enterprise",
+          "unit": "year",
+          "min": null,
+          "max": null,
+          "minOrder": null
+        }
+      ],
+      "pricingUrl": "https://www.planet.com/pricing/",
+      "monitorUrls": [
+        "https://www.planet.com/pricing/"
+      ],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "estimate",
+      "pageHash": "25105581a51797f8"
+    },
+    {
+      "datasetId": "sentinel-hub",
+      "provider": "Sentinel Hub (Sinergise)",
+      "pricingModel": "subscription",
+      "currency": "EUR",
+      "tiers": [
+        {
+          "label": "Exploration",
+          "unit": "month",
+          "min": 25,
+          "max": 25,
+          "minOrder": null
+        },
+        {
+          "label": "Basic",
+          "unit": "month",
+          "min": 83.25,
+          "max": 83.25,
+          "minOrder": null
+        },
+        {
+          "label": "Enterprise",
+          "unit": "month",
+          "min": null,
+          "max": null,
+          "minOrder": null
+        }
+      ],
+      "pricingUrl": "https://www.sentinel-hub.com/pricing/",
+      "monitorUrls": [
+        "https://www.sentinel-hub.com/pricing/"
+      ],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "published",
+      "pageHash": "d00683fea0c74afa"
+    },
+    {
+      "datasetId": "iceye-sar",
+      "provider": "ICEYE",
+      "pricingModel": "dynamic",
+      "currency": "USD",
+      "tiers": [
+        {
+          "label": "SAR (mode-dependent)",
+          "unit": "scene",
+          "min": null,
+          "max": null,
+          "minOrder": null
+        }
+      ],
+      "pricingUrl": "https://www.iceye.com/",
+      "monitorUrls": [],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "unavailable",
+      "pageHash": "0bac2506c328f00d"
+    },
+    {
+      "datasetId": "capella-space-sar",
+      "provider": "Capella Space",
+      "pricingModel": "saas",
+      "currency": "USD",
+      "tiers": [
+        {
+          "label": "SaaS / API Tasking",
+          "unit": "scene",
+          "min": null,
+          "max": null,
+          "minOrder": null
+        }
+      ],
+      "pricingUrl": "https://www.capellaspace.com/",
+      "monitorUrls": [],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "unavailable",
+      "pageHash": "c2e590f8ee7d9361"
+    },
+    {
+      "datasetId": "google-earth-engine",
+      "provider": "Google",
+      "pricingModel": "compute-based",
+      "currency": "USD",
+      "tiers": [
+        {
+          "label": "Research/Education",
+          "unit": "month",
+          "min": 0,
+          "max": 0,
+          "minOrder": null
+        },
+        {
+          "label": "Basic Commercial",
+          "unit": "month",
+          "min": 500,
+          "max": 500,
+          "minOrder": null
+        },
+        {
+          "label": "Professional",
+          "unit": "month",
+          "min": 2000,
+          "max": 2000,
+          "minOrder": null
+        }
+      ],
+      "pricingUrl": "https://cloud.google.com/earth-engine/pricing",
+      "monitorUrls": [
+        "https://cloud.google.com/earth-engine/pricing"
+      ],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "published",
+      "pageHash": "4c24a9728d8cb26e"
+    },
+    {
+      "datasetId": "ecmwf-archive",
+      "provider": "ECMWF",
+      "pricingModel": "service-charge",
+      "currency": "EUR",
+      "tiers": [
+        {
+          "label": "Open Data",
+          "unit": "year",
+          "min": 0,
+          "max": 0,
+          "minOrder": null
+        },
+        {
+          "label": "Archive Access (commercial)",
+          "unit": "year",
+          "min": 3000,
+          "max": 3000,
+          "minOrder": null
+        },
+        {
+          "label": "ecCharts",
+          "unit": "year",
+          "min": 1000,
+          "max": 1000,
+          "minOrder": null
+        }
+      ],
+      "pricingUrl": "https://www.ecmwf.int/en/forecasts/accessing-forecasts",
+      "monitorUrls": [
+        "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
+      ],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "published",
+      "pageHash": "ecbf4c572fac5ff4"
+    },
+    {
+      "datasetId": "up42",
+      "provider": "UP42",
+      "pricingModel": "pay-as-you-go",
+      "currency": "EUR",
+      "tiers": [
+        {
+          "label": "Pay-per-order (credits)",
+          "unit": "order",
+          "min": null,
+          "max": null,
+          "minOrder": null
+        }
+      ],
+      "pricingUrl": "https://up42.com/pricing",
+      "monitorUrls": [
+        "https://up42.com/pricing"
+      ],
+      "lastVerified": "2026-03-31",
+      "lastChanged": null,
+      "confidence": "published",
+      "pageHash": "74b67c62d5416644"
+    }
+  ]
+}
