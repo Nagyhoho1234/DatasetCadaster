@@ -317,18 +317,7 @@ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
   maxZoom:18
 }).addTo(map);
 
-/* Europe bounding box rectangle */
-europeRect = L.rectangle(EUROPE_BOUNDS,{
-  color:"#2980b9", weight:2, fillColor:"#2980b9", fillOpacity:0.05,
-  dashArray:"6 4", interactive:true
-}).addTo(map);
-europeRect.bindTooltip("Europe Region (click for European datasets)",{sticky:true,className:"europe-tooltip"});
-europeRect.on("click", function(){
-  manualOverride = true;
-  showAllOverride = false;
-  document.getElementById("btnShowAll").classList.remove("active");
-  filterByRegion("europe");
-});
+/* Europe rectangle removed — was visually distracting */
 
 /* ── Sidebar toggle ───────────────────────────────────── */
 var sidebar = document.getElementById("sidebar");
@@ -417,6 +406,79 @@ fetch("../datasets.json")
   });
 
 /* ── Filter functions ─────────────────────────────────── */
+/* ── Geographic relevance filtering ──────────────────── */
+/* Datasets tagged "global" aren't always relevant everywhere.
+   Arctic DEM shouldn't show for Italy, Baltic data not for Spain, etc. */
+var GEO_EXCLUSIONS = {
+  /* dataset ID or name substring → excluded regions/latitudes */
+  "arctic": {minLat: 55},           /* Arctic stuff only for lat > 55 */
+  "antarctic": {maxLat: -50},
+  "icesat": {minLat: 50, maxLat: -50}, /* polar */
+  "cryosat": {minLat: 55, maxLat: -55},
+  "ice-sheet": {minLat: 55},
+  "sea-ice": {minLat: 50, maxLat: -50},
+  "arctic-dem": {minLat: 55},
+  "permafrost": {minLat: 50},
+  "baltic": {region: "baltic", minLat: 53, maxLat: 66, minLon: 10, maxLon: 30},
+  "helcom": {region: "baltic", minLat: 53, maxLat: 66, minLon: 10, maxLon: 30},
+  "ospar": {region: "neatlantic", minLat: 36, maxLat: 65, minLon: -30, maxLon: 13},
+  "black-sea": {minLat: 40, maxLat: 47, minLon: 27, maxLon: 42},
+  "mediterranean": {minLat: 30, maxLat: 47, minLon: -6, maxLon: 36},
+  "landscan-usa": {countries: ["US"]},
+  "us-epa": {countries: ["US"]},
+  "airnow": {countries: ["US", "CA", "MX"]},
+  "noaa-digital-coast": {countries: ["US"]},
+  "uk-defra": {countries: ["GB"]},
+  "ukceh": {countries: ["GB"]},
+  "cdip": {countries: ["US"]},        /* US wave buoys */
+  "usgs-water": {countries: ["US"]},
+  "usgs-earthquake": {},               /* earthquakes are global, keep */
+  "3dep": {countries: ["US"]},
+  "nlcd": {countries: ["US"]},
+};
+
+function isGloballyRelevant(d, countryCode, countryObj){
+  var id = (d.id || "").toLowerCase();
+  var name = (d.name || "").toLowerCase();
+  var tags = (d.tags || []).join(" ").toLowerCase();
+  var search = id + " " + name + " " + tags;
+  var lat = countryObj.lat;
+  var lng = countryObj.lng;
+
+  for(var key in GEO_EXCLUSIONS){
+    if(search.indexOf(key) === -1) continue;
+    var rule = GEO_EXCLUSIONS[key];
+
+    /* Country-specific datasets */
+    if(rule.countries && rule.countries.length){
+      if(rule.countries.indexOf(countryCode) === -1) return false;
+      else return true;
+    }
+
+    /* Latitude range checks */
+    if(rule.minLat !== undefined && rule.maxLat !== undefined){
+      /* Polar — must be above minLat OR below maxLat */
+      if(lat < rule.minLat && lat > rule.maxLat) return false;
+    } else if(rule.minLat !== undefined){
+      if(lat < rule.minLat) return false;
+    } else if(rule.maxLat !== undefined){
+      if(lat > rule.maxLat) return false;
+    }
+
+    /* Bounding box for regional seas */
+    if(rule.minLon !== undefined){
+      if(lng < rule.minLon || lng > rule.maxLon) return false;
+      if(lat < rule.minLat || lat > rule.maxLat) return false;
+    }
+  }
+  return true;
+}
+
+function isRegionallyRelevant(d, countryCode, countryObj){
+  /* Same logic — regional datasets should also be checked */
+  return isGloballyRelevant(d, countryCode, countryObj);
+}
+
 function filterByCountry(code, opts){
   opts = opts || {};
   var c = COUNTRIES[code];
@@ -424,13 +486,13 @@ function filterByCountry(code, opts){
 
   currentFilter = {type:"country", country:code, includeGlobal:true};
 
-  /* Datasets for this country: national + regional/continental + global */
+  /* Datasets for this country: national + regional/continental + relevant global */
   filteredDatasets = allDatasets.filter(function(d){
     if(d.scope === "national" && d.country === code) return true;
     if(d.scope === "europe" && c.region === "europe") return true;
-    if(d.scope === "regional") return true;
     if(d.scope === "continental") return true;
-    if(d.scope === "global") return true;
+    if(d.scope === "regional") return isRegionallyRelevant(d, code, c);
+    if(d.scope === "global") return isGloballyRelevant(d, code, c);
     return false;
   });
 
@@ -454,11 +516,13 @@ function filterByRegion(region, opts){
   opts = opts || {};
   currentFilter = {type:"region", country:null, includeGlobal:true};
 
+  /* Use center of Europe for relevance checking */
+  var euroCenter = {lat: 50, lng: 15};
   filteredDatasets = allDatasets.filter(function(d){
-    if(d.scope === "global") return true;
     if(d.scope === "europe") return true;
-    if(d.scope === "regional") return true;
     if(d.scope === "continental") return true;
+    if(d.scope === "regional") return true;
+    if(d.scope === "global") return isGloballyRelevant(d, null, euroCenter);
     if(d.scope === "national" && d.country && COUNTRIES[d.country] && COUNTRIES[d.country].region === "europe") return true;
     return false;
   });
