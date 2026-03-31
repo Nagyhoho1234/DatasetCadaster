@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dataset Cadaster — Map Explorer</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr:#1a2634;
+  --hdr-accent:#2e4057;
+  --body-bg:#f0f2f5;
+  --card-bg:#fff;
+  --text:#2c3e50;
+  --text-light:#5a6a7a;
+  --border:#dce1e8;
+  --accent:#2980b9;
+  --accent-hover:#1f6da0;
+  --green:#27ae60;
+  --green-bg:#e8f8f0;
+  --yellow:#e67e22;
+  --yellow-bg:#fdf3e6;
+  --red:#c0392b;
+  --red-bg:#fbeaea;
+  --blue:#2980b9;
+  --blue-bg:#e4f0fa;
+  --teal:#16a085;
+  --radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+html{font-size:15px}
+body{font-family:var(--font);color:var(--text);background:var(--body-bg);margin:0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Navigation ───────────────────────────────────────── */
+.navbar{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:56px;z-index:1000;box-shadow:0 2px 6px rgba(0,0,0,.25);flex-shrink:0}
+.navbar-brand{font-size:1.25rem;font-weight:600;letter-spacing:.3px;color:#fff;text-decoration:none}
+.navbar-brand span{color:#5dade2;margin-right:6px}
+.navbar-links{margin-left:auto;display:flex;gap:24px;font-size:.9rem}
+.navbar-links a{color:#a0b4c8;text-decoration:none;transition:color .2s}
+.navbar-links a:hover,.navbar-links a.active{color:#fff;text-decoration:none}
+
+/* ── Main Layout ──────────────────────────────────────── */
+.main-container{display:flex;flex:1;overflow:hidden;position:relative}
+
+/* ── Map ──────────────────────────────────────────────── */
+#map{flex:1;z-index:1}
+
+/* ── Stats Overlay ────────────────────────────────────── */
+.stats-overlay{
+  position:absolute;top:12px;left:60px;z-index:800;
+  background:rgba(255,255,255,.95);border-radius:var(--radius);
+  padding:10px 16px;box-shadow:var(--shadow);font-size:.88rem;
+  pointer-events:none;border:1px solid var(--border);
+  max-width:320px;
+}
+.stats-overlay strong{color:var(--accent)}
+
+/* ── Sidebar ──────────────────────────────────────────── */
+.sidebar{
+  width:380px;flex-shrink:0;background:var(--card-bg);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;z-index:500;overflow:hidden;
+  transition:transform .3s ease;
+}
+.sidebar.collapsed{transform:translateX(100%);position:absolute;right:0;top:0;bottom:0}
+
+.sidebar-header{
+  padding:16px;border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.sidebar-header h2{font-size:1.1rem;font-weight:700;margin-bottom:10px;color:var(--text)}
+.sidebar-search{
+  width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);
+  font:inherit;font-size:.88rem;background:var(--body-bg);color:var(--text);
+}
+.sidebar-search:focus{outline:none;border-color:var(--accent)}
+
+.sidebar-controls{
+  padding:8px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;
+}
+.toggle-btn{
+  padding:6px 14px;border-radius:var(--radius);border:1px solid var(--border);
+  cursor:pointer;font:inherit;font-size:.8rem;background:var(--card-bg);color:var(--text);
+  transition:all .2s;
+}
+.toggle-btn:hover{border-color:var(--accent);color:var(--accent)}
+.toggle-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.sidebar-results{
+  flex:1;overflow-y:auto;padding:12px 16px;
+}
+.sidebar-results::-webkit-scrollbar{width:6px}
+.sidebar-results::-webkit-scrollbar-thumb{background:#c0c8d0;border-radius:3px}
+
+.result-count{font-size:.82rem;color:var(--text-light);margin-bottom:10px;font-weight:600}
+
+/* ── Dataset Cards ────────────────────────────────────── */
+.ds-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px 16px;margin-bottom:10px;transition:box-shadow .2s,border-color .2s;
+}
+.ds-card:hover{box-shadow:var(--shadow-hover);border-color:var(--accent)}
+.ds-card h3{font-size:.92rem;font-weight:700;margin-bottom:6px;color:var(--text);line-height:1.3}
+.ds-card h3 a{color:inherit;text-decoration:none}
+.ds-card h3 a:hover{color:var(--accent);text-decoration:underline}
+.ds-card p{font-size:.8rem;color:var(--text-light);line-height:1.45;margin-bottom:8px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ds-badges{display:flex;flex-wrap:wrap;gap:5px}
+.badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:.72rem;font-weight:600}
+.badge-scope{background:#e8f8f0;color:#1e7a4a}
+.badge-cost-free{background:#e8f8f0;color:#27ae60}
+.badge-cost-paid{background:#fdf3e6;color:#b45309}
+.badge-cost-freemium{background:#e4f0fa;color:#2471a3}
+.badge-category{background:#e4f0fa;color:#1a5276;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge-country{background:#fdf3e6;color:#7a5c2e}
+
+/* ── Toggle sidebar button ────────────────────────────── */
+.sidebar-toggle{
+  position:absolute;right:380px;top:50%;z-index:600;
+  transform:translateY(-50%);
+  background:var(--card-bg);border:1px solid var(--border);border-right:none;
+  border-radius:var(--radius) 0 0 var(--radius);
+  padding:12px 6px;cursor:pointer;box-shadow:var(--shadow);
+  font-size:1rem;color:var(--text-light);transition:right .3s ease;
+}
+.sidebar-toggle:hover{color:var(--accent)}
+.sidebar.collapsed ~ .sidebar-toggle{right:0}
+
+/* ── Empty state ──────────────────────────────────────── */
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-light)}
+.empty-state .icon{font-size:2.5rem;margin-bottom:12px;display:block}
+.empty-state p{font-size:.88rem;line-height:1.5}
+
+/* ── Region rectangles ────────────────────────────────── */
+.europe-rect{stroke:var(--accent);stroke-width:2;fill:rgba(41,128,185,.08);cursor:pointer}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media(max-width:900px){
+  .sidebar{width:320px}
+  .sidebar-toggle{right:320px}
+  .sidebar.collapsed ~ .sidebar-toggle{right:0}
+}
+@media(max-width:640px){
+  .sidebar{position:absolute;right:0;top:0;bottom:0;width:100%;max-width:360px}
+  .sidebar.collapsed{transform:translateX(100%)}
+  .sidebar-toggle{right:0;display:none}
+  .navbar-links{gap:14px;font-size:.82rem}
+  .stats-overlay{left:10px;right:60px;font-size:.8rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <a href="landing.html" class="navbar-brand"><span>&#9672;</span>Dataset Cadaster</a>
+  <div class="navbar-links">
+    <a href="index.html">Catalog</a>
+    <a href="estimator.html">GeoEstimator</a>
+    <a href="map.html" class="active">Map</a>
+  </div>
+</nav>
+
+<!-- Main Layout -->
+<div class="main-container">
+  <!-- Map -->
+  <div id="map"></div>
+
+  <!-- Stats Overlay -->
+  <div class="stats-overlay" id="statsOverlay">
+    Click a country marker or region to explore datasets
+  </div>
+
+  <!-- Sidebar Toggle -->
+  <button class="sidebar-toggle" id="sidebarToggle" title="Toggle sidebar">&#9664;</button>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2 id="sidebarTitle">Datasets</h2>
+      <input type="text" class="sidebar-search" id="searchBox" placeholder="Search datasets or countries..." />
+    </div>
+    <div class="sidebar-controls">
+      <button class="toggle-btn" id="btnGlobal">Show Global Datasets</button>
+      <button class="toggle-btn" id="btnEurope">Europe</button>
+      <button class="toggle-btn" id="btnClear">Clear Filter</button>
+    </div>
+    <div class="sidebar-results" id="results">
+      <div class="empty-state">
+        <span class="icon">&#127758;</span>
+        <p>Click a country marker on the map to see available datasets, or use the search box above.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+"use strict";
+
+/* ── Country centroids & metadata ─────────────────────── */
+var COUNTRIES = {
+  HU: {name:"Hungary",       lat:47.16, lng:19.50, region:"europe"},
+  AT: {name:"Austria",        lat:47.52, lng:14.55, region:"europe"},
+  SK: {name:"Slovakia",       lat:48.67, lng:19.70, region:"europe"},
+  CZ: {name:"Czechia",        lat:49.82, lng:15.47, region:"europe"},
+  PL: {name:"Poland",         lat:51.92, lng:19.15, region:"europe"},
+  RO: {name:"Romania",        lat:45.94, lng:24.97, region:"europe"},
+  HR: {name:"Croatia",        lat:45.10, lng:15.20, region:"europe"},
+  SI: {name:"Slovenia",       lat:46.15, lng:14.99, region:"europe"},
+  RS: {name:"Serbia",         lat:44.02, lng:21.01, region:"europe"},
+  DE: {name:"Germany",        lat:51.17, lng:10.45, region:"europe"},
+  FR: {name:"France",         lat:46.23, lng:2.21,  region:"europe"},
+  NL: {name:"Netherlands",    lat:52.13, lng:5.29,  region:"europe"},
+  GB: {name:"United Kingdom", lat:55.38, lng:-3.44, region:"europe"},
+  NO: {name:"Norway",         lat:60.47, lng:8.47,  region:"europe"},
+  SE: {name:"Sweden",         lat:60.13, lng:18.64, region:"europe"},
+  FI: {name:"Finland",        lat:61.92, lng:25.75, region:"europe"},
+  CH: {name:"Switzerland",    lat:46.82, lng:8.23,  region:"europe"},
+  ES: {name:"Spain",          lat:40.46, lng:-3.75, region:"europe"},
+  IT: {name:"Italy",          lat:41.87, lng:12.57, region:"europe"},
+  US: {name:"United States",  lat:37.09, lng:-95.71, region:"americas"}
+};
+
+var EUROPE_BOUNDS = [[35, -12], [72, 45]];
+
+/* ── State ────────────────────────────────────────────── */
+var allDatasets = [];
+var filteredDatasets = [];
+var currentFilter = {type: null, country: null, includeGlobal: false};
+var markers = {};
+var map, europeRect;
+
+/* ── Initialize Map ───────────────────────────────────── */
+map = L.map("map",{zoomControl:true,worldCopyJump:true}).setView([48, 15], 4);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom:18
+}).addTo(map);
+
+/* Europe bounding box rectangle */
+europeRect = L.rectangle(EUROPE_BOUNDS,{
+  color:"#2980b9", weight:2, fillColor:"#2980b9", fillOpacity:0.05,
+  dashArray:"6 4", interactive:true
+}).addTo(map);
+europeRect.bindTooltip("Europe Region (click for European datasets)",{sticky:true,className:"europe-tooltip"});
+europeRect.on("click", function(){
+  filterByRegion("europe");
+});
+
+/* ── Sidebar toggle ───────────────────────────────────── */
+var sidebar = document.getElementById("sidebar");
+var sidebarToggle = document.getElementById("sidebarToggle");
+sidebarToggle.addEventListener("click", function(){
+  sidebar.classList.toggle("collapsed");
+  sidebarToggle.innerHTML = sidebar.classList.contains("collapsed") ? "&#9654;" : "&#9664;";
+  setTimeout(function(){ map.invalidateSize(); }, 350);
+});
+
+/* ── Color scale for markers ──────────────────────────── */
+function getColor(count){
+  if(count === 0) return "#bdc3c7";
+  if(count <= 2) return "#85c1e9";
+  if(count <= 5) return "#5dade2";
+  if(count <= 10) return "#2e86c1";
+  return "#1a5276";
+}
+
+function getRadius(count){
+  if(count === 0) return 6;
+  if(count <= 2) return 10;
+  if(count <= 5) return 14;
+  if(count <= 10) return 18;
+  return 22;
+}
+
+/* ── Create country markers ───────────────────────────── */
+function createMarkers(countryCounts){
+  Object.keys(COUNTRIES).forEach(function(code){
+    var c = COUNTRIES[code];
+    var count = countryCounts[code] || 0;
+    var marker = L.circleMarker([c.lat, c.lng],{
+      radius: getRadius(count),
+      fillColor: getColor(count),
+      color: "#fff",
+      weight: 2,
+      opacity: 1,
+      fillOpacity: 0.85
+    }).addTo(map);
+
+    marker.bindTooltip(
+      "<strong>" + c.name + "</strong><br>" + count + " national dataset" + (count !== 1 ? "s" : ""),
+      {direction:"top", offset:[0,-8]}
+    );
+
+    marker.on("click", function(){
+      filterByCountry(code);
+    });
+
+    markers[code] = marker;
+  });
+}
+
+/* ── Load datasets ────────────────────────────────────── */
+fetch("../datasets.json")
+  .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(function(data){
+    allDatasets = Array.isArray(data) ? data : (data.datasets || []);
+
+    /* Count national datasets per country */
+    var countryCounts = {};
+    allDatasets.forEach(function(d){
+      if(d.scope === "national" && d.country){
+        countryCounts[d.country] = (countryCounts[d.country] || 0) + 1;
+      }
+    });
+
+    createMarkers(countryCounts);
+
+    /* Update stats overlay with totals */
+    updateStats(null);
+
+    /* Check for URL hash */
+    var hash = window.location.hash.replace("#","");
+    if(hash && COUNTRIES[hash.toUpperCase()]){
+      filterByCountry(hash.toUpperCase());
+    }
+  })
+  .catch(function(err){
+    document.getElementById("results").innerHTML =
+      '<div class="empty-state"><span class="icon">&#9888;</span><p>Could not load datasets. Make sure datasets.json is accessible.</p></div>';
+  });
+
+/* ── Filter functions ─────────────────────────────────── */
+function filterByCountry(code){
+  var c = COUNTRIES[code];
+  if(!c) return;
+
+  currentFilter = {type:"country", country:code, includeGlobal:false};
+
+  /* Datasets for this country: national + europe (if european) + global (if toggled) */
+  filteredDatasets = allDatasets.filter(function(d){
+    if(d.scope === "national" && d.country === code) return true;
+    if(d.scope === "europe" && c.region === "europe") return true;
+    if(d.scope === "regional" && c.region === "europe") return true;
+    return false;
+  });
+
+  document.getElementById("sidebarTitle").textContent = c.name + " Datasets";
+  highlightMarker(code);
+  applySearch();
+  updateStats(c.name);
+
+  /* Pan to country */
+  map.setView([c.lat, c.lng], 6, {animate:true});
+
+  /* Open sidebar on mobile */
+  sidebar.classList.remove("collapsed");
+  sidebarToggle.innerHTML = "&#9664;";
+}
+
+function filterByRegion(region){
+  currentFilter = {type:"region", country:null, includeGlobal:false};
+
+  filteredDatasets = allDatasets.filter(function(d){
+    if(d.scope === "europe") return true;
+    if(d.scope === "regional") return true;
+    if(d.scope === "national" && d.country && COUNTRIES[d.country] && COUNTRIES[d.country].region === "europe") return true;
+    return false;
+  });
+
+  document.getElementById("sidebarTitle").textContent = "European Datasets";
+  clearHighlight();
+  applySearch();
+  updateStats("Europe");
+
+  map.fitBounds(EUROPE_BOUNDS, {padding:[30,30], animate:true});
+  sidebar.classList.remove("collapsed");
+  sidebarToggle.innerHTML = "&#9664;";
+}
+
+function showGlobalDatasets(){
+  currentFilter = {type:"global", country:null, includeGlobal:true};
+
+  filteredDatasets = allDatasets.filter(function(d){
+    return d.scope === "global";
+  });
+
+  document.getElementById("sidebarTitle").textContent = "Global Datasets";
+  clearHighlight();
+  applySearch();
+  updateStats("Global");
+
+  sidebar.classList.remove("collapsed");
+  sidebarToggle.innerHTML = "&#9664;";
+}
+
+function clearFilter(){
+  currentFilter = {type:null, country:null, includeGlobal:false};
+  filteredDatasets = [];
+  document.getElementById("sidebarTitle").textContent = "Datasets";
+  document.getElementById("searchBox").value = "";
+  clearHighlight();
+  updateStats(null);
+  document.getElementById("btnGlobal").classList.remove("active");
+  document.getElementById("btnEurope").classList.remove("active");
+
+  document.getElementById("results").innerHTML =
+    '<div class="empty-state"><span class="icon">&#127758;</span>' +
+    '<p>Click a country marker on the map to see available datasets, or use the search box above.</p></div>';
+}
+
+/* ── Highlight marker ─────────────────────────────────── */
+function highlightMarker(code){
+  Object.keys(markers).forEach(function(k){
+    if(k === code){
+      markers[k].setStyle({weight:3, color:"#e74c3c"});
+      markers[k].bringToFront();
+    } else {
+      markers[k].setStyle({weight:2, color:"#fff"});
+    }
+  });
+}
+
+function clearHighlight(){
+  Object.keys(markers).forEach(function(k){
+    markers[k].setStyle({weight:2, color:"#fff"});
+  });
+}
+
+/* ── Stats overlay ────────────────────────────────────── */
+function updateStats(areaName){
+  var el = document.getElementById("statsOverlay");
+  if(!areaName){
+    var totalNational = allDatasets.filter(function(d){return d.scope==="national";}).length;
+    var totalGlobal = allDatasets.filter(function(d){return d.scope==="global";}).length;
+    el.innerHTML = "<strong>" + allDatasets.length + "</strong> total datasets | " +
+      "<strong>" + totalGlobal + "</strong> global | " +
+      "<strong>" + totalNational + "</strong> national";
+  } else {
+    el.innerHTML = "<strong>" + filteredDatasets.length + "</strong> datasets available for <strong>" + areaName + "</strong>";
+  }
+}
+
+/* ── Search ───────────────────────────────────────────── */
+var searchBox = document.getElementById("searchBox");
+searchBox.addEventListener("input", function(){
+  var q = this.value.trim().toLowerCase();
+
+  if(!q && currentFilter.type === null){
+    /* No filter, no search: show nothing or do country search */
+    clearFilter();
+    return;
+  }
+
+  if(currentFilter.type === null && q){
+    /* Search across all datasets */
+    filteredDatasets = allDatasets.filter(function(d){
+      return matchSearch(d, q);
+    });
+    document.getElementById("sidebarTitle").textContent = "Search Results";
+    updateStats("search: \"" + q + "\"");
+  }
+
+  applySearch();
+
+  /* Also filter markers visibility */
+  filterMarkers(q);
+});
+
+function matchSearch(d, q){
+  var searchable = [d.name, d.description, d.category, d.country, d.scope,
+    d.operator, d.dataType, (d.tags||[]).join(" ")].join(" ").toLowerCase();
+  return searchable.indexOf(q) !== -1;
+}
+
+function filterMarkers(q){
+  if(!q){
+    Object.keys(markers).forEach(function(k){ markers[k].setStyle({opacity:1,fillOpacity:0.85}); });
+    return;
+  }
+  Object.keys(markers).forEach(function(k){
+    var c = COUNTRIES[k];
+    var nameMatch = c.name.toLowerCase().indexOf(q) !== -1 || k.toLowerCase().indexOf(q) !== -1;
+    markers[k].setStyle({opacity: nameMatch ? 1 : 0.3, fillOpacity: nameMatch ? 0.85 : 0.2});
+  });
+}
+
+function applySearch(){
+  var q = searchBox.value.trim().toLowerCase();
+  var toShow = filteredDatasets;
+
+  if(q && currentFilter.type !== null){
+    toShow = toShow.filter(function(d){ return matchSearch(d, q); });
+  }
+
+  renderResults(toShow);
+}
+
+/* ── Render dataset cards ─────────────────────────────── */
+function renderResults(datasets){
+  var container = document.getElementById("results");
+
+  if(!datasets || datasets.length === 0){
+    container.innerHTML = '<div class="empty-state"><span class="icon">&#128269;</span>' +
+      '<p>No datasets found. Try a different search or click another country.</p></div>';
+    return;
+  }
+
+  var html = '<div class="result-count">' + datasets.length + ' dataset' + (datasets.length !== 1 ? 's' : '') + '</div>';
+
+  datasets.forEach(function(d){
+    var costClass = d.cost === "free" ? "badge-cost-free" : (d.cost === "freemium" ? "badge-cost-freemium" : "badge-cost-paid");
+    var catLabel = (d.category || "").replace(/-/g," ");
+
+    html += '<div class="ds-card">' +
+      '<h3><a href="' + (d.url || "#") + '" target="_blank" rel="noopener">' + escHtml(d.name) + '</a></h3>' +
+      '<p>' + escHtml(d.description || "") + '</p>' +
+      '<div class="ds-badges">' +
+        '<span class="badge badge-scope">' + escHtml(d.scope || "") + '</span>' +
+        '<span class="badge ' + costClass + '">' + escHtml(d.cost || "") + '</span>' +
+        '<span class="badge badge-category">' + escHtml(catLabel) + '</span>' +
+        (d.country ? '<span class="badge badge-country">' + escHtml(d.country) + '</span>' : '') +
+      '</div>' +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function escHtml(s){
+  var d = document.createElement("div");
+  d.appendChild(document.createTextNode(s));
+  return d.innerHTML;
+}
+
+/* ── Button handlers ──────────────────────────────────── */
+document.getElementById("btnGlobal").addEventListener("click", function(){
+  var isActive = this.classList.contains("active");
+  document.getElementById("btnGlobal").classList.toggle("active");
+  document.getElementById("btnEurope").classList.remove("active");
+
+  if(isActive){
+    /* If was showing global and a country was selected, revert to country */
+    if(currentFilter.country){
+      filterByCountry(currentFilter.country);
+    } else {
+      clearFilter();
+    }
+  } else {
+    showGlobalDatasets();
+  }
+});
+
+document.getElementById("btnEurope").addEventListener("click", function(){
+  var isActive = this.classList.contains("active");
+  document.getElementById("btnEurope").classList.toggle("active");
+  document.getElementById("btnGlobal").classList.remove("active");
+
+  if(isActive){
+    clearFilter();
+  } else {
+    filterByRegion("europe");
+  }
+});
+
+document.getElementById("btnClear").addEventListener("click", function(){
+  clearFilter();
+});
+
+/* ── Legend ────────────────────────────────────────────── */
+var legend = L.control({position:"bottomleft"});
+legend.onAdd = function(){
+  var div = L.DomUtil.create("div","info legend");
+  div.style.cssText = "background:rgba(255,255,255,.92);padding:10px 14px;border-radius:6px;font-size:.78rem;line-height:1.8;box-shadow:0 1px 4px rgba(0,0,0,.15);border:1px solid #dce1e8";
+  div.innerHTML =
+    '<strong style="font-size:.82rem">National Datasets</strong><br>' +
+    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#bdc3c7;margin-right:6px;vertical-align:middle"></span> None<br>' +
+    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#85c1e9;margin-right:6px;vertical-align:middle"></span> 1-2<br>' +
+    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#5dade2;margin-right:6px;vertical-align:middle"></span> 3-5<br>' +
+    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#2e86c1;margin-right:6px;vertical-align:middle"></span> 6-10<br>' +
+    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#1a5276;margin-right:6px;vertical-align:middle"></span> 10+<br>' +
+    '<div style="margin-top:6px;border-top:1px solid #dce1e8;padding-top:6px">' +
+    '<span style="display:inline-block;width:14px;height:10px;border:2px dashed #2980b9;margin-right:6px;vertical-align:middle"></span> Europe Region</div>';
+  return div;
+};
+legend.addTo(map);
+
+})();
+</script>
+</body>
+</html>

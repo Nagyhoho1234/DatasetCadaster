@@ -351,6 +351,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <div class="navbar-links">
     <a href="index.html" class="active">Catalog</a>
     <a href="estimator.html">GeoEstimator</a>
+    <a href="map.html">Map</a>
   </div>
 </nav>
 
@@ -379,6 +380,16 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 <div class="cat-chart-section" id="catChartSection" style="display:none">
   <div class="cat-chart-title">Datasets by Category <span id="catChartFilter" style="font-size:.72rem;color:var(--accent);cursor:pointer;display:none">&mdash; click bar to filter, click again to clear</span></div>
   <div class="cat-chart" id="catChart"></div>
+</div>
+
+<!-- Recently Added / What's New -->
+<div class="recently-added-section" id="recentlyAddedSection" style="display:none">
+  <div class="recently-added-header" id="recentlyAddedHeader">
+    <span class="recently-added-title">Recently Added <span class="whats-new-badge" id="whatsNewBadge" style="display:none">New</span></span>
+    <span class="recently-added-toggle" id="recentlyAddedToggle">&#9660;</span>
+    <span class="recently-added-note" id="recentlyAddedNote"></span>
+  </div>
+  <div id="recentlyAddedContent"></div>
 </div>
 
 <!-- Main Layout -->
@@ -446,6 +457,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     </div>
 
     <button class="btn-clear" id="btnClear">Clear filters</button>
+    <button class="btn-bookmark-filter" id="btnBookmarkFilter">&#9733; Show Bookmarks Only</button>
     <div class="match-count" id="matchCount"></div>
   </aside>
 
@@ -535,6 +547,18 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   let searchTimer = null;
   let compareList = []; // max 4
   let activeCatFilter = ""; // from chart click
+  let bookmarks = [];       // array of dataset IDs
+  let showBookmarksOnly = false;
+
+  /* ── Bookmark Persistence ───────────────────────── */
+  function loadBookmarks(){
+    try { bookmarks = JSON.parse(localStorage.getItem("dc-bookmarks")) || []; }
+    catch(e){ bookmarks = []; }
+  }
+  function saveBookmarks(){
+    localStorage.setItem("dc-bookmarks", JSON.stringify(bookmarks));
+  }
+  loadBookmarks();
 
   /* ── DOM refs ────────────────────────────────────── */
   const $ = id => document.getElementById(id);
@@ -561,6 +585,13 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   const catChartSection= $("catChartSection");
   const catChartFilter = $("catChartFilter");
   const toastEl        = $("toast");
+  const btnBookmarkFilter = $("btnBookmarkFilter");
+  const statBookmarks  = $("statBookmarks");
+  const recentlyAddedSection = $("recentlyAddedSection");
+  const recentlyAddedContent = $("recentlyAddedContent");
+  const recentlyAddedHeader  = $("recentlyAddedHeader");
+  const recentlyAddedNote    = $("recentlyAddedNote");
+  const whatsNewBadge        = $("whatsNewBadge");
 
   let apiValue = "";
 
@@ -643,6 +674,10 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     $("statApi").textContent   = allData.filter(d => d.apiSupport).length;
     const cats = new Set(allData.map(d => d.category).filter(Boolean));
     $("statCats").textContent  = cats.size;
+    updateBookmarkCount();
+  }
+  function updateBookmarkCount(){
+    statBookmarks.textContent = bookmarks.length;
   }
 
   /* ── Category Bar Chart ─────────────────────────── */
@@ -704,6 +739,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     const api = apiValue;
 
     filtered = allData.filter(d => {
+      if(showBookmarksOnly && !bookmarks.includes(d.id)) return false;
       if(cat && d.category !== cat) return false;
       if(sco && d.scope !== sco) return false;
       if(cos && d.cost !== cos) return false;
