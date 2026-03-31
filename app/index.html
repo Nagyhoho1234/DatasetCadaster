@@ -108,6 +108,16 @@
 [data-theme="dark"] .comparison-tray th{background:#151c24}
 [data-theme="dark"] .comparison-tray td{border-color:var(--border)}
 
+/* ── Health Status Dots ──────────────────────────────── */
+.health-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:6px;vertical-align:middle;flex-shrink:0;cursor:help;position:relative}
+.health-dot.health-green{background:#27ae60}
+.health-dot.health-yellow{background:#e67e22}
+.health-dot.health-red{background:#c0392b}
+.health-dot.health-gray{background:#aab2bd}
+.health-tooltip{display:none;position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:4px 10px;border-radius:4px;font-size:.72rem;white-space:nowrap;z-index:500;pointer-events:none}
+.health-dot:hover .health-tooltip{display:block}
+[data-theme="dark"] .health-tooltip{background:#1a1a2e;color:#d0d8e0}
+
 html{font-size:15px}
 body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
 
@@ -404,6 +414,8 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     <a href="guide.html">Guide</a>
     <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
+    <a href="lineage.html">Lineage</a>
+    <a href="coverage.html">Coverage</a>
   </div>
 </nav>
 
@@ -427,6 +439,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <div class="stat">Categories: <strong id="statCats">&#8212;</strong></div>
   <div class="stat">&#9733; Bookmarked: <strong id="statBookmarks">0</strong></div>
   <div class="stat">&#9998; Annotated: <strong id="statAnnotated">0</strong></div>
+  <div class="stat" id="statHealthWrap" style="display:none">APIs: <strong id="statHealthy">-</strong> healthy, <strong id="statDown">-</strong> down</div>
 </div>
 
 <!-- Category Bar Chart -->
@@ -507,6 +520,17 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
         <button data-value="yes">Yes</button>
         <button data-value="no">No</button>
       </div>
+    </div>
+
+    <div class="filter-group" id="healthFilterGroup" style="display:none">
+      <label for="filterHealth">API Status</label>
+      <select id="filterHealth">
+        <option value="">All</option>
+        <option value="healthy">Healthy</option>
+        <option value="degraded">Degraded</option>
+        <option value="down">Down</option>
+        <option value="unchecked">Not checked</option>
+      </select>
     </div>
 
     <button class="btn-clear" id="btnClear">Clear filters</button>
@@ -623,6 +647,9 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   let showUsedOnly = false;
   let showNotesOnly = false;
   let minRating = 0;
+  let healthData = {};      // keyed by datasetId
+  let healthLoaded = false;
+  let healthFilter = "";
 
   /* ── Bookmark Persistence ───────────────────────── */
   function loadBookmarks(){
@@ -700,6 +727,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   const recentlyAddedNote    = $("recentlyAddedNote");
   const whatsNewBadge        = $("whatsNewBadge");
 
+  const filterHealthEl  = $("filterHealth");
   let apiValue = "";
 
   /* ── Dark Mode ──────────────────────────────────── */
@@ -769,6 +797,18 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
       buildRecentlyAdded();
       readHashFilters();
       applyFilters();
+      // Load health data (non-blocking)
+      fetch("../health.json")
+        .then(r => r.ok ? r.json() : null)
+        .then(h => {
+          if(!h || !h.endpoints) return;
+          healthLoaded = true;
+          h.endpoints.forEach(ep => { healthData[ep.datasetId] = ep; });
+          updateHealthStats(h);
+          $("healthFilterGroup").style.display = "";
+          render(); // re-render with health dots
+        })
+        .catch(function(){});
     })
     .catch(err => {
       loadingState.innerHTML =
@@ -790,6 +830,36 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   }
   function updateAnnotatedCount(){
     statAnnotated.textContent = getAnnotatedCount();
+  }
+
+  function updateHealthStats(h){
+    $("statHealthWrap").style.display = "";
+    $("statHealthy").textContent = h.healthy || 0;
+    $("statDown").textContent = h.down || 0;
+  }
+
+  function getHealthDot(datasetId){
+    if(!healthLoaded) return "";
+    var ep = healthData[datasetId];
+    if(!ep) return '<span class="health-dot health-gray"><span class="health-tooltip">Not checked</span></span>';
+    var cls = ep.classification;
+    var dotClass = cls === "healthy" ? "health-green" : cls === "degraded" ? "health-yellow" : "health-red";
+    var tip = "";
+    if(cls === "healthy"){
+      tip = "API healthy (" + (ep.responseTime||0) + "ms)";
+    } else if(cls === "degraded"){
+      tip = "API degraded (" + (ep.responseTime||0) + "ms)";
+    } else {
+      tip = "API down" + (ep.lastHealthy ? " since " + ep.lastHealthy : "");
+    }
+    return '<span class="health-dot ' + dotClass + '"><span class="health-tooltip">' + esc(tip) + '</span></span>';
+  }
+
+  function getHealthClass(datasetId){
+    if(!healthLoaded) return "unchecked";
+    var ep = healthData[datasetId];
+    if(!ep) return "unchecked";
+    return ep.classification || "unchecked";
   }
 
   /* ── Category Bar Chart ─────────────────────────── */
@@ -861,6 +931,10 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
       if(cos && d.cost !== cos) return false;
       if(api === "yes" && !d.apiSupport) return false;
       if(api === "no"  && d.apiSupport)  return false;
+      if(healthFilter){
+        var hc = getHealthClass(d.id);
+        if(healthFilter !== hc) return false;
+      }
       if(q){
         const haystack = [
           d.name, d.description, d.operator,
@@ -1002,7 +1076,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
     return '<div class="card' + (isBookmarked ? ' bookmarked' : '') + '" data-id="' + esc(d.id) + '">' +
       '<div class="card-header">' +
-        '<div class="card-title"><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.name) + '</a>' + noteIndicators + '</div>' +
+        '<div class="card-title"><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.name) + '</a>' + getHealthDot(d.id) + noteIndicators + '</div>' +
         '<div class="card-actions">' +
           '<button class="bookmark-btn' + (isBookmarked ? ' bookmarked' : '') + '" onclick="window._toggleBookmark(\'' + safeId + '\')" title="' + (isBookmarked ? 'Remove bookmark' : 'Add bookmark') + '">' + (isBookmarked ? '\u2605' : '\u2606') + '</button>' +
           '<button class="cite-btn" onclick="window._toggleCite(event,\'' + safeId + '\')" title="Generate citation">Cite</button>' +
@@ -1376,6 +1450,11 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     el.addEventListener("change", applyFilters);
   });
 
+  filterHealthEl.addEventListener("change", function(){
+    healthFilter = filterHealthEl.value;
+    applyFilters();
+  });
+
   // sync chart when category dropdown changes directly
   filterCategory.addEventListener("change", () => {
     activeCatFilter = filterCategory.value;
@@ -1406,6 +1485,8 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     btnNotesFilter.classList.remove("active");
     minRating = 0;
     filterMinRating.value = "0";
+    healthFilter = "";
+    filterHealthEl.value = "";
     apiToggle.querySelectorAll("button").forEach(b => b.classList.remove("active"));
     apiToggle.querySelector('[data-value=""]').classList.add("active");
     sortSelect.value = "alpha";

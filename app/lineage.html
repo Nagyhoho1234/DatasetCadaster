@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dataset Cadaster — Lineage Graph</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr:#1a2634;--hdr-accent:#2e4057;--body-bg:#f0f2f5;--card-bg:#fff;
+  --text:#2c3e50;--text-light:#5a6a7a;--border:#dce1e8;
+  --accent:#2980b9;--accent-hover:#1f6da0;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --nav-h:44px;--header-h:56px;--radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --cat-satellite:#3498db;--cat-climate:#e67e22;--cat-soil:#8b6914;
+  --cat-hydro:#1abc9c;--cat-bio:#27ae60;--cat-dem:#9b59b6;
+  --cat-lulc:#2ecc71;--cat-pop:#e74c3c;--cat-ocean:#2471a3;
+  --cat-geodesy:#7f8c8d;--cat-platform:#16a085;--cat-admin:#c0392b;
+}
+[data-theme="dark"]{
+  --hdr:#0d1520;--hdr-accent:#1a2a3e;--body-bg:#181e26;--card-bg:#1e2733;
+  --text:#d0d8e0;--text-light:#8899aa;--border:#2a3545;
+  --accent:#4ba3d9;--accent-hover:#3a8ec4;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+}
+html{font-size:15px}
+body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
+.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
+.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
+.navbar-links{display:flex;gap:4px}
+.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
+.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
+.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
+.header h1 span{color:#5dade2;margin-right:6px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn-dark-toggle{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:5px}
+.btn-dark-toggle:hover{border-color:#5a7a9a;color:#fff}
+
+/* Layout */
+.main-wrap{display:flex;flex:1;overflow:hidden;position:relative}
+.graph-area{flex:1;position:relative;overflow:hidden;background:var(--body-bg)}
+.graph-area svg{width:100%;height:100%;display:block}
+
+/* Controls bar */
+.controls{position:absolute;top:12px;left:12px;z-index:10;display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start}
+.search-box{padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font:inherit;font-size:.85rem;width:200px;background:var(--card-bg);color:var(--text)}
+.search-box:focus{outline:none;border-color:var(--accent)}
+.filter-panel{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;box-shadow:var(--shadow);font-size:.8rem;display:flex;flex-wrap:wrap;gap:6px 14px}
+.filter-panel label{display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap}
+.filter-panel input[type="checkbox"]{accent-color:var(--accent)}
+.cat-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+
+/* Info panel */
+.info-panel{width:320px;background:var(--card-bg);border-left:1px solid var(--border);padding:20px;overflow-y:auto;display:none;flex-direction:column;gap:12px}
+.info-panel.visible{display:flex}
+.info-panel h2{font-size:1.1rem;color:var(--accent)}
+.info-panel .ip-cat{font-size:.8rem;color:var(--text-light);margin-top:-6px}
+.info-panel .ip-desc{font-size:.88rem;line-height:1.5}
+.info-panel h3{font-size:.85rem;color:var(--text-light);margin-top:6px;text-transform:uppercase;letter-spacing:.5px}
+.info-panel ul{list-style:none;padding:0;font-size:.85rem}
+.info-panel ul li{padding:3px 0;cursor:pointer;color:var(--accent)}
+.info-panel ul li:hover{text-decoration:underline}
+.info-panel .ip-close{align-self:flex-end;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-light)}
+.info-panel .ip-close:hover{color:var(--text)}
+
+/* Legend */
+.legend{position:absolute;bottom:12px;left:12px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);font-size:.78rem;display:flex;flex-wrap:wrap;gap:4px 14px;max-width:500px;z-index:10}
+.legend-item{display:flex;align-items:center;gap:4px;white-space:nowrap}
+
+/* Tooltip */
+.tooltip{position:absolute;pointer-events:none;background:#1a2634;color:#fff;padding:6px 10px;border-radius:var(--radius);font-size:.8rem;max-width:260px;line-height:1.4;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.3);opacity:0;transition:opacity .12s}
+.tooltip.visible{opacity:1}
+.tooltip .tt-name{font-weight:700}
+.tooltip .tt-desc{color:#a0b4c8;font-size:.75rem;margin-top:2px}
+
+/* Mobile list */
+.mobile-list{display:none;flex:1;overflow-y:auto;padding:16px}
+.mobile-list h3{font-size:.9rem;color:var(--text-light);margin:16px 0 6px;text-transform:uppercase;letter-spacing:.5px}
+.mobile-list h3:first-child{margin-top:0}
+.ml-item{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:6px}
+.ml-item .ml-name{font-weight:600;font-size:.92rem}
+.ml-item .ml-conn{font-size:.78rem;color:var(--text-light);margin-top:4px}
+
+@media(max-width:768px){
+  .graph-area,.info-panel,.controls,.legend{display:none!important}
+  .mobile-list{display:block}
+}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="index.html" class="navbar-brand">Dataset Cadaster</a>
+  <div class="navbar-links">
+    <a href="index.html">Catalog</a>
+    <a href="estimator.html">GeoEstimator</a>
+    <a href="recipes.html">Recipes</a>
+    <a href="guide.html">Guide</a>
+    <a href="compare.html">Comparisons</a>
+    <a href="map.html">Map</a>
+    <a href="lineage.html" class="active">Lineage</a>
+    <a href="coverage.html">Coverage</a>
+  </div>
+</nav>
+<div class="header">
+  <h1><span>&#9670;</span> Dataset Lineage Graph</h1>
+  <div class="header-right">
+    <span class="subtitle" style="font-size:.82rem;color:#a0b4c8">How datasets derive from each other</span>
+    <button class="btn-dark-toggle" onclick="toggleDark()">&#9789; Dark</button>
+  </div>
+</div>
+
+<div class="main-wrap">
+  <div class="graph-area" id="graphArea">
+    <div class="controls">
+      <input type="text" class="search-box" id="searchBox" placeholder="Search datasets...">
+      <div class="filter-panel" id="filterPanel"></div>
+    </div>
+    <svg id="svgCanvas"></svg>
+    <div class="legend" id="legend"></div>
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+  <div class="info-panel" id="infoPanel">
+    <button class="ip-close" onclick="closePanel()">&times;</button>
+    <h2 id="ipName"></h2>
+    <div class="ip-cat" id="ipCat"></div>
+    <div class="ip-desc" id="ipDesc"></div>
+    <h3>Derives from</h3>
+    <ul id="ipInputs"></ul>
+    <h3>Feeds into</h3>
+    <ul id="ipOutputs"></ul>
+  </div>
+  <div class="mobile-list" id="mobileList"></div>
+</div>
+
+<script>
+/* ── Data ─────────────────────────────────────────────── */
+const CATEGORIES = {
+  satellite:  {label:'Satellite / EO',      color:'var(--cat-satellite)', hex:'#3498db'},
+  climate:    {label:'Climate / Weather',    color:'var(--cat-climate)',   hex:'#e67e22'},
+  soil:       {label:'Soil',                 color:'var(--cat-soil)',      hex:'#8b6914'},
+  hydro:      {label:'Hydrology',            color:'var(--cat-hydro)',     hex:'#1abc9c'},
+  bio:        {label:'Biosphere / Ecology',  color:'var(--cat-bio)',       hex:'#27ae60'},
+  dem:        {label:'DEM / Elevation',       color:'var(--cat-dem)',       hex:'#9b59b6'},
+  lulc:       {label:'Land Use / Land Cover',color:'var(--cat-lulc)',      hex:'#2ecc71'},
+  pop:        {label:'Population / Urban',   color:'var(--cat-pop)',       hex:'#e74c3c'},
+  ocean:      {label:'Ocean / Marine',       color:'var(--cat-ocean)',     hex:'#2471a3'},
+  geodesy:    {label:'Geodesy / GNSS',       color:'var(--cat-geodesy)',   hex:'#7f8c8d'},
+  platform:   {label:'Data Platform / Std',  color:'var(--cat-platform)', hex:'#16a085'},
+};
+
+const nodes = [
+  // Tier 0 — raw sensors/missions
+  {id:'sentinel2',   label:'Sentinel-2',        cat:'satellite', tier:0, desc:'ESA optical multispectral satellite (10-60m), 5-day revisit'},
+  {id:'sentinel1',   label:'Sentinel-1',        cat:'satellite', tier:0, desc:'ESA C-band SAR satellite, all-weather imaging'},
+  {id:'landsat',     label:'Landsat',            cat:'satellite', tier:0, desc:'NASA/USGS optical satellite series since 1972'},
+  {id:'modis',       label:'MODIS',              cat:'satellite', tier:0, desc:'Moderate Resolution Imaging Spectroradiometer on Terra/Aqua'},
+  {id:'tandemx',     label:'TanDEM-X',           cat:'satellite', tier:0, desc:'DLR bistatic SAR mission for global DEM generation'},
+  {id:'srtm',        label:'SRTM',               cat:'dem',      tier:0, desc:'Shuttle Radar Topography Mission (2000), near-global DEM'},
+  {id:'grace',       label:'GRACE/GRACE-FO',     cat:'satellite', tier:0, desc:'Gravity field satellites measuring water mass changes'},
+  {id:'census',      label:'Census data',        cat:'pop',       tier:0, desc:'National population census microdata and statistics'},
+  {id:'field_wosis', label:'Field surveys (WoSIS)',cat:'soil',    tier:0, desc:'World Soil Information Service — global soil profile DB'},
+  {id:'hwsd',        label:'HWSD',               cat:'soil',      tier:0, desc:'Harmonized World Soil Database by FAO/IIASA'},
+  {id:'gps',         label:'GPS constellation',  cat:'geodesy',   tier:0, desc:'US NAVSTAR GPS satellite navigation system'},
+  {id:'argo',        label:'Argo floats',        cat:'ocean',     tier:0, desc:'Global array of ~4000 ocean profiling floats'},
+  {id:'darwin',      label:'Darwin Core',        cat:'platform',  tier:0, desc:'Biodiversity data standard for species observations'},
+  {id:'iucn',        label:'IUCN Red List',      cat:'bio',       tier:0, desc:'Global conservation status of species'},
+  {id:'wdpa',        label:'WDPA',               cat:'bio',       tier:0, desc:'World Database on Protected Areas'},
+  {id:'natsurv',     label:'National soil surveys',cat:'soil',    tier:0, desc:'Country-level soil mapping and sampling campaigns'},
+
+  // Tier 1 — first-level derived
+  {id:'corine',      label:'CORINE LC',          cat:'lulc',      tier:1, desc:'European land cover inventory at 100m (44 classes)'},
+  {id:'esa_wc',      label:'ESA WorldCover',     cat:'lulc',      tier:1, desc:'Global 10m land cover map from Sentinel-1/2'},
+  {id:'dynworld',    label:'Dynamic World',      cat:'lulc',      tier:1, desc:'Google/WRI near-real-time 10m land cover'},
+  {id:'urban_atlas', label:'Urban Atlas',        cat:'lulc',      tier:1, desc:'EEA high-res urban land cover for European cities'},
+  {id:'hrl_imp',     label:'Copernicus HRL Imperviousness',cat:'lulc',tier:1, desc:'Pan-European 10m imperviousness density layers'},
+  {id:'egms',        label:'EGMS',               cat:'geodesy',   tier:1, desc:'European Ground Motion Service from InSAR'},
+  {id:'euhydro',     label:'Copernicus EU-Hydro',cat:'hydro',     tier:1, desc:'Pan-European hydrographic reference dataset'},
+  {id:'gfw',         label:'Global Forest Watch',cat:'bio',       tier:1, desc:'Near-real-time forest change monitoring from Landsat'},
+  {id:'ghs_built',   label:'GHSL GHS-BUILT',     cat:'pop',       tier:1, desc:'Global Human Settlement built-up surface grids'},
+  {id:'clcplus',     label:'CLCplus Backbone',   cat:'lulc',      tier:1, desc:'Next-gen European land cover from Landsat+Sentinel-2'},
+  {id:'viirs',       label:'VIIRS',              cat:'satellite', tier:1, desc:'Visible Infrared Imaging Radiometer Suite (MODIS successor)'},
+  {id:'cop_dem',     label:'Copernicus DEM GLO-30/90',cat:'dem',  tier:1, desc:'Global 30/90m DEM from TanDEM-X'},
+  {id:'guf',         label:'GUF',                cat:'pop',       tier:1, desc:'Global Urban Footprint from TanDEM-X'},
+  {id:'merit_dem',   label:'MERIT DEM',          cat:'dem',       tier:1, desc:'Multi-Error-Removed Improved-Terrain DEM from SRTM'},
+  {id:'hydrosheds',  label:'HydroSHEDS',         cat:'hydro',     tier:1, desc:'Global hydrographic dataset derived from SRTM'},
+  {id:'era5',        label:'ERA5',               cat:'climate',   tier:1, desc:'ECMWF global climate reanalysis (1940-present, 31km)'},
+  {id:'worldpop',    label:'WorldPop',           cat:'pop',       tier:1, desc:'High-resolution population distribution grids'},
+  {id:'gpw',         label:'GPW',                cat:'pop',       tier:1, desc:'Gridded Population of the World by CIESIN'},
+  {id:'landscan',    label:'LandScan',           cat:'pop',       tier:1, desc:'ORNL global ambient population distribution'},
+  {id:'ghs_pop',     label:'GHSL GHS-POP',       cat:'pop',       tier:1, desc:'Global population grids from GHSL framework'},
+  {id:'soilgrids',   label:'SoilGrids',          cat:'soil',      tier:1, desc:'ISRIC global 250m soil property maps (ML predictions)'},
+  {id:'esdac',       label:'ESDAC European Soil DB',cat:'soil',   tier:1, desc:'European Soil Data Centre harmonized database'},
+  {id:'igs',         label:'IGS',                cat:'geodesy',   tier:1, desc:'International GNSS Service — global tracking network'},
+  {id:'gbif',        label:'GBIF',               cat:'bio',       tier:1, desc:'Global Biodiversity Information Facility — occurrence data'},
+  {id:'obis',        label:'OBIS',               cat:'ocean',     tier:1, desc:'Ocean Biodiversity Information System'},
+  {id:'wsf3d',       label:'WSF 3D',             cat:'pop',       tier:1, desc:'World Settlement Footprint 3D (building heights)'},
+
+  // Tier 2 — second-level derived
+  {id:'fabdem',      label:'FABDEM',             cat:'dem',       tier:2, desc:'Forest And Buildings removed DEM (from SRTM+TanDEM-X)'},
+  {id:'hydrolakes',  label:'HydroLAKES',         cat:'hydro',     tier:2, desc:'Global lake database derived from HydroSHEDS'},
+  {id:'hydrobasins', label:'HydroBASINS',        cat:'hydro',     tier:2, desc:'Global watershed boundaries from HydroSHEDS'},
+  {id:'glofas_in',   label:'GloFAS inputs',      cat:'hydro',     tier:2, desc:'Global Flood Awareness System hydrological inputs'},
+  {id:'era5_land',   label:'ERA5-Land',          cat:'climate',   tier:2, desc:'Downscaled ERA5 land-surface reanalysis (9km)'},
+  {id:'cams',        label:'CAMS',               cat:'climate',   tier:2, desc:'Copernicus Atmosphere Monitoring Service'},
+  {id:'cru_ts',      label:'CRU TS',             cat:'climate',   tier:2, desc:'CRU gridded time-series (validated against ERA5)'},
+  {id:'gldas',       label:'GLDAS',              cat:'climate',   tier:2, desc:'Global Land Data Assimilation System (GRACE-assimilated)'},
+  {id:'euref',       label:'EUREF EPN',          cat:'geodesy',   tier:2, desc:'European Reference Frame Permanent Network'},
+  {id:'glorys',      label:'CMEMS GLORYS',       cat:'ocean',     tier:2, desc:'Copernicus Marine ocean reanalysis'},
+  {id:'mol',         label:'Map of Life',        cat:'bio',       tier:2, desc:'Species range maps and biodiversity patterns'},
+
+  // Tier 3 — applications/aggregators
+  {id:'gnssnet',     label:'GNSSnet.hu',         cat:'geodesy',   tier:3, desc:'Hungarian national CORS GNSS network'},
+  {id:'ibat',        label:'IBAT',               cat:'bio',       tier:3, desc:'Integrated Biodiversity Assessment Tool (commercial)'},
+];
+
+const edges = [
+  // Sentinel-2 derivations
+  {from:'sentinel2',to:'corine'},{from:'sentinel2',to:'esa_wc'},{from:'sentinel2',to:'dynworld'},
+  {from:'sentinel2',to:'urban_atlas'},{from:'sentinel2',to:'hrl_imp'},
+  // Sentinel-1
+  {from:'sentinel1',to:'egms'},{from:'sentinel1',to:'euhydro'},
+  // Landsat
+  {from:'landsat',to:'gfw'},{from:'landsat',to:'ghs_built'},
+  // Landsat + Sentinel-2
+  {from:'landsat',to:'clcplus'},{from:'sentinel2',to:'clcplus'},
+  // MODIS
+  {from:'modis',to:'viirs'},
+  // TanDEM-X
+  {from:'tandemx',to:'cop_dem'},{from:'tandemx',to:'guf'},{from:'tandemx',to:'wsf3d'},
+  {from:'tandemx',to:'fabdem'},
+  // SRTM
+  {from:'srtm',to:'merit_dem'},{from:'srtm',to:'hydrosheds'},{from:'srtm',to:'fabdem'},
+  // HydroSHEDS
+  {from:'hydrosheds',to:'hydrolakes'},{from:'hydrosheds',to:'hydrobasins'},{from:'hydrosheds',to:'glofas_in'},
+  // GRACE
+  {from:'grace',to:'gldas'},
+  // ERA5
+  {from:'era5',to:'era5_land'},{from:'era5',to:'cams'},{from:'era5',to:'cru_ts'},
+  // Census
+  {from:'census',to:'worldpop'},{from:'census',to:'gpw'},{from:'census',to:'landscan'},{from:'census',to:'ghs_pop'},
+  // Soil
+  {from:'field_wosis',to:'soilgrids'},
+  {from:'hwsd',to:'esdac'},{from:'natsurv',to:'esdac'},
+  // Ocean
+  {from:'argo',to:'glorys'},
+  // Biodiversity
+  {from:'gbif',to:'mol'},
+  {from:'darwin',to:'gbif'},{from:'darwin',to:'obis'},
+  {from:'iucn',to:'ibat'},{from:'wdpa',to:'ibat'},
+  // Geodesy
+  {from:'gps',to:'igs'},{from:'igs',to:'euref'},{from:'euref',to:'gnssnet'},
+];
+
+/* ── Build lookups ───────────────────────────────────── */
+const nodeMap = {};
+nodes.forEach(n => { nodeMap[n.id] = n; n.x = 0; n.y = 0; n.vx = 0; n.vy = 0; });
+
+function getInputs(id)  { return edges.filter(e => e.to === id).map(e => e.from); }
+function getOutputs(id) { return edges.filter(e => e.from === id).map(e => e.to); }
+
+/* ── Layout ──────────────────────────────────────────── */
+function layoutNodes(w, h) {
+  const tierX = {0: w*0.08, 1: w*0.33, 2: w*0.6, 3: w*0.85};
+  const tierGroups = {0:[], 1:[], 2:[], 3:[]};
+  nodes.forEach(n => tierGroups[n.tier].push(n));
+
+  // Sort within tiers by category for grouping
+  const catOrder = Object.keys(CATEGORIES);
+  Object.values(tierGroups).forEach(arr => arr.sort((a,b) => catOrder.indexOf(a.cat) - catOrder.indexOf(b.cat)));
+
+  // Position
+  for (const [tier, arr] of Object.entries(tierGroups)) {
+    const spacing = Math.min(50, (h - 80) / (arr.length + 1));
+    const totalH = spacing * (arr.length - 1);
+    const startY = (h - totalH) / 2;
+    arr.forEach((n, i) => { n.x = tierX[tier]; n.y = startY + i * spacing; });
+  }
+
+  // Simple spring physics to reduce edge crossings
+  for (let iter = 0; iter < 50; iter++) {
+    nodes.forEach(n => { n.vx = 0; n.vy = 0; });
+    // Edge attraction (vertical only, keep tier X fixed)
+    edges.forEach(e => {
+      const a = nodeMap[e.from], b = nodeMap[e.to];
+      if (!a || !b) return;
+      const dy = b.y - a.y;
+      a.vy += dy * 0.02;
+      b.vy -= dy * 0.02;
+    });
+    // Node repulsion within same tier
+    for (const arr of Object.values(tierGroups)) {
+      for (let i = 0; i < arr.length; i++) {
+        for (let j = i+1; j < arr.length; j++) {
+          const dy = arr[j].y - arr[i].y;
+          const dist = Math.abs(dy) || 1;
+          if (dist < 40) {
+            const force = (40 - dist) * 0.3;
+            arr[i].vy -= force;
+            arr[j].vy += force;
+          }
+        }
+      }
+    }
+    // Apply
+    nodes.forEach(n => {
+      n.y += n.vy * 0.5;
+      n.y = Math.max(40, Math.min(h - 40, n.y));
+    });
+  }
+}
+
+/* ── Rendering ───────────────────────────────────────── */
+const svg = document.getElementById('svgCanvas');
+const NS = 'http://www.w3.org/2000/svg';
+let gMain, transform = {x:0, y:0, k:1};
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const [k,v] of Object.entries(attrs||{})) e.setAttribute(k, v);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function render() {
+  const rect = svg.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = '';
+
+  // Defs for arrowheads
+  const defs = el('defs', {}, svg);
+  const marker = el('marker', {id:'arrow', viewBox:'0 0 10 7', refX:'10', refY:'3.5', markerWidth:'8', markerHeight:'6', orient:'auto-start-reverse'}, defs);
+  el('polygon', {points:'0 0, 10 3.5, 0 7', fill:'#8899aa'}, marker);
+  const markerHi = el('marker', {id:'arrowHi', viewBox:'0 0 10 7', refX:'10', refY:'3.5', markerWidth:'8', markerHeight:'6', orient:'auto-start-reverse'}, defs);
+  el('polygon', {points:'0 0, 10 3.5, 0 7', fill:'#5dade2'}, markerHi);
+
+  layoutNodes(W, H);
+
+  gMain = el('g', {id:'gMain'}, svg);
+  applyTransform();
+
+  // Draw edges
+  const gEdges = el('g', {class:'edges'}, gMain);
+  edges.forEach(e => {
+    const a = nodeMap[e.from], b = nodeMap[e.to];
+    if (!a || !b) return;
+    const r = getNodeRadius(a), r2 = getNodeRadius(b);
+    // Curved path
+    const mx = (a.x + b.x)/2, my = (a.y + b.y)/2;
+    const cx = mx, cy = my;
+    const d = `M${a.x+r},${a.y} Q${cx},${cy} ${b.x-r2},${b.y}`;
+    const path = el('path', {d, fill:'none', stroke:'#556677', 'stroke-width':'1.2', 'stroke-opacity':'0.4', 'marker-end':'url(#arrow)', 'data-from':e.from, 'data-to':e.to, class:'edge'}, gEdges);
+  });
+
+  // Draw nodes
+  const gNodes = el('g', {class:'nodes'}, gMain);
+  nodes.forEach(n => {
+    const r = getNodeRadius(n);
+    const g = el('g', {'data-id':n.id, class:'node-g', style:'cursor:pointer'}, gNodes);
+    el('circle', {cx:n.x, cy:n.y, r, fill:CATEGORIES[n.cat].hex, 'fill-opacity':'0.85', stroke:'#fff', 'stroke-width':'1.5'}, g);
+    const fs = r < 10 ? 8 : 9;
+    const txt = el('text', {x:n.x, y:n.y + r + fs + 2, 'text-anchor':'middle', fill: getComputedStyle(document.documentElement).getPropertyValue('--text').trim() || '#2c3e50', 'font-size':fs+'px', 'font-family':'inherit', 'pointer-events':'none'}, g);
+    txt.textContent = n.label;
+
+    g.addEventListener('mouseenter', ev => onNodeHover(n, ev));
+    g.addEventListener('mouseleave', onNodeLeave);
+    g.addEventListener('click', () => onNodeClick(n));
+  });
+}
+
+function getNodeRadius(n) {
+  const out = getOutputs(n.id).length;
+  return Math.max(7, Math.min(18, 8 + out * 1.5));
+}
+
+function applyTransform() {
+  if (gMain) gMain.setAttribute('transform', `translate(${transform.x},${transform.y}) scale(${transform.k})`);
+}
+
+/* ── Interaction ─────────────────────────────────────── */
+const tooltip = document.getElementById('tooltip');
+let activeNode = null;
+
+function onNodeHover(n, ev) {
+  // Highlight connected
+  const ins = getInputs(n.id), outs = getOutputs(n.id);
+  const connected = new Set([n.id, ...ins, ...outs]);
+  svg.querySelectorAll('.node-g').forEach(g => {
+    g.style.opacity = connected.has(g.getAttribute('data-id')) ? '1' : '0.15';
+  });
+  svg.querySelectorAll('.edge').forEach(p => {
+    const f = p.getAttribute('data-from'), t = p.getAttribute('data-to');
+    if (connected.has(f) && connected.has(t)) {
+      p.setAttribute('stroke', '#5dade2'); p.setAttribute('stroke-opacity', '0.9'); p.setAttribute('stroke-width', '2');
+      p.setAttribute('marker-end', 'url(#arrowHi)');
+    } else {
+      p.setAttribute('stroke-opacity', '0.08'); p.setAttribute('stroke-width', '1');
+    }
+  });
+  // Tooltip
+  tooltip.innerHTML = `<div class="tt-name">${n.label}</div><div class="tt-desc">${n.desc}</div>`;
+  tooltip.classList.add('visible');
+  positionTooltip(ev);
+}
+
+function positionTooltip(ev) {
+  const area = document.getElementById('graphArea').getBoundingClientRect();
+  tooltip.style.left = (ev.clientX - area.left + 14) + 'px';
+  tooltip.style.top = (ev.clientY - area.top - 10) + 'px';
+}
+
+document.getElementById('graphArea').addEventListener('mousemove', ev => {
+  if (tooltip.classList.contains('visible')) positionTooltip(ev);
+});
+
+function onNodeLeave() {
+  svg.querySelectorAll('.node-g').forEach(g => g.style.opacity = '1');
+  svg.querySelectorAll('.edge').forEach(p => {
+    p.setAttribute('stroke', '#556677'); p.setAttribute('stroke-opacity', '0.4');
+    p.setAttribute('stroke-width', '1.2'); p.setAttribute('marker-end', 'url(#arrow)');
+  });
+  tooltip.classList.remove('visible');
+}
+
+function onNodeClick(n) {
+  const panel = document.getElementById('infoPanel');
+  panel.classList.add('visible');
+  document.getElementById('ipName').textContent = n.label;
+  document.getElementById('ipCat').textContent = CATEGORIES[n.cat].label + ' — Tier ' + n.tier;
+  document.getElementById('ipDesc').textContent = n.desc;
+
+  const ins = getInputs(n.id), outs = getOutputs(n.id);
+  const ipIn = document.getElementById('ipInputs');
+  ipIn.innerHTML = ins.length ? ins.map(id => `<li onclick="jumpTo('${id}')">${nodeMap[id].label}</li>`).join('') : '<li style="color:var(--text-light);cursor:default">None (raw source)</li>';
+  const ipOut = document.getElementById('ipOutputs');
+  ipOut.innerHTML = outs.length ? outs.map(id => `<li onclick="jumpTo('${id}')">${nodeMap[id].label}</li>`).join('') : '<li style="color:var(--text-light);cursor:default">None listed</li>';
+}
+
+function closePanel() { document.getElementById('infoPanel').classList.remove('visible'); }
+
+function jumpTo(id) {
+  const n = nodeMap[id];
+  if (!n) return;
+  const rect = svg.getBoundingClientRect();
+  transform.x = rect.width/2 - n.x * transform.k;
+  transform.y = rect.height/2 - n.y * transform.k;
+  applyTransform();
+  onNodeClick(n);
+}
+
+/* ── Zoom & Pan ──────────────────────────────────────── */
+let isPanning = false, panStart = {x:0, y:0};
+const area = document.getElementById('graphArea');
+
+area.addEventListener('wheel', ev => {
+  ev.preventDefault();
+  const rect = svg.getBoundingClientRect();
+  const mx = ev.clientX - rect.left, my = ev.clientY - rect.top;
+  const factor = ev.deltaY < 0 ? 1.12 : 0.89;
+  const nk = Math.max(0.3, Math.min(4, transform.k * factor));
+  transform.x = mx - (mx - transform.x) * (nk / transform.k);
+  transform.y = my - (my - transform.y) * (nk / transform.k);
+  transform.k = nk;
+  applyTransform();
+}, {passive:false});
+
+area.addEventListener('mousedown', ev => {
+  if (ev.target.closest('.node-g') || ev.target.closest('.controls') || ev.target.closest('.legend')) return;
+  isPanning = true; panStart = {x: ev.clientX - transform.x, y: ev.clientY - transform.y};
+  area.style.cursor = 'grabbing';
+});
+window.addEventListener('mousemove', ev => {
+  if (!isPanning) return;
+  transform.x = ev.clientX - panStart.x;
+  transform.y = ev.clientY - panStart.y;
+  applyTransform();
+});
+window.addEventListener('mouseup', () => { isPanning = false; area.style.cursor = ''; });
+
+/* ── Search ──────────────────────────────────────────── */
+document.getElementById('searchBox').addEventListener('input', function() {
+  const q = this.value.toLowerCase().trim();
+  if (!q) { svg.querySelectorAll('.node-g').forEach(g => g.style.opacity = '1'); return; }
+  const matches = nodes.filter(n => n.label.toLowerCase().includes(q) || n.id.includes(q));
+  const matchIds = new Set(matches.map(n => n.id));
+  svg.querySelectorAll('.node-g').forEach(g => {
+    g.style.opacity = matchIds.has(g.getAttribute('data-id')) ? '1' : '0.12';
+  });
+  if (matches.length === 1) jumpTo(matches[0].id);
+});
+
+/* ── Category Filters ────────────────────────────────── */
+const activeFilters = new Set(Object.keys(CATEGORIES));
+function buildFilters() {
+  const fp = document.getElementById('filterPanel');
+  fp.innerHTML = '';
+  for (const [key, cat] of Object.entries(CATEGORIES)) {
+    const lbl = document.createElement('label');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.checked = true; cb.dataset.cat = key;
+    cb.addEventListener('change', () => {
+      if (cb.checked) activeFilters.add(key); else activeFilters.delete(key);
+      applyFilters();
+    });
+    const dot = document.createElement('span');
+    dot.className = 'cat-dot'; dot.style.background = cat.hex;
+    lbl.append(cb, dot, ' ' + cat.label);
+    fp.appendChild(lbl);
+  }
+}
+
+function applyFilters() {
+  svg.querySelectorAll('.node-g').forEach(g => {
+    const n = nodeMap[g.getAttribute('data-id')];
+    g.style.display = activeFilters.has(n.cat) ? '' : 'none';
+  });
+  svg.querySelectorAll('.edge').forEach(p => {
+    const fn = nodeMap[p.getAttribute('data-from')], tn = nodeMap[p.getAttribute('data-to')];
+    p.style.display = (activeFilters.has(fn.cat) && activeFilters.has(tn.cat)) ? '' : 'none';
+  });
+}
+
+/* ── Legend ───────────────────────────────────────────── */
+function buildLegend() {
+  const lg = document.getElementById('legend');
+  lg.innerHTML = '';
+  for (const [, cat] of Object.entries(CATEGORIES)) {
+    const d = document.createElement('span');
+    d.className = 'legend-item';
+    d.innerHTML = `<span class="cat-dot" style="background:${cat.hex}"></span>${cat.label}`;
+    lg.appendChild(d);
+  }
+}
+
+/* ── Mobile List ─────────────────────────────────────── */
+function buildMobileList() {
+  const ml = document.getElementById('mobileList');
+  const byTier = {0:'Raw Sensors & Missions', 1:'First-level Derived', 2:'Second-level Derived', 3:'Applications'};
+  for (const [tier, title] of Object.entries(byTier)) {
+    const h = document.createElement('h3'); h.textContent = title; ml.appendChild(h);
+    nodes.filter(n => n.tier == tier).forEach(n => {
+      const d = document.createElement('div'); d.className = 'ml-item';
+      const ins = getInputs(n.id).map(id => nodeMap[id].label);
+      const outs = getOutputs(n.id).map(id => nodeMap[id].label);
+      let conn = '';
+      if (ins.length) conn += 'From: ' + ins.join(', ');
+      if (outs.length) conn += (conn ? ' | ' : '') + 'To: ' + outs.join(', ');
+      d.innerHTML = `<div class="ml-name" style="color:${CATEGORIES[n.cat].hex}">${n.label}</div>` +
+        `<div style="font-size:.82rem;margin-top:2px">${n.desc}</div>` +
+        (conn ? `<div class="ml-conn">${conn}</div>` : '');
+      ml.appendChild(d);
+    });
+  }
+}
+
+/* ── Dark Mode ───────────────────────────────────────── */
+function toggleDark() {
+  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? '' : 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('theme', t);
+  render();
+}
+(function(){
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+})();
+
+/* ── Init ────────────────────────────────────────────── */
+buildFilters();
+buildLegend();
+buildMobileList();
+render();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>

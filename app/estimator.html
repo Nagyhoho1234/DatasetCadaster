@@ -243,6 +243,8 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     <a href="guide.html">Guide</a>
     <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
+    <a href="lineage.html">Lineage</a>
+    <a href="coverage.html">Coverage</a>
   </nav>
 </header>
 
@@ -451,7 +453,11 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
     <div class="step-title" style="margin-bottom:0">Your GeoEstimate</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <select id="budgetCurrency" style="padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:.85rem;font-family:var(--font);background:#fafbfc;cursor:pointer" title="Report currency">
+        <option value="EUR" selected>&#8364; EUR</option>
+        <option value="USD">$ USD</option>
+      </select>
       <button class="btn btn-primary" onclick="generateBudgetReport()" style="background:#27ae60">Download Budget Report</button>
       <button class="btn btn-secondary" onclick="copyBudgetMarkdown()">Copy as Markdown</button>
       <button class="btn btn-secondary" onclick="window.print()">Print / PDF</button>
@@ -1236,6 +1242,551 @@ function esc(s) {
   var d = document.createElement('div');
   d.textContent = s || '';
   return d.innerHTML;
+}
+
+/* ══════════════════════════════════════════════
+   BUDGET REPORT HELPERS
+   ══════════════════════════════════════════════ */
+function getLabelMaps() {
+  return {
+    domain: {agriculture:'Agriculture',urban:'Urban Planning',flood:'Flood / Water Risk',ecology:'Ecology / Conservation',geology:'Geology / Mining',climate:'Climate Analysis',general:'General Mapping',custom:'Custom'},
+    resolution: {low:'Low (>100 m)',medium:'Medium (10-100 m)',high:'High (1-10 m)','very-high':'Very High (<1 m)'},
+    frequency: {'one-time':'One-time',annual:'Annual',monthly:'Monthly',weekly:'Weekly',daily:'Daily'},
+    history: {current:'Current only','5':'5 years','10':'10 years','30':'30+ years'},
+    region: {global:'Global',europe:'Europe',hungary:'Hungary',germany:'Germany',france:'France',spain:'Spain',italy:'Italy',uk:'United Kingdom',usa:'United States',africa:'Africa',asia:'Asia','south-america':'South America'}
+  };
+}
+
+function getFreeSources() {
+  var domainRecs = domainRecommendations[state.domain] || [];
+  var allKeys = {};
+  domainRecs.forEach(function(k){ allKeys[k] = true; });
+  Object.keys(freeDB).forEach(function(k){
+    freeDB[k].types.forEach(function(t){
+      if (state.dataTypes.indexOf(t) !== -1) allKeys[k] = true;
+    });
+  });
+  return Object.keys(allKeys).map(function(k){ return {key:k, ds:freeDB[k]}; }).filter(function(o){ return !!o.ds; });
+}
+
+function getCommercialSources() {
+  var items = [];
+  if (state.resolution === 'very-high') { items.push('maxar','pleiades-neo','skysat'); }
+  if (state.resolution === 'high') { items.push('planetscope','spot'); }
+  if (state.dataTypes.indexOf('sar') !== -1) { items.push('iceye','capella'); }
+  return items.map(function(k){ return {key:k, ds:commercialDB[k]}; }).filter(function(o){ return !!o.ds; });
+}
+
+function computeBudgetData(currency) {
+  var rate = currency === 'USD' ? 1.0 : 0.93; // Prices stored in USD; EUR = USD * 0.93 (1 EUR ~ 1.08 USD)
+  var sym = currency === 'USD' ? '$' : '\u20AC';
+  var area = state.area;
+  var acqs = getAcquisitionsPerYear();
+  var years = getYears();
+  var totalAcqs = acqs * years;
+  var labels = getLabelMaps();
+  var freeSrcs = getFreeSources();
+  var commSrcs = getCommercialSources();
+
+  // Storage calculations (same logic as renderStorageDownload)
+  var sizeRef = {
+    'sentinel-2':{tileArea:10000,tileSize:800},'landsat':{tileArea:34225,tileSize:200},
+    'copernicus-dem':{tileArea:12321,tileSize:25},'hydrosheds':{tileArea:12321,tileSize:3},
+    'sentinel-1':{tileArea:42500,tileSize:1024},'era5':{tileArea:510000000,tileSize:500},
+    'era5-land':{tileArea:510000000,tileSize:500},'chirps':{tileArea:510000000,tileSize:300},
+    'cams':{tileArea:510000000,tileSize:500},'cru-ts':{tileArea:510000000,tileSize:200},
+    'e-obs':{tileArea:10000000,tileSize:800},'soilgrids':{tileArea:510000000,tileSize:2048},
+    'corine':{tileArea:5800000,tileSize:1500},'copernicus-hrl':{tileArea:5800000,tileSize:3072},
+    'global-forest-watch':{tileArea:12321,tileSize:50},'ghsl':{tileArea:510000000,tileSize:4096},
+    'worldpop':{tileArea:510000000,tileSize:2048},'osm':{tileArea:93000,tileSize:10},
+    'natural-earth':{tileArea:510000000,tileSize:800},'viirs-ntl':{tileArea:510000000,tileSize:500},
+    'urban-atlas':{tileArea:5800000,tileSize:2048},'gbif':{tileArea:510000000,tileSize:500},
+    'glofas':{tileArea:510000000,tileSize:500},'hungaromet':{tileArea:93000,tileSize:50},
+    'ghcn':{tileArea:510000000,tileSize:200},'grace-fo':{tileArea:510000000,tileSize:100},
+    'iucn':{tileArea:510000000,tileSize:2048},'onegeology':{tileArea:510000000,tileSize:500},
+    'egdi':{tileArea:5800000,tileSize:500},'usgs-earthquake':{tileArea:510000000,tileSize:100}
+  };
+  var commSizeRef = {
+    'planetscope':{tileArea:100,tileSize:1536},'maxar':{tileArea:100,tileSize:25600},
+    'pleiades-neo':{tileArea:100,tileSize:12800},'skysat':{tileArea:100,tileSize:5120},
+    'spot':{tileArea:3600,tileSize:2048},'iceye':{tileArea:625,tileSize:1024},'capella':{tileArea:625,tileSize:1024}
+  };
+  var timeSeriesKeys = ['sentinel-2','landsat','sentinel-1','era5','era5-land','chirps','cams','e-obs','viirs-ntl','glofas','hungaromet','grace-fo'];
+
+  function calcSize(ref, isTS) {
+    var scenesNeeded = ref.tileArea >= 500000 ? Math.max(1, area / ref.tileArea) : Math.max(1, Math.ceil(area / ref.tileArea));
+    var numAcqs = isTS ? totalAcqs : 1;
+    var totalRawMB = scenesNeeded * ref.tileSize * numAcqs;
+    return {rawMB: totalRawMB, compMB: totalRawMB * 0.6};
+  }
+
+  var freeStorageRaw = 0, freeStorageComp = 0;
+  var storageRows = [];
+  freeSrcs.forEach(function(o){
+    var ref = sizeRef[o.key];
+    if (!ref) return;
+    var isTS = timeSeriesKeys.indexOf(o.key) !== -1;
+    var c = calcSize(ref, isTS);
+    freeStorageRaw += c.rawMB;
+    freeStorageComp += c.compMB;
+    storageRows.push({name: o.ds.name, singleMB: ref.tileSize, numAcqs: isTS ? totalAcqs : 1, rawMB: c.rawMB, compMB: c.compMB});
+  });
+
+  var commStorageRaw = 0, commStorageComp = 0;
+  commSrcs.forEach(function(o){
+    var ref = commSizeRef[o.key];
+    if (!ref) return;
+    var c = calcSize(ref, true);
+    commStorageRaw += c.rawMB;
+    commStorageComp += c.compMB;
+    storageRows.push({name: o.ds.name, singleMB: ref.tileSize, numAcqs: totalAcqs, rawMB: c.rawMB, compMB: c.compMB});
+  });
+
+  // Commercial cost calculations
+  var commCostLow = 0, commCostHigh = 0;
+  var commCostRows = [];
+  commSrcs.forEach(function(o){
+    var ds = o.ds;
+    var unitCost, areaCostLow, areaCostHigh, annualLow, annualHigh, totalLow, totalHigh;
+    if (ds.unit === 'km2') {
+      unitCost = sym + Math.round(ds.priceMin * rate) + ' - ' + sym + Math.round(ds.priceMax * rate) + ' /km\u00B2';
+      areaCostLow = ds.priceMin * rate * area;
+      areaCostHigh = ds.priceMax * rate * area;
+      annualLow = areaCostLow * acqs;
+      annualHigh = areaCostHigh * acqs;
+      totalLow = annualLow * years;
+      totalHigh = annualHigh * years;
+    } else {
+      unitCost = '~' + sym + formatNum(Math.round(ds.priceMin * rate)) + '+ /year';
+      areaCostLow = ds.priceMin * rate;
+      areaCostHigh = ds.priceMin * rate;
+      annualLow = areaCostLow;
+      annualHigh = areaCostHigh;
+      totalLow = annualLow * years;
+      totalHigh = annualHigh * years;
+    }
+    commCostLow += totalLow;
+    commCostHigh += totalHigh;
+    commCostRows.push({
+      name: ds.name, resolution: ds.resolution, unitCost: unitCost,
+      areaCost: sym + formatNum(Math.round(areaCostLow)) + ' - ' + sym + formatNum(Math.round(areaCostHigh)),
+      annualCost: sym + formatNum(Math.round(annualLow)) + ' - ' + sym + formatNum(Math.round(annualHigh)),
+      totalCost: sym + formatNum(Math.round(totalLow)) + ' - ' + sym + formatNum(Math.round(totalHigh))
+    });
+  });
+
+  // Infrastructure costs
+  var totalStorageGB = (freeStorageComp + commStorageComp) / 1024;
+  var freeStorageGB = freeStorageComp / 1024;
+  var cloudStorageCostYearly = totalStorageGB * 0.02 * 12; // EUR 0.02/GB/month
+  var localStorageCost = Math.ceil(totalStorageGB / 1000) * 50; // EUR 50/TB
+  var processingCost = 0;
+  if (area > 10000) processingCost = 500;
+  if (area > 50000) processingCost = 1500;
+  if (state.resolution === 'very-high') processingCost += 1000;
+  else if (state.resolution === 'high') processingCost += 500;
+
+  return {
+    sym: sym, rate: rate, area: area, acqs: acqs, years: years, totalAcqs: totalAcqs,
+    labels: labels,
+    freeSrcs: freeSrcs, commSrcs: commSrcs,
+    storageRows: storageRows,
+    freeStorageGB: freeStorageGB,
+    totalStorageGB: totalStorageGB,
+    commCostRows: commCostRows,
+    commCostLow: commCostLow, commCostHigh: commCostHigh,
+    cloudStorageCostYearly: cloudStorageCostYearly,
+    localStorageCost: localStorageCost,
+    processingCost: processingCost
+  };
+}
+
+function fmtSizeBudget(mb) {
+  if (mb < 1) return '< 1 MB';
+  if (mb < 1024) return formatNum(Math.round(mb)) + ' MB';
+  if (mb < 1024 * 1024) return formatNum(Math.round(mb / 1024 * 10) / 10) + ' GB';
+  return formatNum(Math.round(mb / (1024 * 1024) * 100) / 100) + ' TB';
+}
+
+/* ══════════════════════════════════════════════
+   GENERATE BUDGET REPORT (print-ready HTML)
+   ══════════════════════════════════════════════ */
+window.generateBudgetReport = function() {
+  var currencyToggle = document.getElementById('budgetCurrency');
+  var currency = (currencyToggle && currencyToggle.value === 'USD') ? 'USD' : 'EUR';
+  var b = computeBudgetData(currency);
+  var sym = b.sym;
+  var labels = b.labels;
+  var dateStr = new Date().toLocaleDateString('en-GB', {year:'numeric', month:'long', day:'numeric'});
+
+  // Option A: free only
+  var optAStorage = b.freeStorageGB;
+  var optAcost = 0;
+  // Option B: free + some commercial (use low end)
+  var optBcostLow = Math.round(b.commCostLow * 0.3); // partial commercial
+  var optBcostHigh = Math.round(b.commCostHigh * 0.3);
+  var optBStorage = b.totalStorageGB;
+  // Option C: full commercial
+  var optCcostLow = Math.round(b.commCostLow);
+  var optCcostHigh = Math.round(b.commCostHigh);
+  var optCStorage = b.totalStorageGB;
+
+  // Infrastructure per year
+  var infraStorage = b.totalStorageGB < 500 ? Math.round(b.localStorageCost) : Math.round(b.cloudStorageCostYearly);
+  var infraStorageLabel = b.totalStorageGB < 500 ? 'Local drives' : 'Cloud storage';
+  var infraProcessing = Math.round(b.processingCost);
+
+  // Grand totals (over full project)
+  var grandLow = 0 + infraStorage + 0; // Free option
+  var grandHighLow = optCcostLow + infraStorage * b.years + infraProcessing * b.years;
+  var grandHighHigh = optCcostHigh + infraStorage * b.years + infraProcessing * b.years;
+
+  var html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Data Acquisition Budget Estimate</title><style>';
+  html += '@page{size:A4;margin:18mm 15mm}';
+  html += '*{box-sizing:border-box;margin:0;padding:0}';
+  html += 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#2c3e50;font-size:11pt;line-height:1.5;padding:20px 30px}';
+  html += 'h1{font-size:18pt;margin-bottom:2px;color:#1a2634}';
+  html += 'h2{font-size:13pt;color:#2980b9;margin:22px 0 10px;padding-bottom:4px;border-bottom:2px solid #2980b9;page-break-after:avoid}';
+  html += 'h3{font-size:11pt;margin:14px 0 8px;color:#1a2634}';
+  html += '.subtitle{font-size:10pt;color:#5a6a7a;margin-bottom:16px}';
+  html += '.header-bar{border-bottom:3px solid #2980b9;padding-bottom:12px;margin-bottom:20px}';
+  html += '.params{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:9.5pt;color:#5a6a7a;margin-top:6px}';
+  html += '.params span{font-weight:600;color:#2c3e50}';
+  html += 'table{width:100%;border-collapse:collapse;margin:8px 0 16px;font-size:9.5pt}';
+  html += 'th,td{padding:6px 10px;text-align:left;border:1px solid #dce1e8}';
+  html += 'th{background:#f0f4f8;font-weight:700;font-size:9pt;text-transform:uppercase;letter-spacing:.3px;color:#5a6a7a}';
+  html += 'tr:nth-child(even){background:#fafbfc}';
+  html += '.total-row{background:#f0f4f8!important;font-weight:700}';
+  html += '.total-row td{border-top:2px solid #2980b9}';
+  html += '.highlight{background:#e8f8f0;font-weight:700}';
+  html += '.option-box{border:1px solid #dce1e8;border-radius:6px;padding:12px 16px;margin:6px 0}';
+  html += '.option-box h3{margin:0 0 4px;font-size:10.5pt}';
+  html += '.option-box .cost{font-size:14pt;font-weight:700;color:#27ae60}';
+  html += '.option-box .cost.commercial{color:#e67e22}';
+  html += '.option-box .cost.full{color:#c0392b}';
+  html += '.options-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:10px 0 16px}';
+  html += '.notes{font-size:9pt;color:#5a6a7a;line-height:1.6;margin-top:8px}';
+  html += '.notes li{margin-bottom:3px}';
+  html += '.grand-total{background:#1a2634;color:#fff;padding:14px 18px;border-radius:6px;margin:16px 0;text-align:center}';
+  html += '.grand-total .range{font-size:16pt;font-weight:700;letter-spacing:.5px}';
+  html += '.footer{margin-top:24px;padding-top:12px;border-top:1px solid #dce1e8;font-size:8.5pt;color:#8899aa;line-height:1.6}';
+  html += '@media print{body{padding:0}.options-grid{grid-template-columns:1fr 1fr 1fr}h2{break-after:avoid}table,h2,.option-box,.grand-total,.footer{break-inside:avoid}@page{margin:15mm 12mm}}';
+  html += '@media screen{body{max-width:900px;margin:0 auto}}';
+  html += '.no-print{margin-bottom:16px}';
+  html += '@media print{.no-print{display:none}}';
+  html += '</style></head><body>';
+
+  // Print button (screen only)
+  html += '<div class="no-print" style="text-align:right"><button onclick="window.print()" style="padding:8px 20px;font-size:10pt;cursor:pointer;background:#2980b9;color:#fff;border:none;border-radius:4px;font-weight:600">Print / Save as PDF</button></div>';
+
+  // 1. Header
+  html += '<div class="header-bar">';
+  html += '<h1>Data Acquisition Budget Estimate</h1>';
+  html += '<div class="subtitle">' + dateStr + '</div>';
+  html += '<div class="params">';
+  html += '<div>Domain: <span>' + (labels.domain[state.domain]||state.domain) + '</span></div>';
+  html += '<div>Area: <span>' + formatNum(state.area) + ' km\u00B2</span></div>';
+  html += '<div>Region: <span>' + (labels.region[state.region]||state.region) + '</span></div>';
+  html += '<div>Resolution: <span>' + (labels.resolution[state.resolution]||state.resolution) + '</span></div>';
+  html += '<div>Frequency: <span>' + (labels.frequency[state.frequency]||state.frequency) + '</span></div>';
+  html += '<div>History: <span>' + (labels.history[state.history]||state.history) + '</span></div>';
+  html += '<div>Currency: <span>' + (currency === 'USD' ? 'USD ($)' : 'EUR (\u20AC)') + '</span></div>';
+  html += '</div></div>';
+
+  // 2. Project Summary Table
+  html += '<h2>1. Project Summary</h2>';
+  html += '<table><tbody>';
+  html += '<tr><td style="width:35%;font-weight:600">Domain</td><td>' + (labels.domain[state.domain]||state.domain) + '</td></tr>';
+  html += '<tr><td style="font-weight:600">Area of Interest</td><td>' + formatNum(state.area) + ' km\u00B2</td></tr>';
+  html += '<tr><td style="font-weight:600">Region</td><td>' + (labels.region[state.region]||state.region) + '</td></tr>';
+  html += '<tr><td style="font-weight:600">Spatial Resolution</td><td>' + (labels.resolution[state.resolution]||state.resolution) + '</td></tr>';
+  html += '<tr><td style="font-weight:600">Temporal Frequency</td><td>' + (labels.frequency[state.frequency]||state.frequency) + '</td></tr>';
+  html += '<tr><td style="font-weight:600">Historical Depth</td><td>' + (labels.history[state.history]||state.history) + '</td></tr>';
+  html += '<tr><td style="font-weight:600">Acquisitions per Year</td><td>' + b.acqs + '</td></tr>';
+  html += '<tr><td style="font-weight:600">Project Duration</td><td>' + b.years + ' year(s)</td></tr>';
+  html += '</tbody></table>';
+
+  // 3. Free Data Sources Table
+  html += '<h2>2. Free Data Sources</h2>';
+  if (b.freeSrcs.length > 0) {
+    html += '<table><thead><tr><th>Dataset</th><th>Provider</th><th>Resolution</th><th>Coverage</th><th>Format</th><th>Access</th></tr></thead><tbody>';
+    b.freeSrcs.forEach(function(o){
+      var provider = 'Open';
+      var coverage = 'Global';
+      var format = 'GeoTIFF';
+      var access = 'Direct download';
+      if (o.key.indexOf('sentinel') !== -1 || o.key.indexOf('copernicus') !== -1 || o.key === 'corine' || o.key === 'urban-atlas') { provider = 'ESA / Copernicus'; access = 'Copernicus Data Space'; }
+      else if (o.key.indexOf('landsat') !== -1) { provider = 'USGS'; access = 'EarthExplorer / GEE'; }
+      else if (o.key.indexOf('era5') !== -1 || o.key === 'cams') { provider = 'ECMWF / Copernicus'; format = 'NetCDF / GRIB'; access = 'CDS API'; }
+      else if (o.key === 'chirps') { provider = 'UCSB'; format = 'GeoTIFF / NetCDF'; access = 'Direct download'; }
+      else if (o.key === 'soilgrids') { provider = 'ISRIC'; access = 'WCS / Direct download'; }
+      else if (o.key === 'osm') { provider = 'OSM Foundation'; format = 'PBF / GeoJSON'; access = 'Overpass API / Geofabrik'; }
+      else if (o.key === 'hydrosheds' || o.key === 'glofas') { provider = 'WWF / ECMWF'; access = 'Direct download'; }
+      else if (o.key === 'ghsl' || o.key === 'worldpop') { provider = 'JRC / WorldPop'; }
+      else if (o.key.indexOf('e-obs') !== -1) { provider = 'ECA&D'; format = 'NetCDF'; coverage = 'Europe'; access = 'Direct download'; }
+      else if (o.key === 'hungaromet') { provider = 'HungaroMet'; coverage = 'Hungary'; access = 'Open Data Portal'; }
+      else if (o.key === 'cru-ts') { provider = 'CRU / UEA'; format = 'NetCDF'; access = 'Direct download'; }
+      else if (o.key === 'ghcn') { provider = 'NOAA/NCEI'; format = 'CSV'; access = 'Direct download'; }
+      else if (o.key === 'gbif') { provider = 'GBIF'; format = 'CSV / DarwinCore'; access = 'GBIF API'; }
+      else if (o.key === 'natural-earth') { provider = 'Natural Earth'; format = 'Shapefile / GeoJSON'; }
+      else if (o.key === 'grace-fo') { provider = 'NASA / DLR'; format = 'NetCDF'; access = 'PO.DAAC'; }
+      else if (o.key === 'iucn') { provider = 'IUCN'; format = 'Shapefile'; access = 'Registration required'; }
+      else if (o.key === 'onegeology' || o.key === 'egdi') { provider = 'Geological Surveys'; format = 'WMS / WFS'; access = 'Web services'; }
+      else if (o.key === 'usgs-earthquake') { provider = 'USGS'; format = 'CSV / GeoJSON'; access = 'API / Download'; }
+      else if (o.key === 'viirs-ntl') { provider = 'NOAA / Colorado School of Mines'; }
+      else if (o.key === 'global-forest-watch') { provider = 'U. of Maryland / WRI'; }
+      if (o.key === 'corine' || o.key === 'urban-atlas' || o.key === 'copernicus-hrl' || o.key.indexOf('e-obs') !== -1) coverage = 'Europe';
+      if (o.key === 'hungaromet') coverage = 'Hungary';
+
+      html += '<tr><td>' + o.ds.name + '</td><td>' + provider + '</td><td>' + o.ds.resolution + '</td><td>' + coverage + '</td><td>' + format + '</td><td>' + access + '</td></tr>';
+    });
+    html += '</tbody></table>';
+  } else {
+    html += '<p style="color:#5a6a7a;font-style:italic">No free sources matched the selected parameters.</p>';
+  }
+
+  // 4. Commercial Data Alternatives Table
+  html += '<h2>3. Commercial Data Alternatives</h2>';
+  if (b.commCostRows.length > 0) {
+    html += '<table><thead><tr><th>Dataset</th><th>Resolution</th><th>Unit Price</th><th>Area Cost (single)</th><th>Annual Cost</th><th>Multi-year Total (' + b.years + ' yr)</th></tr></thead><tbody>';
+    b.commCostRows.forEach(function(r){
+      html += '<tr><td>' + r.name + '</td><td>' + r.resolution + '</td><td>' + r.unitCost + '</td><td>' + r.areaCost + '</td><td>' + r.annualCost + '</td><td>' + r.totalCost + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    html += '<p style="font-size:9pt;color:#5a6a7a">* Prices are estimates based on publicly available list prices as of March 2026. Volume discounts and academic pricing may apply.</p>';
+  } else {
+    html += '<p style="color:#5a6a7a;font-style:italic">No commercial data needed at the selected resolution. Free sources cover your requirements.</p>';
+  }
+
+  // 5. Storage Requirements Table
+  html += '<h2>4. Storage Requirements</h2>';
+  if (b.storageRows.length > 0) {
+    html += '<table><thead><tr><th>Dataset</th><th>Single Acq. Size</th><th>Total Acquisitions</th><th>Raw Total</th><th>Compressed (~60%)</th></tr></thead><tbody>';
+    var totalRawMB = 0, totalCompMB = 0;
+    b.storageRows.forEach(function(r){
+      totalRawMB += r.rawMB;
+      totalCompMB += r.compMB;
+      html += '<tr><td>' + r.name + '</td><td>' + fmtSizeBudget(r.singleMB) + '</td><td>' + formatNum(r.numAcqs) + '</td><td>' + fmtSizeBudget(r.rawMB) + '</td><td>' + fmtSizeBudget(r.compMB) + '</td></tr>';
+    });
+    html += '<tr class="total-row"><td colspan="3">TOTAL</td><td>' + fmtSizeBudget(totalRawMB) + '</td><td>' + fmtSizeBudget(totalCompMB) + '</td></tr>';
+    html += '</tbody></table>';
+  }
+
+  // 6. Total Budget Summary
+  html += '<h2>5. Total Budget Summary</h2>';
+  html += '<div class="options-grid">';
+  // Option A
+  html += '<div class="option-box"><h3>Option A: Free Data Only</h3>';
+  html += '<div class="cost">' + sym + '0</div>';
+  html += '<div style="font-size:9pt;color:#5a6a7a;margin-top:4px">Data cost: ' + sym + '0<br>Storage: ' + formatNum(Math.round(optAStorage)) + ' GB</div></div>';
+  // Option B
+  html += '<div class="option-box"><h3>Option B: Free + Commercial Mix</h3>';
+  if (b.commCostRows.length > 0) {
+    html += '<div class="cost commercial">' + sym + formatNum(Math.round(optBcostLow)) + ' \u2013 ' + sym + formatNum(Math.round(optBcostHigh)) + '</div>';
+    html += '<div style="font-size:9pt;color:#5a6a7a;margin-top:4px">~30% commercial supplement<br>Storage: ' + formatNum(Math.round(optBStorage)) + ' GB</div>';
+  } else {
+    html += '<div class="cost">' + sym + '0</div>';
+    html += '<div style="font-size:9pt;color:#5a6a7a;margin-top:4px">No commercial data needed<br>Storage: ' + formatNum(Math.round(optBStorage)) + ' GB</div>';
+  }
+  html += '</div>';
+  // Option C
+  html += '<div class="option-box"><h3>Option C: Full Commercial</h3>';
+  if (b.commCostRows.length > 0) {
+    html += '<div class="cost full">' + sym + formatNum(Math.round(optCcostLow)) + ' \u2013 ' + sym + formatNum(Math.round(optCcostHigh)) + '</div>';
+    html += '<div style="font-size:9pt;color:#5a6a7a;margin-top:4px">All available commercial sources<br>Storage: ' + formatNum(Math.round(optCStorage)) + ' GB</div>';
+  } else {
+    html += '<div class="cost">' + sym + '0</div>';
+    html += '<div style="font-size:9pt;color:#5a6a7a;margin-top:4px">No commercial data needed<br>Storage: ' + formatNum(Math.round(optCStorage)) + ' GB</div>';
+  }
+  html += '</div></div>';
+
+  // 7. Infrastructure Costs
+  html += '<h2>6. Infrastructure Costs (Annual Estimates)</h2>';
+  html += '<table><thead><tr><th>Component</th><th>Estimate</th><th>Notes</th></tr></thead><tbody>';
+  html += '<tr><td style="font-weight:600">Storage</td><td>' + sym + formatNum(Math.round(infraStorage * b.rate)) + '</td><td>' + infraStorageLabel + ' (' + formatNum(Math.round(b.totalStorageGB)) + ' GB; ';
+  html += b.totalStorageGB < 500 ? '~' + sym + '50/TB local drive' : '~' + sym + '0.02/GB/month cloud';
+  html += ')</td></tr>';
+  html += '<tr><td style="font-weight:600">Processing</td><td>' + sym + formatNum(Math.round(infraProcessing * b.rate)) + '/yr</td><td>Cloud compute estimate based on area (' + formatNum(b.area) + ' km\u00B2) and resolution</td></tr>';
+  html += '<tr><td style="font-weight:600">Software</td><td>' + sym + '0</td><td>QGIS, Python, GDAL, Rasterio, Google Earth Engine (all free/open-source)</td></tr>';
+  var infraTotal = infraStorage + infraProcessing;
+  html += '<tr class="total-row"><td>Annual infrastructure total</td><td>' + sym + formatNum(Math.round(infraTotal * b.rate)) + '/yr</td><td></td></tr>';
+  html += '</tbody></table>';
+
+  // 8. Grand Total Range
+  var infraTotalConverted = Math.round(infraTotal * b.rate);
+  var grandMin = infraTotalConverted;
+  var grandMaxLow = Math.round(optCcostLow + infraTotalConverted * b.years);
+  var grandMaxHigh = Math.round(optCcostHigh + infraTotalConverted * b.years);
+
+  html += '<div class="grand-total">';
+  html += '<div style="font-size:10pt;margin-bottom:4px">Estimated Total Project Data Cost (' + b.years + ' year' + (b.years > 1 ? 's' : '') + ')</div>';
+  html += '<div class="range">' + sym + formatNum(grandMin) + ' \u2014 ' + sym + formatNum(grandMaxHigh) + '</div>';
+  html += '<div style="font-size:9pt;margin-top:6px;opacity:.8">Free-only option: ' + sym + formatNum(grandMin) + ' (infrastructure only) | Full commercial: ' + sym + formatNum(grandMaxLow) + ' \u2013 ' + sym + formatNum(grandMaxHigh) + '</div>';
+  html += '</div>';
+
+  // 9. Footer
+  html += '<div class="footer">';
+  html += 'Generated by <strong>Dataset Cadaster GeoEstimator</strong> (dataset-cadaster.example.com) on ' + dateStr + '.<br>';
+  html += 'Prices verified as of March 2026. Commercial prices are estimates and may vary based on licensing terms, volume discounts, and academic agreements.';
+  html += '</div>';
+
+  // 10. Notes section
+  html += '<h2>7. Notes &amp; Methodology</h2>';
+  html += '<div class="notes"><ul>';
+  html += '<li><strong>Storage estimates</strong> are based on reference tile sizes for each dataset, scaled to the area of interest. Actual sizes vary with compression, format, and spatial filtering.</li>';
+  html += '<li><strong>Commercial pricing</strong> is based on publicly available list prices (as of March 2026). Academic/research discounts of 30\u201370% are commonly available from Planet, Airbus, and Maxar.</li>';
+  html += '<li><strong>Option B (mixed)</strong> assumes approximately 30% of acquisitions use commercial imagery, with the remainder covered by free Sentinel/Landsat data.</li>';
+  html += '<li><strong>Infrastructure costs</strong> assume cloud storage at standard rates (~' + sym + '0.02/GB/month) or local NAS/drive costs (~' + sym + '50/TB). Processing estimates assume occasional cloud VM use for batch jobs.</li>';
+  html += '<li><strong>Free data sources</strong> include Copernicus (Sentinel-1, Sentinel-2, DEM), USGS (Landsat), ECMWF (ERA5), and various thematic global datasets. All are open-access with no licensing fees.</li>';
+  html += '<li><strong>Temporal coverage</strong>: Sentinel-2 data available from 2015, Landsat from 1972, ERA5 from 1940. Actual availability depends on geographic region and cloud cover.</li>';
+  html += '<li>All costs shown in ' + (currency === 'USD' ? 'USD. EUR amounts converted at approximate rate of 1 EUR = 1.08 USD.' : 'EUR.') + '</li>';
+  html += '</ul></div>';
+
+  html += '</body></html>';
+
+  // Open in new window
+  var w = window.open('', '_blank');
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+    setTimeout(function(){ w.print(); }, 600);
+  } else {
+    alert('Pop-up blocked. Please allow pop-ups for this page and try again.');
+  }
+};
+
+/* ══════════════════════════════════════════════
+   COPY AS MARKDOWN
+   ══════════════════════════════════════════════ */
+window.copyBudgetMarkdown = function() {
+  var currencyToggle = document.getElementById('budgetCurrency');
+  var currency = (currencyToggle && currencyToggle.value === 'USD') ? 'USD' : 'EUR';
+  var b = computeBudgetData(currency);
+  var sym = b.sym;
+  var labels = b.labels;
+  var dateStr = new Date().toLocaleDateString('en-GB', {year:'numeric', month:'long', day:'numeric'});
+  var nl = '\n';
+
+  var md = '';
+  md += '# Data Acquisition Budget Estimate' + nl;
+  md += '_Generated: ' + dateStr + '_' + nl + nl;
+
+  md += '## Project Summary' + nl + nl;
+  md += '| Parameter | Value |' + nl;
+  md += '|---|---|' + nl;
+  md += '| Domain | ' + (labels.domain[state.domain]||state.domain) + ' |' + nl;
+  md += '| Area | ' + formatNum(state.area) + ' km\u00B2 |' + nl;
+  md += '| Region | ' + (labels.region[state.region]||state.region) + ' |' + nl;
+  md += '| Resolution | ' + (labels.resolution[state.resolution]||state.resolution) + ' |' + nl;
+  md += '| Frequency | ' + (labels.frequency[state.frequency]||state.frequency) + ' |' + nl;
+  md += '| Historical Depth | ' + (labels.history[state.history]||state.history) + ' |' + nl;
+  md += '| Duration | ' + b.years + ' year(s) |' + nl;
+  md += nl;
+
+  // Free sources table
+  md += '## Free Data Sources' + nl + nl;
+  if (b.freeSrcs.length > 0) {
+    md += '| Dataset | Resolution | Description |' + nl;
+    md += '|---|---|---|' + nl;
+    b.freeSrcs.forEach(function(o){
+      md += '| ' + o.ds.name + ' | ' + o.ds.resolution + ' | ' + o.ds.provides + ' |' + nl;
+    });
+    md += nl;
+  } else {
+    md += '_No free sources matched._' + nl + nl;
+  }
+
+  // Commercial alternatives
+  if (b.commCostRows.length > 0) {
+    md += '## Commercial Data Alternatives' + nl + nl;
+    md += '| Dataset | Resolution | Unit Price | Area Cost | Annual Cost | ' + b.years + '-yr Total |' + nl;
+    md += '|---|---|---|---|---|---|' + nl;
+    b.commCostRows.forEach(function(r){
+      md += '| ' + r.name + ' | ' + r.resolution + ' | ' + r.unitCost + ' | ' + r.areaCost + ' | ' + r.annualCost + ' | ' + r.totalCost + ' |' + nl;
+    });
+    md += nl;
+  }
+
+  // Storage
+  md += '## Storage Requirements' + nl + nl;
+  if (b.storageRows.length > 0) {
+    md += '| Dataset | Single Acq. | Total Acqs. | Raw Total | Compressed |' + nl;
+    md += '|---|---|---|---|---|' + nl;
+    var tRaw = 0, tComp = 0;
+    b.storageRows.forEach(function(r){
+      tRaw += r.rawMB; tComp += r.compMB;
+      md += '| ' + r.name + ' | ' + fmtSizeBudget(r.singleMB) + ' | ' + formatNum(r.numAcqs) + ' | ' + fmtSizeBudget(r.rawMB) + ' | ' + fmtSizeBudget(r.compMB) + ' |' + nl;
+    });
+    md += '| **TOTAL** | | | **' + fmtSizeBudget(tRaw) + '** | **' + fmtSizeBudget(tComp) + '** |' + nl;
+    md += nl;
+  }
+
+  // Budget options
+  md += '## Budget Summary' + nl + nl;
+  md += '| Option | Data Cost | Storage |' + nl;
+  md += '|---|---|---|' + nl;
+  md += '| A: Free data only | ' + sym + '0 | ' + formatNum(Math.round(b.freeStorageGB)) + ' GB |' + nl;
+  if (b.commCostRows.length > 0) {
+    md += '| B: Free + commercial mix | ' + sym + formatNum(Math.round(b.commCostLow * 0.3)) + ' - ' + sym + formatNum(Math.round(b.commCostHigh * 0.3)) + ' | ' + formatNum(Math.round(b.totalStorageGB)) + ' GB |' + nl;
+    md += '| C: Full commercial | ' + sym + formatNum(Math.round(b.commCostLow)) + ' - ' + sym + formatNum(Math.round(b.commCostHigh)) + ' | ' + formatNum(Math.round(b.totalStorageGB)) + ' GB |' + nl;
+  }
+  md += nl;
+
+  // Infrastructure
+  md += '## Infrastructure Costs (Annual)' + nl + nl;
+  md += '| Component | Estimate | Notes |' + nl;
+  md += '|---|---|---|' + nl;
+  var infraS = Math.round((b.totalStorageGB < 500 ? b.localStorageCost : b.cloudStorageCostYearly) * b.rate);
+  var infraP = Math.round(b.processingCost * b.rate);
+  md += '| Storage | ' + sym + formatNum(infraS) + ' | ' + (b.totalStorageGB < 500 ? 'Local drives' : 'Cloud storage') + ' |' + nl;
+  md += '| Processing | ' + sym + formatNum(infraP) + '/yr | Cloud compute |' + nl;
+  md += '| Software | ' + sym + '0 | QGIS, Python, GDAL (free) |' + nl;
+  md += nl;
+
+  // Grand total
+  var grandMin = infraS;
+  var grandMaxHigh = Math.round(b.commCostHigh + (infraS + infraP) * b.years);
+  md += '## Grand Total (' + b.years + '-year project)' + nl + nl;
+  md += '**Estimated range: ' + sym + formatNum(grandMin) + ' - ' + sym + formatNum(grandMaxHigh) + '**' + nl + nl;
+
+  md += '---' + nl;
+  md += '_Generated by Dataset Cadaster GeoEstimator on ' + dateStr + '. Prices as of March 2026._' + nl;
+
+  // Copy to clipboard
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(md).then(function(){
+      showCopyFeedback('Markdown copied to clipboard');
+    }, function(){
+      fallbackCopy(md);
+    });
+  } else {
+    fallbackCopy(md);
+  }
+};
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showCopyFeedback('Markdown copied to clipboard');
+  } catch(e) {
+    showCopyFeedback('Copy failed \u2014 please use Ctrl+C');
+  }
+  document.body.removeChild(ta);
+}
+
+function showCopyFeedback(msg) {
+  var el = document.createElement('div');
+  el.textContent = msg;
+  el.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#27ae60;color:#fff;padding:10px 24px;border-radius:6px;font-size:.9rem;font-weight:600;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.2);transition:opacity .3s';
+  document.body.appendChild(el);
+  setTimeout(function(){ el.style.opacity = '0'; }, 2000);
+  setTimeout(function(){ document.body.removeChild(el); }, 2500);
 }
 
 })();

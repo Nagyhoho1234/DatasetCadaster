@@ -84,6 +84,76 @@ jobs:
               labels: ['price-update', 'automated']
             });
 
+  check-health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run API health check
+        run: python scripts/check_health.py --apply --verbose
+
+      - name: Check for changes
+        id: health_changes
+        run: |
+          if git diff --quiet health.json 2>/dev/null; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit updated health data
+        if: steps.health_changes.outputs.changed == 'true'
+        run: |
+          git config user.name "Dataset Cadaster Bot"
+          git config user.email "bot@dataset-cadaster.local"
+          git add health.json
+          git commit -m "auto: daily health check $(date +%Y-%m-%d)"
+          git push
+
+      - name: Create issue if many endpoints are down
+        if: steps.health_changes.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const health = JSON.parse(fs.readFileSync('health.json', 'utf8'));
+
+            if (health.down <= 5) return;
+
+            const downEps = health.endpoints
+              .filter(ep => ep.classification === 'down')
+              .map(ep => `- \`${ep.datasetId}\`: ${ep.url} (${ep.error || 'HTTP ' + ep.status})`)
+              .join('\n');
+
+            const body = `## API Health Alert
+
+            **Check time:** ${health.lastCheck}
+            **Total checked:** ${health.totalChecked}
+            **Healthy:** ${health.healthy}
+            **Degraded:** ${health.degraded}
+            **Down:** ${health.down}
+
+            ### Down Endpoints
+
+            ${downEps}
+
+            ---
+            _Generated automatically by Dataset Cadaster Health Monitor_`.replace(/^            /gm, '');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `API Health Alert: ${health.down} endpoints down (${health.lastCheck.slice(0,10)})`,
+              body: body,
+              labels: ['api-health', 'automated']
+            });
+
   check-links:
     runs-on: ubuntu-latest
     steps:
