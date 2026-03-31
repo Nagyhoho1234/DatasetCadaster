@@ -451,7 +451,9 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
   <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
     <div class="step-title" style="margin-bottom:0">Your GeoEstimate</div>
-    <div style="display:flex;gap:8px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="generateBudgetReport()" style="background:#27ae60">Download Budget Report</button>
+      <button class="btn btn-secondary" onclick="copyBudgetMarkdown()">Copy as Markdown</button>
       <button class="btn btn-secondary" onclick="window.print()">Print / PDF</button>
       <button class="btn btn-reset" onclick="startOver()">Start Over</button>
     </div>
