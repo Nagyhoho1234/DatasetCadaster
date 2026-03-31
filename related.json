@@ -1,0 +1,118 @@
+{
+  "rules": [
+    {
+      "if_category": "dem-elevation",
+      "suggest_categories": ["soil", "hydrology", "land-use-land-cover"],
+      "suggest_specific": ["isric-soilgrids", "hydrosheds", "corine-land-cover"]
+    },
+    {
+      "if_category": "soil",
+      "suggest_categories": ["dem-elevation", "climate-weather", "hydrology"],
+      "suggest_specific": ["copernicus-dem-glo30", "era5-land", "hydrosheds"]
+    },
+    {
+      "if_category": "satellite-eo",
+      "if_subcategory": "optical",
+      "suggest_categories": ["satellite-eo", "dem-elevation", "land-use-land-cover"],
+      "suggest_specific": ["sentinel-1", "copernicus-dem-glo30", "esa-worldcover"]
+    },
+    {
+      "if_category": "satellite-eo",
+      "if_subcategory": "sar",
+      "suggest_categories": ["satellite-eo", "dem-elevation", "geodesy-insar"],
+      "suggest_specific": ["sentinel-2", "copernicus-dem-glo30", "egms"]
+    },
+    {
+      "if_category": "climate-weather",
+      "suggest_categories": ["soil", "hydrology", "biosphere-ecology"],
+      "suggest_specific": ["isric-soilgrids", "hydrosheds", "copernicus-land-monitoring"]
+    },
+    {
+      "if_category": "hydrology",
+      "suggest_categories": ["dem-elevation", "soil", "climate-weather", "land-use-land-cover"],
+      "suggest_specific": ["copernicus-dem-glo30", "isric-soilgrids", "era5-land", "corine-land-cover"]
+    },
+    {
+      "if_category": "population-urban",
+      "suggest_categories": ["land-use-land-cover", "admin-boundaries"],
+      "suggest_specific": ["corine-land-cover", "gadm", "eog-viirs-annual-composites", "dmsp-ols-nighttime-lights"]
+    },
+    {
+      "if_category": "air-quality",
+      "suggest_categories": ["climate-weather", "population-urban", "satellite-eo"],
+      "suggest_specific": ["era5-land", "ghsl-ghs-pop", "sentinel-5p-tropomi"]
+    },
+    {
+      "if_category": "ocean-marine",
+      "suggest_categories": ["climate-weather", "biosphere-ecology"],
+      "suggest_specific": ["copernicus-cds", "gebco", "copernicus-marine"]
+    },
+    {
+      "if_category": "geology-geophysics",
+      "suggest_categories": ["dem-elevation", "soil", "geodesy-insar"],
+      "suggest_specific": ["copernicus-dem-glo30", "isric-soilgrids", "egms"]
+    },
+    {
+      "if_category": "admin-boundaries",
+      "suggest_categories": ["population-urban", "land-use-land-cover"],
+      "suggest_specific": ["ghsl-ghs-pop", "corine-land-cover", "worldpop"]
+    },
+    {
+      "if_category": "biosphere-ecology",
+      "suggest_categories": ["land-use-land-cover", "climate-weather", "satellite-eo"],
+      "suggest_specific": ["esa-worldcover", "era5-land", "sentinel-2"]
+    },
+    {
+      "if_category": "geodesy-insar",
+      "suggest_categories": ["dem-elevation", "satellite-eo", "geology-geophysics"],
+      "suggest_specific": ["copernicus-dem-glo30", "sentinel-1", "egms"]
+    }
+  ],
+  "specific": {
+    "sentinel-2": ["landsat-8-9", "sentinel-1", "corine-land-cover", "esa-worldcover", "dynamic-world", "copernicus-dem-glo30"],
+    "sentinel-1": ["sentinel-2", "alos-palsar", "nisar", "copernicus-dem-glo30", "egms", "comet-licsar"],
+    "landsat-8-9": ["sentinel-2", "terra-aqua-modis", "esa-worldcover", "dynamic-world", "copernicus-dem-glo30"],
+    "copernicus-dem-glo30": ["isric-soilgrids", "hydrosheds", "corine-land-cover", "srtm-nasa", "fabdem", "copernicus-dem-glo90"],
+    "srtm-nasa": ["copernicus-dem-glo30", "nasadem", "alos-aw3d30", "merit-dem", "hydrosheds"],
+    "alos-aw3d30": ["srtm-nasa", "copernicus-dem-glo30", "tandem-x-90m", "fabdem"],
+    "fabdem": ["copernicus-dem-glo30", "srtm-nasa", "merit-dem", "alos-aw3d30"],
+    "tandem-x-90m": ["copernicus-dem-glo30", "srtm-nasa", "tandem-x-12m", "alos-aw3d30"],
+    "merit-dem": ["srtm-nasa", "copernicus-dem-glo30", "hydrosheds", "fabdem"],
+    "isric-soilgrids": ["fao-hwsd", "esdac", "openlandmap", "copernicus-dem-glo30", "esa-cci-soil-moisture"],
+    "fao-hwsd": ["isric-soilgrids", "esdac", "openlandmap", "fao-gsocmap"],
+    "esdac": ["isric-soilgrids", "fao-hwsd", "openlandmap", "euso-dashboard"],
+    "openlandmap": ["isric-soilgrids", "esdac", "copernicus-dem-glo30", "esa-worldcover"],
+    "esa-cci-soil-moisture": ["smap-l4", "smos", "era5-land", "isric-soilgrids"],
+    "corine-land-cover": ["esa-worldcover", "dynamic-world", "clcplus-backbone", "copernicus-urban-atlas", "sentinel-2"],
+    "esa-worldcover": ["corine-land-cover", "dynamic-world", "esri-land-cover", "sentinel-2", "modis-land-cover"],
+    "dynamic-world": ["esa-worldcover", "corine-land-cover", "sentinel-2", "esri-land-cover", "globeland30"],
+    "modis-land-cover": ["esa-cci-land-cover", "esa-worldcover", "globeland30", "terra-aqua-modis"],
+    "esri-land-cover": ["esa-worldcover", "dynamic-world", "corine-land-cover", "sentinel-2"],
+    "ghsl-ghs-pop": ["worldpop", "gpw-v4-sedac", "landscan-global", "kontur-population", "meta-high-resolution-population"],
+    "worldpop": ["ghsl-ghs-pop", "gpw-v4-sedac", "landscan-global", "meta-high-resolution-population", "kontur-population"],
+    "gpw-v4-sedac": ["ghsl-ghs-pop", "worldpop", "landscan-global", "kontur-population"],
+    "landscan-global": ["ghsl-ghs-pop", "worldpop", "gpw-v4-sedac", "kontur-population"],
+    "kontur-population": ["ghsl-ghs-pop", "worldpop", "gpw-v4-sedac", "landscan-global"],
+    "meta-high-resolution-population": ["ghsl-ghs-pop", "worldpop", "gpw-v4-sedac", "meta-hrsl"],
+    "eog-viirs-annual-composites": ["viirs-black-marble-vnp46", "dmsp-ols-nighttime-lights", "ghsl-ghs-pop"],
+    "viirs-black-marble-vnp46": ["eog-viirs-annual-composites", "dmsp-ols-nighttime-lights", "viirs-npp-jpss"],
+    "dmsp-ols-nighttime-lights": ["eog-viirs-annual-composites", "viirs-black-marble-vnp46", "ghsl-ghs-pop"],
+    "era5-land": ["copernicus-cds", "e-obs", "chirps", "mswep", "ghcn"],
+    "copernicus-cds": ["era5-land", "e-obs", "copernicus-marine", "copernicus-atmosphere"],
+    "e-obs": ["era5-land", "copernicus-cds", "cru-ts", "ghcn"],
+    "hydrosheds": ["copernicus-dem-glo30", "glofas", "grdc", "hydrolakes", "copernicus-global-surface-water"],
+    "copernicus-global-surface-water": ["hydrosheds", "hydrolakes", "sentinel-2", "dynamic-world"],
+    "alos-palsar": ["sentinel-1", "nisar", "copernicus-dem-glo30", "global-forest-watch"],
+    "nisar": ["sentinel-1", "alos-palsar", "copernicus-dem-glo30", "egms"],
+    "sentinel-5p-tropomi": ["copernicus-atmosphere", "openaq", "sentinel-5p", "cams-european-air-quality"],
+    "sentinel-5p": ["sentinel-5p-tropomi", "copernicus-atmosphere", "s5p-pal-tropomi-l3", "openaq"],
+    "egms": ["sentinel-1", "comet-licsar", "copernicus-dem-glo30", "aria-gunw"],
+    "gebco": ["emodnet-bathymetry", "etopo", "copernicus-marine", "srtm15-bathymetry"],
+    "copernicus-marine": ["gebco", "emodnet-bathymetry", "copernicus-cds", "sentinel-3"],
+    "gadm": ["natural-earth", "eurostat-gisco", "geoboundaries", "ghsl-ghs-pop", "worldpop"],
+    "natural-earth": ["gadm", "eurostat-gisco", "geoboundaries", "fao-gaul"],
+    "global-forest-watch": ["sentinel-2", "landsat-8-9", "alos-palsar", "esa-worldcover"],
+    "terra-aqua-modis": ["landsat-8-9", "viirs-npp-jpss", "sentinel-3", "modis-land-cover"],
+    "google-earth-engine": ["copernicus-data-space", "microsoft-planetary-computer", "sentinel-hub", "aws-open-data"]
+  }
+}

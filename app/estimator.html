@@ -460,12 +460,14 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     <button class="results-tab" data-tab="commercial" onclick="switchTab(this)">Commercial Alternatives</button>
     <button class="results-tab" data-tab="cost" onclick="switchTab(this)">Cost Breakdown</button>
     <button class="results-tab" data-tab="stack" onclick="switchTab(this)">Recommended Stack</button>
+    <button class="results-tab" data-tab="storage" onclick="switchTab(this)">Storage &amp; Download</button>
   </div>
 
   <div class="tab-content visible" id="tabFree" data-print-title="Free Data Sources"></div>
   <div class="tab-content" id="tabCommercial" data-print-title="Commercial Alternatives"></div>
   <div class="tab-content" id="tabCost" data-print-title="Cost Breakdown"></div>
   <div class="tab-content" id="tabStack" data-print-title="Recommended Stack"></div>
+  <div class="tab-content" id="tabStorage" data-print-title="Storage &amp; Download Estimates"></div>
 </div>
 
 </div><!-- /container -->
@@ -744,6 +746,7 @@ window.generateResults = function() {
   renderCommercial();
   renderCostBreakdown();
   renderStack();
+  renderStorageDownload();
   goToStep(4);
 };
 
@@ -1010,7 +1013,7 @@ window.switchTab = function(el) {
   el.classList.add('active');
   var tabId = 'tab' + el.getAttribute('data-tab').charAt(0).toUpperCase() + el.getAttribute('data-tab').slice(1);
   // map tab names
-  var tabMap = {free:'tabFree',commercial:'tabCommercial',cost:'tabCost',stack:'tabStack'};
+  var tabMap = {free:'tabFree',commercial:'tabCommercial',cost:'tabCost',stack:'tabStack',storage:'tabStorage'};
   var target = tabMap[el.getAttribute('data-tab')];
   if (target) document.getElementById(target).classList.add('visible');
 };

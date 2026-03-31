@@ -273,6 +273,59 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 .badge-cat-geodesy-insar{background:#dde4ea;color:#3a4f63}
 .badge-cat-data-platform{background:#dceef0;color:#2a6e6e}
 
+/* ── Bookmark / Favorites ────────────────────────────── */
+.card.bookmarked{border-color:#e6c200;box-shadow:0 0 0 1px rgba(230,194,0,.3)}
+.bookmark-btn{background:none;border:1px solid var(--border);color:var(--text-light);padding:3px 8px;border-radius:var(--radius);cursor:pointer;font-size:.82rem;font-family:var(--font);transition:all .15s;white-space:nowrap;line-height:1}
+.bookmark-btn:hover{border-color:#e6c200;color:#d4a800}
+.bookmark-btn.bookmarked{color:#d4a800;border-color:#e6c200;background:rgba(230,194,0,.08)}
+.btn-bookmark-filter{
+  padding:8px 14px;font-size:.82rem;border:1px solid var(--border);border-radius:var(--radius);
+  background:#fafbfc;cursor:pointer;font-family:var(--font);color:var(--text-light);transition:all .15s;width:100%;text-align:left
+}
+.btn-bookmark-filter:hover{background:#eef1f5;color:var(--text)}
+.btn-bookmark-filter.active{background:rgba(230,194,0,.12);border-color:#e6c200;color:#a08600}
+[data-theme="dark"] .btn-bookmark-filter{background:#151c24;color:var(--text-light);border-color:var(--border)}
+[data-theme="dark"] .btn-bookmark-filter:hover{background:#1e2733;color:var(--text)}
+[data-theme="dark"] .btn-bookmark-filter.active{background:rgba(230,194,0,.15);border-color:#e6c200;color:#e6c200}
+[data-theme="dark"] .card.bookmarked{border-color:#b89a00;box-shadow:0 0 0 1px rgba(184,154,0,.3)}
+
+/* ── Citation Popup ──────────────────────────────────── */
+.cite-btn{background:none;border:1px solid var(--border);color:var(--text-light);padding:3px 8px;border-radius:var(--radius);cursor:pointer;font-size:.7rem;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.cite-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cite-popup{position:absolute;top:40px;right:0;z-index:200;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;width:360px;box-shadow:0 6px 20px rgba(0,0,0,.15);font-size:.82rem;display:none}
+.cite-popup.visible{display:block}
+.cite-popup-close{position:absolute;top:6px;right:10px;background:none;border:none;font-size:1rem;color:var(--text-light);cursor:pointer}
+.cite-popup-close:hover{color:var(--text)}
+.cite-popup h4{font-size:.82rem;margin-bottom:8px;color:var(--text)}
+.cite-text{background:var(--body-bg);border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:.78rem;line-height:1.45;color:var(--text);margin-bottom:8px;word-break:break-word;white-space:pre-wrap;font-family:var(--font)}
+.cite-bibtex{display:none;background:var(--body-bg);border:1px solid var(--border);border-radius:4px;padding:8px 10px;font-size:.72rem;line-height:1.4;color:var(--text);margin-bottom:8px;word-break:break-all;white-space:pre-wrap;font-family:'Consolas','Monaco',monospace}
+.cite-bibtex.visible{display:block}
+.cite-actions{display:flex;gap:6px;flex-wrap:wrap}
+.cite-actions button{padding:4px 10px;font-size:.75rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--card-bg);cursor:pointer;font-family:var(--font);color:var(--text-light);transition:all .15s}
+.cite-actions button:hover{background:var(--body-bg);color:var(--text);border-color:var(--accent)}
+.cite-actions button.cite-active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── Recently Added / What's New ─────────────────────── */
+.recently-added-section{background:var(--card-bg);border-bottom:1px solid var(--border);padding:14px 24px;overflow:hidden;transition:max-height .3s ease,padding .3s ease}
+.recently-added-section.collapsed{max-height:40px;padding:10px 24px;overflow:hidden}
+.recently-added-header{display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none}
+.recently-added-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light);font-weight:600}
+.recently-added-toggle{font-size:.7rem;color:var(--accent);transition:transform .2s}
+.recently-added-section.collapsed .recently-added-toggle{transform:rotate(-90deg)}
+.recently-added-note{font-size:.75rem;color:var(--text-light);margin-left:auto;font-weight:400}
+.whats-new-badge{background:var(--green);color:#fff;font-size:.6rem;padding:1px 6px;border-radius:8px;margin-left:6px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;vertical-align:middle}
+.recent-scroll{display:flex;gap:10px;overflow-x:auto;padding:10px 0 4px;scroll-snap-type:x mandatory}
+.recent-scroll::-webkit-scrollbar{height:4px}
+.recent-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.recent-card{flex:0 0 auto;min-width:180px;max-width:240px;background:var(--body-bg);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;cursor:pointer;transition:all .15s;scroll-snap-align:start}
+.recent-card:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.recent-card-name{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.recent-card-badges{display:flex;gap:4px;flex-wrap:wrap}
+.recent-featured{font-size:.78rem;color:var(--text-light);padding:10px 0 4px}
+[data-theme="dark"] .recent-card{background:#151c24}
+.card-highlight{animation:highlightPulse 1.5s ease}
+@keyframes highlightPulse{0%{box-shadow:0 0 0 3px rgba(41,128,185,.5)}100%{box-shadow:none}}
+
 /* ── Responsive ───────────────────────────────────────── */
 @media(max-width:860px){
   .sidebar{position:fixed;left:-320px;top:calc(var(--nav-h) + var(--header-h));bottom:0;z-index:150;transition:left .25s ease;box-shadow:4px 0 16px rgba(0,0,0,.15)}
