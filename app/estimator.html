@@ -239,6 +239,9 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <nav class="header-nav">
     <a href="index.html">&larr; Dataset Catalog</a>
     <a href="estimator.html" class="active">GeoEstimator</a>
+    <a href="recipes.html">Processing Recipes</a>
+    <a href="guide.html">Guide</a>
+    <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
   </nav>
 </header>
@@ -1003,6 +1006,197 @@ function renderStack() {
 
   html += '</div>';
   document.getElementById('tabStack').innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════
+   Tab 5: Storage & Download Estimates
+   ══════════════════════════════════════════════ */
+function renderStorageDownload() {
+  var area = state.area;
+  var acqs = getAcquisitionsPerYear();
+  var years = getYears();
+  var totalAcqs = acqs * years;
+
+  var sizeRef = {
+    'sentinel-2':    {tileArea:10000, tileSize:800,  label:'Sentinel-2 (10m, 13 bands)',  singleLabel:'~800 MB / 100x100 km tile'},
+    'landsat':       {tileArea:34225, tileSize:200,  label:'Landsat 8/9 (30m, 11 bands)', singleLabel:'~200 MB / 185x185 km scene'},
+    'copernicus-dem':{tileArea:12321, tileSize:25,   label:'Copernicus DEM 30m',           singleLabel:'~25 MB / 1\u00b0x1\u00b0 tile'},
+    'hydrosheds':    {tileArea:12321, tileSize:3,    label:'DEM 90m (HydroSHEDS)',         singleLabel:'~3 MB / 1\u00b0x1\u00b0 tile'},
+    'sentinel-1':    {tileArea:42500, tileSize:1024, label:'Sentinel-1 SAR (IW)',          singleLabel:'~1 GB / IW scene (~250x170 km)'},
+    'era5':          {tileArea:510000000, tileSize:500, label:'ERA5 Reanalysis (0.25\u00b0)', singleLabel:'~500 MB / variable / year'},
+    'era5-land':     {tileArea:510000000, tileSize:500, label:'ERA5-Land',                  singleLabel:'~500 MB / variable / year'},
+    'chirps':        {tileArea:510000000, tileSize:300, label:'CHIRPS Rainfall',             singleLabel:'~300 MB / year (global)'},
+    'cams':          {tileArea:510000000, tileSize:500, label:'CAMS Atmosphere',             singleLabel:'~500 MB / variable / year'},
+    'cru-ts':        {tileArea:510000000, tileSize:200, label:'CRU TS',                     singleLabel:'~200 MB / variable (full archive)'},
+    'e-obs':         {tileArea:10000000, tileSize:800, label:'E-OBS',                       singleLabel:'~800 MB / variable'},
+    'soilgrids':     {tileArea:510000000, tileSize:2048, label:'SoilGrids (250m, global)',   singleLabel:'~2 GB (full global set)'},
+    'corine':        {tileArea:5800000, tileSize:1500, label:'CORINE Land Cover',           singleLabel:'~1.5 GB (full Europe)'},
+    'copernicus-hrl':{tileArea:5800000, tileSize:3072, label:'Copernicus HRL',              singleLabel:'~3 GB (full Europe)'},
+    'global-forest-watch':{tileArea:12321, tileSize:50, label:'Global Forest Watch (30m)',  singleLabel:'~50 MB / 1\u00b0x1\u00b0 tile'},
+    'ghsl':          {tileArea:510000000, tileSize:4096, label:'GHSL',                      singleLabel:'~4 GB (global set)'},
+    'worldpop':      {tileArea:510000000, tileSize:2048, label:'WorldPop',                  singleLabel:'~2 GB (global 100m)'},
+    'osm':           {tileArea:93000, tileSize:10, label:'OpenStreetMap (vector)',           singleLabel:'~10 MB / country'},
+    'natural-earth': {tileArea:510000000, tileSize:800, label:'Natural Earth',              singleLabel:'~800 MB (full set)'},
+    'viirs-ntl':     {tileArea:510000000, tileSize:500, label:'VIIRS Nighttime Lights',     singleLabel:'~500 MB / monthly composite'},
+    'urban-atlas':   {tileArea:5800000, tileSize:2048, label:'Urban Atlas',                 singleLabel:'~2 GB (full Europe)'},
+    'gbif':          {tileArea:510000000, tileSize:500, label:'GBIF Occurrences',            singleLabel:'~500 MB / major taxon (CSV)'},
+    'glofas':        {tileArea:510000000, tileSize:500, label:'GloFAS',                     singleLabel:'~500 MB / variable / year'},
+    'hungaromet':    {tileArea:93000, tileSize:50, label:'HungaroMet',                      singleLabel:'~50 MB (station data)'},
+    'ghcn':          {tileArea:510000000, tileSize:200, label:'GHCN',                       singleLabel:'~200 MB (full archive)'},
+    'grace-fo':      {tileArea:510000000, tileSize:100, label:'GRACE-FO',                   singleLabel:'~100 MB / monthly'},
+    'iucn':          {tileArea:510000000, tileSize:2048, label:'IUCN Red List Spatial',     singleLabel:'~2 GB (full set)'},
+    'onegeology':    {tileArea:510000000, tileSize:500, label:'OneGeology',                  singleLabel:'~500 MB (regional set)'},
+    'egdi':          {tileArea:5800000, tileSize:500, label:'EGDI',                         singleLabel:'~500 MB (European set)'},
+    'usgs-earthquake':{tileArea:510000000, tileSize:100,label:'USGS Earthquake',            singleLabel:'~100 MB (catalog)'}
+  };
+
+  var commSizeRef = {
+    'planetscope': {tileArea:100,  tileSize:1536, label:'PlanetScope (3m, 8 bands)', singleLabel:'~1.5 GB / 100 km\u00b2'},
+    'maxar':       {tileArea:100,  tileSize:25600, label:'WorldView (0.3m)',          singleLabel:'~25 GB / 100 km\u00b2'},
+    'pleiades-neo':{tileArea:100,  tileSize:12800, label:'Pleiades Neo (0.3m)',       singleLabel:'~12.8 GB / 100 km\u00b2'},
+    'skysat':      {tileArea:100,  tileSize:5120,  label:'SkySat (0.5m)',             singleLabel:'~5 GB / 100 km\u00b2'},
+    'spot':        {tileArea:3600, tileSize:2048,  label:'SPOT 6/7 (1.5m)',           singleLabel:'~2 GB / 60x60 km scene'},
+    'iceye':       {tileArea:625,  tileSize:1024,  label:'ICEYE SAR',                 singleLabel:'~1 GB / 25x25 km scene'},
+    'capella':     {tileArea:625,  tileSize:1024,  label:'Capella SAR',               singleLabel:'~1 GB / 25x25 km scene'}
+  };
+
+  var domainRecs = domainRecommendations[state.domain] || [];
+  var allKeys = {};
+  domainRecs.forEach(function(k){ allKeys[k] = true; });
+  Object.keys(freeDB).forEach(function(k){
+    freeDB[k].types.forEach(function(t){
+      if (state.dataTypes.indexOf(t) !== -1) allKeys[k] = true;
+    });
+  });
+  var freeKeys = Object.keys(allKeys);
+
+  var commKeys = [];
+  if (state.resolution === 'very-high') commKeys.push('maxar','pleiades-neo','skysat');
+  if (state.resolution === 'high') commKeys.push('planetscope','spot');
+  if (state.dataTypes.indexOf('sar') !== -1) commKeys.push('iceye','capella');
+
+  function calcSize(ref, isTimeSeries) {
+    var scenesNeeded;
+    if (ref.tileArea >= 500000) {
+      scenesNeeded = Math.max(1, area / ref.tileArea);
+    } else {
+      scenesNeeded = Math.max(1, Math.ceil(area / ref.tileArea));
+    }
+    var singleMB = ref.tileSize;
+    var numAcqs = isTimeSeries ? totalAcqs : 1;
+    var totalRawMB = scenesNeeded * singleMB * numAcqs;
+    var compressedMB = totalRawMB * 0.6;
+    return {scenesNeeded: scenesNeeded, singleMB: singleMB, numAcqs: numAcqs, totalRawMB: totalRawMB, compressedMB: compressedMB};
+  }
+
+  var timeSeriesKeys = ['sentinel-2','landsat','sentinel-1','era5','era5-land','chirps','cams','e-obs','viirs-ntl','glofas','hungaromet','grace-fo'];
+
+  var rows = [];
+  var grandTotalRaw = 0, grandTotalCompressed = 0;
+
+  freeKeys.forEach(function(k){
+    var ref = sizeRef[k];
+    if (!ref) return;
+    var isTS = timeSeriesKeys.indexOf(k) !== -1;
+    var c = calcSize(ref, isTS);
+    grandTotalRaw += c.totalRawMB;
+    grandTotalCompressed += c.compressedMB;
+    rows.push({label: ref.label, singleLabel: ref.singleLabel, scenesNeeded: c.scenesNeeded, numAcqs: c.numAcqs, totalRawMB: c.totalRawMB, compressedMB: c.compressedMB, type: 'free'});
+  });
+
+  commKeys.forEach(function(k){
+    var ref = commSizeRef[k];
+    if (!ref) return;
+    var c = calcSize(ref, true);
+    grandTotalRaw += c.totalRawMB;
+    grandTotalCompressed += c.compressedMB;
+    rows.push({label: ref.label, singleLabel: ref.singleLabel, scenesNeeded: c.scenesNeeded, numAcqs: c.numAcqs, totalRawMB: c.totalRawMB, compressedMB: c.compressedMB, type: 'commercial'});
+  });
+
+  function fmtSize(mb) {
+    if (mb < 1) return '< 1 MB';
+    if (mb < 1024) return formatNum(Math.round(mb)) + ' MB';
+    if (mb < 1024 * 1024) return formatNum(Math.round(mb / 1024 * 10) / 10) + ' GB';
+    return formatNum(Math.round(mb / (1024 * 1024) * 100) / 100) + ' TB';
+  }
+
+  var html = '<h3 style="margin-bottom:16px">Download Size Estimates</h3>';
+  html += '<div class="info-box" style="margin-bottom:18px"><p>Estimates based on reference tile sizes and your project parameters (' + formatNum(area) + ' km\u00b2, ' + acqs + ' acq/yr, ' + years + ' yr). Actual sizes vary with compression, format, and cloud-cover filtering.</p></div>';
+
+  if (rows.length === 0) {
+    html += '<div class="info-box"><h4>No datasets to estimate</h4><p>Select data types or a domain to see download size estimates.</p></div>';
+    document.getElementById('tabStorage').innerHTML = html;
+    return;
+  }
+
+  html += '<div style="overflow-x:auto"><table class="cost-table"><thead><tr>' +
+    '<th>Dataset</th><th>Single Scene</th><th>Scenes Needed</th><th>Acquisitions</th><th>Total Raw</th><th>Compressed (~60%)</th>' +
+    '</tr></thead><tbody>';
+
+  rows.forEach(function(r){
+    var badge = r.type === 'free'
+      ? '<span class="rec-badge rec-badge-free" style="margin-right:6px;font-size:.65rem">FREE</span>'
+      : '<span class="rec-badge rec-badge-commercial" style="margin-right:6px;font-size:.65rem">COMM</span>';
+    html += '<tr>' +
+      '<td>' + badge + esc(r.label) + '<br><span style="font-size:.75rem;color:var(--text-light)">' + esc(r.singleLabel) + '</span></td>' +
+      '<td>' + fmtSize(r.scenesNeeded > 0 ? r.totalRawMB / (r.scenesNeeded * r.numAcqs) : 0) + '</td>' +
+      '<td>' + (r.scenesNeeded < 1 ? '&lt; 1' : formatNum(Math.ceil(r.scenesNeeded))) + '</td>' +
+      '<td>' + formatNum(r.numAcqs) + '</td>' +
+      '<td>' + fmtSize(r.totalRawMB) + '</td>' +
+      '<td>' + fmtSize(r.compressedMB) + '</td>' +
+    '</tr>';
+  });
+
+  html += '<tr class="total-row"><td colspan="4"><strong>TOTAL PROJECT STORAGE</strong></td>' +
+    '<td><strong>' + fmtSize(grandTotalRaw) + '</strong></td>' +
+    '<td><strong>' + fmtSize(grandTotalCompressed) + '</strong></td></tr>';
+  html += '</tbody></table></div>';
+
+  // Bandwidth: 50 Mbps = 6.25 MB/s
+  var downloadSeconds = grandTotalCompressed / 6.25;
+  var downloadHrs = downloadSeconds / 3600;
+  var dlLabel;
+  if (downloadHrs < 0.0167) dlLabel = '< 1 minute';
+  else if (downloadHrs < 1) dlLabel = Math.round(downloadHrs * 60) + ' minutes';
+  else if (downloadHrs < 24) dlLabel = Math.round(downloadHrs * 10) / 10 + ' hours';
+  else dlLabel = Math.round(downloadHrs / 24 * 10) / 10 + ' days';
+
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:20px">';
+
+  html += '<div class="info-box" style="margin:0"><h4>Bandwidth Estimate</h4>' +
+    '<p>At <strong>50 Mbps</strong>, downloading compressed data takes approximately <strong>' + dlLabel + '</strong>.</p>' +
+    '<p style="margin-top:6px;font-size:.8rem">At 100 Mbps: ~' +
+    (downloadHrs < 2 ? Math.round(downloadHrs * 30) + ' min' : Math.round(downloadHrs / 2 * 10) / 10 + ' hrs') +
+    ' &bull; At 1 Gbps: ~' +
+    (downloadHrs < 20 ? Math.round(downloadHrs * 3) + ' min' : Math.round(downloadHrs / 20 * 10) / 10 + ' hrs') +
+    '</p></div>';
+
+  var totalGB = grandTotalCompressed / 1024;
+  var storRec, storColor;
+  if (totalGB < 50) {
+    storRec = 'Internal SSD is sufficient. Any modern laptop can handle this.';
+    storColor = 'var(--green)';
+  } else if (totalGB < 500) {
+    storRec = 'Use an external SSD (1-2 TB recommended). Keep backups on a second drive.';
+    storColor = 'var(--yellow)';
+  } else if (totalGB < 5120) {
+    storRec = 'Use a NAS or dedicated workstation storage. Consider RAID for redundancy.';
+    storColor = 'var(--yellow)';
+  } else {
+    storRec = 'Cloud storage recommended (S3, GCS, or Azure Blob). Consider processing in the cloud to avoid downloading entirely.';
+    storColor = 'var(--red)';
+  }
+
+  html += '<div class="info-box" style="margin:0"><h4>Storage Recommendation</h4>' +
+    '<p>Total compressed: <strong style="font-size:1.1rem;color:' + storColor + '">' + fmtSize(grandTotalCompressed) + '</strong></p>' +
+    '<p style="margin-top:8px">' + storRec + '</p>' +
+    '<ul style="margin-top:8px;margin-left:18px;font-size:.82rem;color:var(--text-light)">' +
+    '<li>&lt; 500 GB: external SSD</li>' +
+    '<li>500 GB &ndash; 5 TB: NAS / workstation RAID</li>' +
+    '<li>&gt; 5 TB: cloud storage (S3, GCS, Azure)</li></ul></div>';
+
+  html += '</div>';
+  document.getElementById('tabStorage').innerHTML = html;
 }
 
 /* ══════════════════════════════════════════════

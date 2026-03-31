@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DataCadaster">
+<meta name="theme-color" content="#1a2634">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.svg">
 <title>Dataset Cadaster — Geospatial &amp; Environmental Data Discovery</title>
 <style>
 /* ── Reset & Base ─────────────────────────────────────── */
@@ -155,6 +162,22 @@ a:hover{text-decoration:underline}
 .footer-links a:hover{color:#fff}
 .footer-note{color:#5a6a7a;font-size:.76rem}
 
+/* ── Language Toggle ──────────────────────────────────── */
+.lang-toggle{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:#a0b4c8;padding:4px 10px;border-radius:4px;font-size:.82rem;font-weight:600;
+  cursor:pointer;font-family:var(--font);transition:all .2s;margin-left:8px;letter-spacing:.5px
+}
+.lang-toggle:hover{background:rgba(255,255,255,.2);color:#fff}
+
+/* ── Offline Indicator ───────────────────────────────── */
+.offline-bar{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:999;
+  background:#e67e22;color:#fff;text-align:center;padding:6px 12px;
+  font-size:.82rem;font-weight:600;font-family:var(--font)
+}
+.offline-bar.visible{display:block}
+
 /* ── Responsive ───────────────────────────────────────── */
 @media(max-width:768px){
   .hero{padding:64px 16px 56px}
@@ -185,20 +208,24 @@ a:hover{text-decoration:underline}
 <nav class="nav">
   <a href="landing.html" class="nav-brand"><span>&#9672;</span>Dataset Cadaster</a>
   <div class="nav-links">
-    <a href="index.html">Catalog</a>
+    <a href="index.html" data-i18n="catalog">Catalog</a>
     <a href="estimator.html">GeoEstimator</a>
+    <a href="recipes.html">Recipes</a>
+    <a href="guide.html">Guide</a>
+    <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
+    <button class="lang-toggle" id="langToggle" title="Switch language">HU</button>
   </div>
 </nav>
 
 <!-- Hero Section -->
 <section class="hero">
   <div class="hero-content">
-    <h1><span>&#9672;</span> Dataset Cadaster</h1>
-    <p>A curated catalog of 500+ geospatial and environmental data sources &mdash; with a cost estimation tool for your next project</p>
+    <h1><span>&#9672;</span> <span data-i18n="title">Dataset Cadaster</span></h1>
+    <p data-i18n="subtitle">A curated catalog of 500+ geospatial and environmental data sources &mdash; with a cost estimation tool for your next project</p>
     <div class="hero-btns">
-      <a href="index.html" class="btn btn-primary">Browse Catalog &rarr;</a>
-      <a href="estimator.html" class="btn btn-secondary">Estimate Data Costs &rarr;</a>
+      <a href="index.html" class="btn btn-primary" data-i18n="browse_catalog">Browse Catalog</a>
+      <a href="estimator.html" class="btn btn-secondary" data-i18n="estimate_costs">Estimate Data Costs</a>
     </div>
   </div>
 </section>
@@ -208,27 +235,27 @@ a:hover{text-decoration:underline}
   <div class="stats-grid fade-in">
     <div class="stat-box">
       <div class="stat-number" id="statSources">500+</div>
-      <div class="stat-label">Data Sources</div>
+      <div class="stat-label" data-i18n="data_sources">Data Sources</div>
     </div>
     <div class="stat-box">
       <div class="stat-number" id="statDomains">14</div>
-      <div class="stat-label">Domains Covered</div>
+      <div class="stat-label" data-i18n="domains_covered">Domains Covered</div>
     </div>
     <div class="stat-box">
       <div class="stat-number" id="statFree">350+</div>
-      <div class="stat-label">Free &amp; Open Access</div>
+      <div class="stat-label" data-i18n="free_open_access">Free &amp; Open Access</div>
     </div>
     <div class="stat-box">
       <div class="stat-number" id="statCountries">9</div>
-      <div class="stat-label">Countries Mapped</div>
+      <div class="stat-label" data-i18n="countries_mapped">Countries Mapped</div>
     </div>
   </div>
 </section>
 
 <!-- Domains Grid -->
 <section class="section" id="domains">
-  <h2 class="section-title">Browse by Domain</h2>
-  <p class="section-sub">Explore data sources organized across 14 thematic categories</p>
+  <h2 class="section-title" data-i18n="browse_by_domain">Browse by Domain</h2>
+  <p class="section-sub" data-i18n="browse_by_domain_sub">Explore data sources organized across 14 thematic categories</p>
   <div class="domains-grid" id="domainsGrid">
     <!-- Populated by JS, with static fallback -->
   </div>
@@ -236,18 +263,18 @@ a:hover{text-decoration:underline}
 
 <!-- Tools Section -->
 <section class="section" id="tools">
-  <h2 class="section-title">Tools</h2>
-  <p class="section-sub">Two ways to find the data you need</p>
+  <h2 class="section-title" data-i18n="tools">Tools</h2>
+  <p class="section-sub" data-i18n="tools_sub">Two ways to find the data you need</p>
   <div class="tools-grid">
     <div class="tool-card fade-in">
-      <h3>Dataset Catalog</h3>
-      <p>Search, filter, and compare 500+ data sources. Filter by domain, cost, API support, and geographic scope.</p>
-      <a href="index.html" class="btn btn-primary">Browse &rarr;</a>
+      <h3 data-i18n="dataset_catalog">Dataset Catalog</h3>
+      <p data-i18n="dataset_catalog_desc">Search, filter, and compare 500+ data sources. Filter by domain, cost, API support, and geographic scope.</p>
+      <a href="index.html" class="btn btn-primary" data-i18n="browse">Browse</a>
     </div>
     <div class="tool-card fade-in">
-      <h3>GeoEstimator</h3>
-      <p>Plan your data needs. Get cost estimates, find the right free sources, and build your data budget for grant proposals.</p>
-      <a href="estimator.html" class="btn btn-primary">Try it &rarr;</a>
+      <h3 data-i18n="geoestimator">GeoEstimator</h3>
+      <p data-i18n="geoestimator_desc">Plan your data needs. Get cost estimates, find the right free sources, and build your data budget for grant proposals.</p>
+      <a href="estimator.html" class="btn btn-primary" data-i18n="try_it">Try it</a>
     </div>
   </div>
 </section>
@@ -255,9 +282,9 @@ a:hover{text-decoration:underline}
 <!-- About Section -->
 <section class="about">
   <div class="section about-inner" style="padding-top:48px;padding-bottom:48px">
-    <h2 class="section-title">About</h2>
-    <p>Built to help researchers, students, and professionals find the right geospatial data for their work. All information is curated and verified against primary sources.</p>
-    <p>This tool is free to use. If you find it useful, please cite:</p>
+    <h2 class="section-title" data-i18n="about">About</h2>
+    <p data-i18n="about_text">Built to help researchers, students, and professionals find the right geospatial data for their work. All information is curated and verified against primary sources.</p>
+    <p data-i18n="cite_text">This tool is free to use. If you find it useful, please cite:</p>
     <div class="cite">[Citation placeholder &mdash; update with DOI or reference when available]</div>
   </div>
 </section>
@@ -382,6 +409,66 @@ a:hover{text-decoration:underline}
   }
   observeAll();
 
+})();
+</script>
+
+<!-- Offline indicator -->
+<div class="offline-bar" id="offlineBar" data-i18n="offline_mode">Offline mode</div>
+
+<script>
+/* ── PWA: Service Worker Registration ──────────────── */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(function(){});
+}
+
+/* ── Offline indicator ─────────────────────────────── */
+(function(){
+  var bar = document.getElementById('offlineBar');
+  function update(){ bar.classList.toggle('visible', !navigator.onLine); }
+  window.addEventListener('online', update);
+  window.addEventListener('offline', update);
+  update();
+})();
+
+/* ── Language Toggle (i18n) ────────────────────────── */
+(function(){
+  var btn = document.getElementById('langToggle');
+  var i18nData = null;
+  var currentLang = localStorage.getItem('dc-lang') || 'en';
+
+  /* Load translations */
+  fetch('i18n.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      i18nData = data;
+      applyLang(currentLang);
+    })
+    .catch(function(){});
+
+  btn.addEventListener('click', function(){
+    currentLang = currentLang === 'en' ? 'hu' : 'en';
+    localStorage.setItem('dc-lang', currentLang);
+    applyLang(currentLang);
+  });
+
+  function applyLang(lang){
+    if (!i18nData || !i18nData[lang]) return;
+    var t = i18nData[lang];
+
+    /* Update toggle button text */
+    btn.textContent = lang === 'en' ? 'HU' : 'EN';
+
+    /* Update all elements with data-i18n */
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if (t[key] !== undefined) {
+        el.textContent = t[key];
+      }
+    });
+
+    /* Update html lang attribute */
+    document.documentElement.lang = lang;
+  }
 })();
 </script>
 </body>

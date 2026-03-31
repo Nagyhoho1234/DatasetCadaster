@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparison Matrices — Dataset Cadaster</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr:#1a2634;
+  --hdr-accent:#2e4057;
+  --body-bg:#f0f2f5;
+  --card-bg:#fff;
+  --text:#2c3e50;
+  --text-light:#5a6a7a;
+  --border:#dce1e8;
+  --accent:#2980b9;
+  --accent-hover:#1f6da0;
+  --green:#27ae60;
+  --green-bg:#e8f8f0;
+  --yellow:#e67e22;
+  --yellow-bg:#fdf3e6;
+  --red:#c0392b;
+  --red-bg:#fbeaea;
+  --blue:#2980b9;
+  --blue-bg:#e4f0fa;
+  --teal:#16a085;
+  --radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --nav-h:44px;
+  --header-h:56px;
+}
+/* ── Dark Mode ────────────────────────────────────────── */
+[data-theme="dark"]{
+  --hdr:#0d1520;
+  --hdr-accent:#1a2a3e;
+  --body-bg:#181e26;
+  --card-bg:#1e2733;
+  --text:#d0d8e0;
+  --text-light:#8899aa;
+  --border:#2a3545;
+  --accent:#4ba3d9;
+  --accent-hover:#3a8ec4;
+  --green:#2ecc71;
+  --green-bg:#1a3328;
+  --yellow:#f39c12;
+  --yellow-bg:#332a14;
+  --red:#e74c3c;
+  --red-bg:#331a1a;
+  --blue:#4ba3d9;
+  --blue-bg:#1a2a3e;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Navigation Bar ──────────────────────────────────── */
+.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
+.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
+.navbar-links{display:flex;gap:4px}
+.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
+.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
+
+/* ── Header ───────────────────────────────────────────── */
+.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
+.header h1 span{color:#5dade2;margin-right:6px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.btn-dark-toggle{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:5px}
+.btn-dark-toggle:hover{border-color:#5a7a9a;color:#fff}
+
+/* ── Content ─────────────────────────────────────────── */
+.container{max-width:1400px;width:100%;margin:0 auto;padding:24px}
+.page-intro{margin-bottom:28px}
+.page-intro h2{font-size:1.3rem;margin-bottom:8px;color:var(--text)}
+.page-intro p{color:var(--text-light);font-size:.92rem;line-height:1.5}
+
+/* ── Jump Nav ────────────────────────────────────────── */
+.jump-nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px}
+.jump-nav a{display:inline-block;padding:6px 14px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);font-size:.82rem;color:var(--accent);transition:all .15s}
+.jump-nav a:hover{background:var(--accent);color:#fff;border-color:var(--accent);text-decoration:none}
+
+/* ── Matrix Section ──────────────────────────────────── */
+.matrix-section{margin-bottom:36px}
+.matrix-section h3{font-size:1.1rem;margin-bottom:4px;color:var(--text);padding-top:12px}
+.matrix-section .subtitle{font-size:.82rem;color:var(--text-light);margin-bottom:14px}
+.matrix-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);background:var(--card-bg)}
+.matrix-wrap table{width:100%;border-collapse:collapse;font-size:.82rem;min-width:900px}
+.matrix-wrap th{text-align:left;padding:10px 12px;background:var(--hdr);color:#fff;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;position:sticky;top:0;z-index:1}
+[data-theme="dark"] .matrix-wrap th{background:#0d1520}
+.matrix-wrap td{padding:9px 12px;border-top:1px solid var(--border);vertical-align:top}
+.matrix-wrap tr:hover{background:var(--blue-bg)}
+[data-theme="dark"] .matrix-wrap tr:hover{background:rgba(75,163,217,.08)}
+.matrix-wrap td:first-child{font-weight:600;white-space:nowrap;min-width:160px}
+.matrix-wrap td:first-child a{color:var(--accent)}
+.badge-free{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.7rem;font-weight:600;background:var(--green-bg);color:var(--green)}
+.badge-freemium{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.7rem;font-weight:600;background:var(--yellow-bg);color:var(--yellow)}
+.badge-commercial{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.7rem;font-weight:600;background:var(--red-bg);color:var(--red)}
+.badge-regulated{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.7rem;font-weight:600;background:var(--yellow-bg);color:var(--yellow)}
+.badge-api{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.7rem;font-weight:600;background:var(--blue-bg);color:var(--blue)}
+.badge-no-api{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.7rem;font-weight:600;background:#eee;color:#888}
+[data-theme="dark"] .badge-no-api{background:#2a2a2a;color:#666}
+.advantage{font-style:italic;color:var(--text-light);font-size:.78rem;max-width:220px}
+
+/* ── Footer ──────────────────────────────────────────── */
+.footer{background:var(--hdr);color:#a0b4c8;text-align:center;padding:18px;font-size:.78rem;margin-top:auto}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media(max-width:768px){
+  .navbar{padding:0 12px;font-size:.75rem}
+  .navbar-brand{font-size:.82rem;margin-right:12px}
+  .container{padding:14px}
+  .jump-nav{gap:5px}
+  .jump-nav a{padding:4px 10px;font-size:.75rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="navbar-brand">Dataset Cadaster</a>
+  <div class="navbar-links">
+    <a href="index.html">Catalog</a>
+    <a href="estimator.html">GeoEstimator</a>
+    <a href="recipes.html">Recipes</a>
+    <a href="compare.html" class="active">Comparisons</a>
+    <a href="map.html">Map</a>
+  </div>
+</nav>
+
+<header class="header">
+  <h1><span>&#9638;</span> Comparison Matrices</h1>
+  <div class="header-right">
+    <button class="btn-dark-toggle" onclick="toggleDark()" title="Toggle dark mode">Dark Mode</button>
+  </div>
+</header>
+
+<div class="container">
+
+<div class="page-intro">
+  <h2>Pre-built Side-by-Side Comparisons</h2>
+  <p>Quick-reference comparison tables for major dataset categories. Data is loaded from the catalog; key advantages are curated summaries.</p>
+</div>
+
+<div class="jump-nav">
+  <a href="#dem">All DEMs Compared</a>
+  <a href="#population">Population Grids</a>
+  <a href="#sar">Free SAR Sources</a>
+  <a href="#landcover">Land Cover Products</a>
+  <a href="#climate">Climate Reanalysis</a>
+  <a href="#nightlights">Nighttime Lights</a>
+  <a href="#soil">Soil Data Products</a>
+</div>
+
+<!-- Tables are rendered by JS below -->
+<div id="matrices-container"></div>
+
+</div>
+
+<footer class="footer">Dataset Cadaster &mdash; Geospatial &amp; Environmental Data Discovery</footer>
+
+<script>
+/* ── Dark mode ───────────────────────────────────────── */
+function toggleDark(){
+  const t=document.documentElement.getAttribute('data-theme')==='dark'?'':'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('dc-theme',t);
+}
+(function(){const t=localStorage.getItem('dc-theme');if(t)document.documentElement.setAttribute('data-theme',t)})();
+
+/* ── Matrix definitions ─────────────────────────────── */
+const MATRICES = [
+  {
+    id: "dem",
+    title: "All DEMs Compared",
+    subtitle: "Global and regional Digital Elevation Models side by side",
+    ids: [
+      "copernicus-dem-glo30","copernicus-dem-glo90","copernicus-dem-eea10","srtm-nasa","nasadem",
+      "alos-aw3d30","fabdem","merit-dem","tandem-x-90m","tandem-x-12m",
+      "aster-gdem","gmted2010","eu-dem","etopo","arcticdem","usgs-3dep","opentopography"
+    ],
+    advantages: {
+      "copernicus-dem-glo30": "Best free global 30m DEM; based on TanDEM-X with void-filling",
+      "copernicus-dem-glo90": "Same quality as GLO-30 at lower storage cost; great for regional studies",
+      "copernicus-dem-eea10": "Highest-resolution free DEM for Europe (10m)",
+      "srtm-nasa": "The original global DEM benchmark; widest software support",
+      "nasadem": "Reprocessed SRTM with improved void-filling and ASTER blending",
+      "alos-aw3d30": "Optical stereo DSM; useful where radar DEMs have artifacts",
+      "fabdem": "Forest and building removed from Copernicus DEM; best for bare-earth analysis",
+      "merit-dem": "Error-corrected DEM optimized for hydrological modeling",
+      "tandem-x-90m": "Free TanDEM-X product; excellent absolute accuracy (~1m)",
+      "tandem-x-12m": "Highest-accuracy global DEM; requires science proposal",
+      "aster-gdem": "Long heritage; community-contributed corrections over 20+ years",
+      "gmted2010": "Multi-source 250m DEM; good for continental-scale work",
+      "eu-dem": "Pan-European 25m DEM blended from SRTM and ASTER",
+      "etopo": "Combines land elevation and ocean bathymetry in one global grid",
+      "arcticdem": "2m strips for the entire Arctic; unprecedented polar detail",
+      "usgs-3dep": "Authoritative US elevation with sub-meter LiDAR coverage",
+      "opentopography": "One-stop portal for high-res LiDAR and photogrammetric DEMs worldwide"
+    }
+  },
+  {
+    id: "population",
+    title: "Population Grids Compared",
+    subtitle: "Gridded population estimates for spatial analysis",
+    ids: [
+      "ghsl-ghs-pop","worldpop","gpw-v4-sedac","landscan-global",
+      "meta-high-resolution-population","kontur-population","eurostat-geostat-population-grid"
+    ],
+    advantages: {
+      "ghsl-ghs-pop": "Multi-epoch 1975-2030; consistent methodology from JRC; pairs with built-up layers",
+      "worldpop": "100m resolution with age/sex disaggregation; strong in developing countries",
+      "gpw-v4-sedac": "Census-based without modeling; best for validation and benchmarking",
+      "landscan-global": "Ambient population (daytime); used by emergency responders worldwide",
+      "meta-high-resolution-population": "30m resolution using AI building detection; fastest update cycle",
+      "kontur-population": "H3 hexagonal grid; optimized for logistics and delivery planning",
+      "eurostat-geostat-population-grid": "Official EU census-based 1km grid; authoritative for European policy"
+    }
+  },
+  {
+    id: "sar",
+    title: "Free SAR Sources Compared",
+    subtitle: "Synthetic Aperture Radar datasets available at no cost",
+    ids: [
+      "sentinel-1","alos-palsar","nisar","terrasar-x","cosmo-skymed"
+    ],
+    advantages: {
+      "sentinel-1": "Free C-band SAR with 6-day revisit; largest open SAR archive in the world",
+      "alos-palsar": "L-band penetrates canopy; best free SAR for forest biomass estimation",
+      "nisar": "Dual-frequency L+S band; unprecedented 12-day global coverage starting 2025",
+      "terrasar-x": "Very high resolution (sub-meter) X-band; science proposals get free access",
+      "cosmo-skymed": "X-band constellation with rapid revisit; some data free for research"
+    }
+  },
+  {
+    id: "landcover",
+    title: "Land Cover Products Compared",
+    subtitle: "Global and European land cover / land use classifications",
+    ids: [
+      "corine-land-cover","esa-worldcover","dynamic-world","modis-land-cover",
+      "esa-cci-land-cover","esri-land-cover","globeland30","clcplus-backbone",
+      "glad-glcluc","glc-fcs30d"
+    ],
+    advantages: {
+      "corine-land-cover": "European standard since 1990; 44 classes; change layers every 6 years",
+      "esa-worldcover": "Best free 10m global map; validated at 75%+ accuracy",
+      "dynamic-world": "Near-real-time 10m classification; updated with every Sentinel-2 pass",
+      "modis-land-cover": "Annual global maps since 2001; longest consistent time series at 500m",
+      "esa-cci-land-cover": "Annual 300m maps back to 1992; designed for climate model input",
+      "esri-land-cover": "Annual 10m global maps from 2017; easy ArcGIS integration",
+      "globeland30": "Free 30m global map for 2000/2010/2020; Chinese Academy of Sciences product",
+      "clcplus-backbone": "Next-gen CORINE replacement at 10m; raster-based pan-European coverage",
+      "glad-glcluc": "30m global maps from Landsat; strong tree cover and change detection",
+      "glc-fcs30d": "30m global with 30+ fine classes; annual maps from 1985-2022"
+    }
+  },
+  {
+    id: "climate",
+    title: "Climate Reanalysis Compared",
+    subtitle: "Gridded climate and weather reanalysis products",
+    ids: [
+      "copernicus-cds","era5-land","e-obs","cru-ts","chirps","mswep",
+      "berkeley-earth","ghcn","gpcc","nasa-power","open-meteo"
+    ],
+    advantages: {
+      "copernicus-cds": "ERA5 is the gold standard reanalysis; hourly data from 1940 on a 0.25-deg grid",
+      "era5-land": "Enhanced 9km land reanalysis; best free gridded weather for local studies",
+      "e-obs": "Station-based European gridded dataset; preferred for impact studies in the EU",
+      "cru-ts": "Monthly 0.5-deg grids from 1901; standard reference for long-term climate trends",
+      "chirps": "Satellite+station blended rainfall at 5km; best for tropical and African precipitation",
+      "mswep": "Multi-source 10km precipitation; merges satellite, reanalysis, and gauges",
+      "berkeley-earth": "Independent temperature record from 1750; useful for climate skepticism audits",
+      "ghcn": "100k+ weather stations worldwide; most extensive station network freely available",
+      "gpcc": "Gauge-based global precipitation; authoritative for rain gauge density analysis",
+      "nasa-power": "Solar radiation and weather for energy/agriculture; simple REST API for point queries",
+      "open-meteo": "Free weather API with historical and forecast data; no API key needed"
+    }
+  },
+  {
+    id: "nightlights",
+    title: "Nighttime Lights Compared",
+    subtitle: "Satellite-based nighttime illumination products",
+    ids: [
+      "eog-viirs-annual-composites","viirs-black-marble-vnp46","dmsp-ols-nighttime-lights","viirs-npp-jpss"
+    ],
+    advantages: {
+      "eog-viirs-annual-composites": "Stray-light corrected annual composites; best for multi-year economic proxies",
+      "viirs-black-marble-vnp46": "NASA daily/monthly product at 500m; accounts for moonlight and atmospheric effects",
+      "dmsp-ols-nighttime-lights": "1992-2013 archive; only source for pre-VIIRS nightlight time series",
+      "viirs-npp-jpss": "Raw DNB radiance at 375m; basis for all modern nighttime light products"
+    }
+  },
+  {
+    id: "soil",
+    title: "Soil Data Products Compared",
+    subtitle: "Global and European soil property datasets",
+    ids: [
+      "isric-soilgrids","fao-hwsd","esdac","openlandmap","fao-gsocmap",
+      "esa-cci-soil-moisture","ebod-austria"
+    ],
+    advantages: {
+      "isric-soilgrids": "250m global predictions for 6 depths; most detailed free global soil maps",
+      "fao-hwsd": "Harmonized 1km global soil database; standard input for crop and ecosystem models",
+      "esdac": "European Soil Data Centre with 30+ thematic datasets; authoritative EU reference",
+      "openlandmap": "Cloud-optimized global soil layers; fast tile access via COG for web apps",
+      "fao-gsocmap": "First global soil organic carbon map built from country submissions",
+      "esa-cci-soil-moisture": "Satellite-derived global soil moisture from 1978; longest remote sensing record",
+      "ebod-austria": "Detailed Austrian soil map with profile data; excellent national-scale reference"
+    }
+  }
+];
+
+/* ── Load datasets and build tables ──────────────────── */
+fetch('../datasets.json')
+  .then(r=>r.json())
+  .then(datasets=>{
+    const byId={};
+    datasets.forEach(d=>{byId[d.id||d.name]=d});
+    const container=document.getElementById('matrices-container');
+
+    MATRICES.forEach(m=>{
+      const section=document.createElement('div');
+      section.className='matrix-section';
+      section.innerHTML=`<h3 id="${m.id}">${m.title}</h3><p class="subtitle">${m.subtitle}</p>`;
+
+      let html='<div class="matrix-wrap"><table><thead><tr>';
+      html+='<th>Dataset</th><th>Resolution</th><th>Temporal Coverage</th><th>Cost</th><th>API</th><th>Formats</th><th>Key Advantage</th>';
+      html+='</tr></thead><tbody>';
+
+      m.ids.forEach(id=>{
+        const d=byId[id];
+        if(!d) return;
+        const costClass=d.cost==='free'?'badge-free':d.cost==='freemium'?'badge-freemium':d.cost==='commercial'?'badge-commercial':'badge-regulated';
+        const apiHtml=d.apiSupport?'<span class="badge-api">API</span>':'<span class="badge-no-api">No API</span>';
+        const adv=m.advantages[id]||'';
+        html+=`<tr>`;
+        html+=`<td><a href="${d.url}" target="_blank" rel="noopener">${d.name}</a></td>`;
+        html+=`<td>${d.spatialResolution||'—'}</td>`;
+        html+=`<td>${d.temporalCoverage||'—'}</td>`;
+        html+=`<td><span class="${costClass}">${d.cost||'—'}</span></td>`;
+        html+=`<td>${apiHtml}</td>`;
+        html+=`<td>${d.formats||'—'}</td>`;
+        html+=`<td><span class="advantage">${adv}</span></td>`;
+        html+=`</tr>`;
+      });
+
+      html+='</tbody></table></div>';
+      section.innerHTML+=html;
+      container.appendChild(section);
+    });
+  })
+  .catch(err=>{
+    document.getElementById('matrices-container').innerHTML=
+      '<p style="color:var(--red);padding:20px">Failed to load datasets.json: '+err.message+'</p>';
+  });
+</script>
+
+</body>
+</html>

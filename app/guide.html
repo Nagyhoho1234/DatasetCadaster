@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dataset Cadaster — Dataset Selection Guide</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr:#1a2634;
+  --hdr-accent:#2e4057;
+  --body-bg:#f0f2f5;
+  --card-bg:#fff;
+  --text:#2c3e50;
+  --text-light:#5a6a7a;
+  --border:#dce1e8;
+  --accent:#2980b9;
+  --accent-hover:#1f6da0;
+  --green:#27ae60;
+  --green-bg:#e8f8f0;
+  --yellow:#e67e22;
+  --yellow-bg:#fdf3e6;
+  --red:#c0392b;
+  --red-bg:#fbeaea;
+  --blue:#2980b9;
+  --blue-bg:#e4f0fa;
+  --teal:#16a085;
+  --radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+[data-theme="dark"]{
+  --hdr:#0d1520;
+  --hdr-accent:#1a2a3e;
+  --body-bg:#181e26;
+  --card-bg:#1e2733;
+  --text:#d0d8e0;
+  --text-light:#8899aa;
+  --border:#2a3545;
+  --accent:#4ba3d9;
+  --accent-hover:#3a8ec4;
+  --green:#2ecc71;
+  --green-bg:#1a3328;
+  --yellow:#f39c12;
+  --yellow-bg:#332a14;
+  --red:#e74c3c;
+  --red-bg:#331a1a;
+  --blue:#4ba3d9;
+  --blue-bg:#1a2a3e;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Header ──────────────────────────────────────────── */
+.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
+.header h1 span{color:#5dade2;margin-right:6px}
+.header-nav{margin-left:auto;display:flex;gap:20px;font-size:.88rem;align-items:center}
+.header-nav a{color:#a0b4c8;text-decoration:none;transition:color .2s}
+.header-nav a:hover,.header-nav a.active{color:#fff;text-decoration:none}
+.theme-toggle{background:none;border:1px solid rgba(255,255,255,.2);color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.82rem;transition:all .2s}
+.theme-toggle:hover{color:#fff;border-color:rgba(255,255,255,.5)}
+
+/* ── Page Layout ─────────────────────────────────────── */
+.page-title{text-align:center;padding:40px 24px 10px}
+.page-title h2{font-size:1.8rem;font-weight:700;color:var(--text)}
+.page-title p{font-size:1rem;color:var(--text-light);margin-top:8px;max-width:600px;margin-left:auto;margin-right:auto}
+.trees-container{max-width:900px;width:100%;margin:0 auto;padding:20px 24px 60px}
+
+/* ── Tree Card ───────────────────────────────────────── */
+.tree-card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s}
+.tree-card:hover{box-shadow:var(--shadow-hover)}
+.tree-header{display:flex;align-items:center;padding:18px 22px;cursor:pointer;user-select:none;gap:14px;transition:background .15s}
+.tree-header:hover{background:rgba(0,0,0,.02)}
+[data-theme="dark"] .tree-header:hover{background:rgba(255,255,255,.03)}
+.tree-icon{font-size:1.6rem;flex-shrink:0;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px}
+.tree-header h3{font-size:1.1rem;font-weight:600;flex:1}
+.tree-header h3 small{display:block;font-size:.8rem;font-weight:400;color:var(--text-light);margin-top:2px}
+.tree-chevron{font-size:1rem;color:var(--text-light);transition:transform .25s;flex-shrink:0}
+.tree-card.open .tree-chevron{transform:rotate(90deg)}
+.tree-body{display:none;padding:0 22px 22px}
+.tree-card.open .tree-body{display:block}
+
+/* icon backgrounds */
+.icon-elevation{background:#e8d5b7;color:#8B6914}
+.icon-satellite{background:#c8dff0;color:#1a5276}
+.icon-climate{background:#d4efdf;color:#196f3d}
+.icon-population{background:#f5cba7;color:#a04000}
+.icon-soil{background:#e6d2c0;color:#6e4b3a}
+.icon-water{background:#b8d8e8;color:#1a5276}
+[data-theme="dark"] .icon-elevation{background:#3a3020;color:#d4a84a}
+[data-theme="dark"] .icon-satellite{background:#1a2e44;color:#6aa8d4}
+[data-theme="dark"] .icon-climate{background:#1a3328;color:#44b870}
+[data-theme="dark"] .icon-population{background:#3a2a18;color:#d48840}
+[data-theme="dark"] .icon-soil{background:#2e2518;color:#c4a880}
+[data-theme="dark"] .icon-water{background:#142e3a;color:#5ab0d4}
+
+/* ── Breadcrumb ──────────────────────────────────────── */
+.breadcrumb{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-bottom:14px;font-size:.82rem;min-height:24px}
+.breadcrumb-item{color:var(--accent);cursor:pointer;padding:2px 8px;border-radius:4px;transition:background .15s}
+.breadcrumb-item:hover{background:var(--blue-bg);text-decoration:none}
+.breadcrumb-sep{color:var(--text-light);font-size:.7rem}
+.breadcrumb-current{color:var(--text);font-weight:600;padding:2px 8px}
+
+/* ── Question / Choices ──────────────────────────────── */
+.question-panel{animation:fadeSlideIn .3s ease}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.question-text{font-size:1rem;font-weight:600;margin-bottom:14px;color:var(--text)}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice-btn{background:var(--body-bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;text-align:left;cursor:pointer;font:inherit;font-size:.92rem;color:var(--text);transition:all .15s;display:flex;align-items:center;gap:10px}
+.choice-btn:hover{border-color:var(--accent);background:var(--blue-bg);transform:translateX(4px)}
+.choice-btn .choice-arrow{margin-left:auto;color:var(--text-light);font-size:.8rem;transition:transform .15s}
+.choice-btn:hover .choice-arrow{transform:translateX(3px);color:var(--accent)}
+
+/* ── Result Card ─────────────────────────────────────── */
+.result-panel{animation:fadeSlideIn .3s ease}
+.result-cards{display:flex;flex-direction:column;gap:10px}
+.result-item{background:var(--body-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px}
+.result-item h4{font-size:.98rem;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.result-meta{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.result-badge{font-size:.72rem;padding:2px 8px;border-radius:3px;font-weight:600}
+.badge-free{background:var(--green-bg);color:var(--green)}
+.badge-paid{background:var(--yellow-bg);color:var(--yellow)}
+.badge-res{background:var(--blue-bg);color:var(--blue)}
+.badge-scope{background:#f0e6f6;color:#7d3c98}
+[data-theme="dark"] .badge-scope{background:#2a1e3a;color:#b87ad4}
+.result-desc{font-size:.84rem;color:var(--text-light);margin-bottom:8px}
+.result-link{font-size:.84rem;font-weight:600;display:inline-flex;align-items:center;gap:4px}
+
+/* ── Action Buttons ──────────────────────────────────── */
+.action-row{margin-top:16px;display:flex;gap:10px}
+.btn-restart{background:none;border:1px solid var(--border);color:var(--text-light);padding:6px 14px;border-radius:var(--radius);cursor:pointer;font:inherit;font-size:.82rem;transition:all .15s}
+.btn-restart:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── Mobile ──────────────────────────────────────────── */
+@media(max-width:600px){
+  .header{padding:0 14px}
+  .header-nav{gap:12px;font-size:.8rem}
+  .trees-container{padding:14px}
+  .tree-header{padding:14px 16px}
+  .tree-body{padding:0 16px 16px}
+  .page-title{padding:28px 16px 8px}
+  .page-title h2{font-size:1.4rem}
+  .choice-btn{padding:10px 12px;font-size:.86rem}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <h1><span>&#9672;</span>Dataset Selection Guide</h1>
+  <nav class="header-nav">
+    <a href="landing.html">Home</a>
+    <a href="index.html">Catalog</a>
+    <a href="estimator.html">GeoEstimator</a>
+    <a href="recipes.html">Recipes</a>
+    <a href="guide.html" class="active">Guide</a>
+    <a href="compare.html">Comparisons</a>
+    <a href="map.html">Map</a>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">&#9789;</button>
+  </nav>
+</header>
+
+<div class="page-title">
+  <h2>Dataset Selection Guide</h2>
+  <p>Answer a few questions to find the right geospatial dataset for your project. Pick a topic to get started.</p>
+</div>
+
+<div class="trees-container" id="treesContainer"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   Decision Tree Data
+   ═══════════════════════════════════════════════════════ */
+
+// Helper: leaf node
+function L(name, resolution, cost, scope, desc, query) {
+  return { leaf: true, name, resolution, cost, scope, desc, query: query || name };
+}
+
+const TREES = [
+  {
+    id: 'elevation',
+    title: 'I need elevation data',
+    subtitle: 'DEMs, DSMs, LiDAR point clouds',
+    icon: '\u25B2',
+    iconClass: 'icon-elevation',
+    root: {
+      question: 'What spatial resolution do you need?',
+      choices: [
+        { label: 'Rough (>30 m)', next: {
+          leaf: false, results: [
+            L('Copernicus GLO-90', '90 m', 'Free', 'Global', 'Free global DEM from Copernicus, derived from TanDEM-X.', 'GLO-90')
+          ]
+        }},
+        { label: 'Medium (10\u201330 m)', next: {
+          question: 'What is your budget?',
+          choices: [
+            { label: 'Free', next: { leaf: false, results: [
+              L('Copernicus GLO-30', '30 m', 'Free', 'Global', 'Copernicus global DEM at 30 m.', 'GLO-30'),
+              L('SRTM', '30 m', 'Free', 'Near-global', 'NASA Shuttle Radar Topography Mission, 60\u00b0N\u201356\u00b0S.', 'SRTM'),
+              L('ALOS AW3D30', '30 m', 'Free', 'Global', 'JAXA optical stereo DEM.', 'AW3D30')
+            ]}},
+            { label: 'Paid', next: { leaf: false, results: [
+              L('TanDEM-X', '12 m', 'Paid', 'Global', 'DLR commercial DEM from SAR interferometry.', 'TanDEM-X'),
+              L('National LiDAR programs', '1\u20135 m', 'Varies', 'National', 'Country-specific LiDAR-derived DEMs (check availability).', 'LiDAR')
+            ]}}
+          ]
+        }},
+        { label: 'High (<10 m)', next: {
+          question: 'Where is your area of interest?',
+          choices: [
+            { label: 'Europe', next: { leaf: false, results: [
+              L('UK Environment Agency LiDAR', '1 m', 'Free', 'England', 'Composite DTM/DSM for England.', 'UK LiDAR'),
+              L('AHN (Netherlands)', '0.5 m', 'Free', 'Netherlands', 'Actueel Hoogtebestand Nederland, very high quality.', 'AHN'),
+              L('Poland LiDAR (ISOK)', '1 m', 'Free', 'Poland', 'National coverage from GUGiK.', 'ISOK'),
+              L('Czech Republic DMR5G', '1 m', 'Free', 'Czech Republic', 'National LiDAR DEM.', 'DMR5G'),
+              L('Slovenia LiDAR', '1 m', 'Free', 'Slovenia', 'Full national coverage.', 'Slovenia LiDAR')
+            ]}},
+            { label: 'USA', next: { leaf: false, results: [
+              L('USGS 3DEP', '1 m', 'Free', 'USA', '3D Elevation Program, extensive LiDAR coverage.', '3DEP')
+            ]}},
+            { label: 'Anywhere else', next: { leaf: false, results: [
+              L('OpenTopography', 'Varies', 'Free', 'Global (patchy)', 'Community LiDAR data portal with processing tools.', 'OpenTopography'),
+              L('Commercial LiDAR providers', 'Varies', 'Paid', 'Global', 'Companies like Fugro, Leica, etc.', 'LiDAR')
+            ]}}
+          ]
+        }},
+        { label: 'Ultra-high (<1 m)', next: { leaf: false, results: [
+          L('Commission airborne LiDAR survey', '<0.5 m', 'Paid (high)', 'Custom', 'Hire a survey company for bespoke drone or aircraft LiDAR acquisition.', 'LiDAR')
+        ]}}
+      ]
+    }
+  },
+
+  {
+    id: 'satellite',
+    title: 'I need satellite imagery',
+    subtitle: 'Optical, SAR, hyperspectral',
+    icon: '\uD83D\uDEF0',
+    iconClass: 'icon-satellite',
+    root: {
+      question: 'What type of imagery?',
+      choices: [
+        { label: 'Optical', next: {
+          question: 'What spatial resolution?',
+          choices: [
+            { label: 'Coarse (>100 m)', next: { leaf: false, results: [
+              L('MODIS', '250\u20131000 m', 'Free', 'Global', 'Daily revisit, ideal for vegetation indices and land surface monitoring.', 'MODIS')
+            ]}},
+            { label: 'Medium (10\u201330 m)', next: { leaf: false, results: [
+              L('Sentinel-2', '10 m', 'Free', 'Global', '13 spectral bands, 5-day revisit. The workhorse of free EO.', 'Sentinel-2'),
+              L('Landsat', '30 m', 'Free', 'Global', '8\u201316 day revisit. Archive back to 1972.', 'Landsat')
+            ]}},
+            { label: 'High (1\u201310 m)', next: {
+              question: 'What is your budget?',
+              choices: [
+                { label: 'Free', next: { leaf: false, results: [
+                  L('Sentinel-2', '10 m', 'Free', 'Global', 'Best free option at this resolution tier.', 'Sentinel-2')
+                ]}},
+                { label: 'Paid', next: { leaf: false, results: [
+                  L('PlanetScope', '3 m', 'Subscription', 'Global', 'Daily global coverage. ~$5\u201315k/yr academic.', 'PlanetScope'),
+                  L('SPOT 6/7', '1.5 m', 'Paid', 'Global', 'Airbus optical satellite, archive and tasking.', 'SPOT')
+                ]}}
+              ]
+            }},
+            { label: 'Very high (<1 m)', next: {
+              question: 'What is your budget per km\u00b2?',
+              choices: [
+                { label: '<$20/km\u00b2', next: { leaf: false, results: [
+                  L('Pleiades Neo (archive)', '30 cm', 'Paid', 'Global', 'Airbus archive imagery, cheaper than tasking.', 'Pleiades'),
+                  L('SPOT 6/7', '1.5 m', 'Paid', 'Global', 'Lower cost alternative for sub-meter needs.', 'SPOT')
+                ]}},
+                { label: '>$20/km\u00b2', next: { leaf: false, results: [
+                  L('Maxar WorldView', '30 cm', 'Paid', 'Global', 'Highest resolution commercial optical. Archive + tasking.', 'WorldView'),
+                  L('Pleiades Neo (tasking)', '30 cm', 'Paid', 'Global', 'New tasking acquisition at 30 cm native resolution.', 'Pleiades')
+                ]}}
+              ]
+            }}
+          ]
+        }},
+        { label: 'SAR (Synthetic Aperture Radar)', next: {
+          question: 'What is your budget?',
+          choices: [
+            { label: 'Free', next: { leaf: false, results: [
+              L('Sentinel-1', 'C-band, 5\u00d720 m', 'Free', 'Global', 'ESA C-band SAR, 6\u201312 day revisit. Ideal for InSAR, flood mapping.', 'Sentinel-1'),
+              L('ALOS PALSAR', 'L-band, 10\u201325 m', 'Free (archive)', 'Global', 'JAXA L-band SAR archive. Good for forest/biomass.', 'PALSAR')
+            ]}},
+            { label: 'Paid', next: { leaf: false, results: [
+              L('ICEYE', 'X-band, <1 m', 'Paid', 'Global', 'Small-sat constellation, very high resolution SAR.', 'ICEYE'),
+              L('Capella Space', 'X-band, <1 m', 'Paid', 'Global', 'Commercial X-band SAR, sub-meter resolution.', 'Capella')
+            ]}}
+          ]
+        }},
+        { label: 'Hyperspectral', next: { leaf: false, results: [
+          L('EnMAP', '30 m', 'Free', 'Global', 'DLR hyperspectral mission, 200+ bands.', 'EnMAP'),
+          L('PRISMA', '30 m', 'Free', 'Global', 'ASI (Italian) hyperspectral, 240 bands.', 'PRISMA'),
+          L('DESIS', '30 m', 'Free', 'ISS orbit', 'DLR hyperspectral on ISS, 235 bands.', 'DESIS')
+        ]}}
+      ]
+    }
+  },
+
+  {
+    id: 'climate',
+    title: 'I need climate/weather data',
+    subtitle: 'Reanalysis, forecasts, projections',
+    icon: '\u2601',
+    iconClass: 'icon-climate',
+    root: {
+      question: 'What timeframe are you interested in?',
+      choices: [
+        { label: 'Historical reanalysis', next: {
+          question: 'What spatial scope/resolution?',
+          choices: [
+            { label: 'Global (~25 km)', next: { leaf: false, results: [
+              L('ERA5', '~25 km', 'Free', 'Global', 'ECMWF reanalysis. Hourly data, 1940\u2013present. The gold standard.', 'ERA5')
+            ]}},
+            { label: 'Europe (~9 km)', next: { leaf: false, results: [
+              L('ERA5-Land', '~9 km', 'Free', 'Global land', 'Higher-resolution land component of ERA5.', 'ERA5-Land'),
+              L('E-OBS', '0.1\u00b0', 'Free', 'Europe', 'Gridded observational dataset for temperature, precip, etc.', 'E-OBS')
+            ]}},
+            { label: 'Local / station data', next: { leaf: false, results: [
+              L('HungaroMet', 'Station', 'Free/request', 'Hungary', 'Hungarian Meteorological Service station data.', 'HungaroMet'),
+              L('National meteorological services', 'Station', 'Varies', 'National', 'Each country has its own met service with station archives.', 'meteorological')
+            ]}}
+          ]
+        }},
+        { label: 'Real-time forecasts', next: {
+          question: 'What scope?',
+          choices: [
+            { label: 'Global', next: { leaf: false, results: [
+              L('ECMWF open data', '~25 km', 'Free', 'Global', 'Open charts and selected ECMWF forecast data.', 'ECMWF'),
+              L('GFS (NOAA)', '~13 km', 'Free', 'Global', 'NOAA Global Forecast System, updated 4x daily.', 'GFS')
+            ]}},
+            { label: 'Europe / specialized', next: { leaf: false, results: [
+              L('CAMS', 'Various', 'Free', 'Global/Europe', 'Copernicus Atmosphere Monitoring Service: air quality, aerosols.', 'CAMS'),
+              L('ECMWF', '~9 km', 'Free/Paid', 'Europe', 'ECMWF high-resolution forecasts.', 'ECMWF')
+            ]}},
+            { label: 'API-first (easy integration)', next: { leaf: false, results: [
+              L('Open-Meteo', '~1 km', 'Free', 'Global', 'No API key needed. Weather forecast + historical. Easy JSON API.', 'Open-Meteo')
+            ]}}
+          ]
+        }},
+        { label: 'Climate projections (future)', next: { leaf: false, results: [
+          L('CMIP6 via Copernicus CDS', 'Various', 'Free', 'Global', 'CMIP6 model outputs via the Climate Data Store.', 'CMIP6'),
+          L('IPCC DDC', 'Various', 'Free', 'Global', 'IPCC Data Distribution Centre archives.', 'IPCC')
+        ]}}
+      ]
+    }
+  },
+
+  {
+    id: 'population',
+    title: 'I need population/settlement data',
+    subtitle: 'Population grids, buildings, urban extent, nightlights',
+    icon: '\uD83C\uDFD8',
+    iconClass: 'icon-population',
+    root: {
+      question: 'What exactly do you need?',
+      choices: [
+        { label: 'Population count grids', next: {
+          question: 'What resolution?',
+          choices: [
+            { label: '~1 km', next: { leaf: false, results: [
+              L('GHSL GHS-POP', '1 km', 'Free', 'Global', 'JRC Global Human Settlement Layer. Multi-epoch (1975\u20132030).', 'GHS-POP'),
+              L('LandScan', '1 km', 'Free', 'Global', 'ORNL ambient population distribution.', 'LandScan')
+            ]}},
+            { label: '~100 m', next: { leaf: false, results: [
+              L('WorldPop', '100 m', 'Free', 'Global', 'Disaggregated population estimates. Multiple demographic layers.', 'WorldPop')
+            ]}},
+            { label: '~30 m', next: { leaf: false, results: [
+              L('Meta HRSL', '30 m', 'Free', 'Global', 'Meta High Resolution Settlement Layer. Single epoch, AI-derived.', 'HRSL')
+            ]}}
+          ]
+        }},
+        { label: 'Building footprints', next: { leaf: false, results: [
+          L('Microsoft Building Footprints', 'Vector', 'Free', 'Global (800M+)', 'AI-extracted footprints from Bing imagery.', 'Microsoft Buildings'),
+          L('Google Open Buildings', 'Vector', 'Free', 'Global South', 'AI-derived footprints covering Africa, South/SE Asia, etc.', 'Google Open Buildings'),
+          L('Overture Maps', 'Vector', 'Free', 'Global', 'Linux Foundation collaborative open map data.', 'Overture')
+        ]}},
+        { label: 'Urban extent / classification', next: { leaf: false, results: [
+          L('GHSL GHS-BUILT', '10 m', 'Free', 'Global', 'JRC built-up surface fraction grid. Multi-epoch.', 'GHS-BUILT'),
+          L('World Settlement Footprint (WSF)', '10 m', 'Free', 'Global', 'DLR binary settlement mask.', 'WSF')
+        ]}},
+        { label: 'Nighttime lights', next: { leaf: false, results: [
+          L('VIIRS Black Marble', '500 m', 'Free', 'Global', 'NASA night light product, 2012\u2013present. Monthly/annual.', 'VIIRS Black Marble'),
+          L('DMSP-OLS', '1 km', 'Free', 'Global', 'Legacy nightlights archive 1992\u20132013. Lower quality but long record.', 'DMSP-OLS')
+        ]}}
+      ]
+    }
+  },
+
+  {
+    id: 'soil',
+    title: 'I need soil data',
+    subtitle: 'Soil properties, texture, organic carbon',
+    icon: '\u2B22',
+    iconClass: 'icon-soil',
+    root: {
+      question: 'What spatial scale?',
+      choices: [
+        { label: 'Global', next: { leaf: false, results: [
+          L('SoilGrids', '250 m', 'Free', 'Global', 'ISRIC global soil property maps. WCS/WMS API. Many variables and depths.', 'SoilGrids'),
+          L('HWSD', '1 km', 'Free', 'Global', 'Harmonized World Soil Database. FAO/IIASA.', 'HWSD')
+        ]}},
+        { label: 'Europe', next: { leaf: false, results: [
+          L('ESDAC', '1 km', 'Free (request)', 'Europe', 'European Soil Data Centre. JRC. Request form required.', 'ESDAC'),
+          L('LUCAS Soil Survey', 'Point', 'Free', 'Europe', 'Land Use/Cover Area Survey with soil sampling. ~22k points.', 'LUCAS')
+        ]}},
+        { label: 'Field-level (precision agriculture)', next: { leaf: false, results: [
+          L('Commercial IoT sensors', 'Point', 'Paid', 'Field', 'Arable Mark, Teralytic, etc. Real-time soil moisture, NPK, EC.', 'soil sensors')
+        ]}}
+      ]
+    }
+  },
+
+  {
+    id: 'water',
+    title: 'I need water/flood data',
+    subtitle: 'River discharge, flood risk, soil moisture, surface water',
+    icon: '\u224B',
+    iconClass: 'icon-water',
+    root: {
+      question: 'What aspect of water data?',
+      choices: [
+        { label: 'River discharge / streamflow', next: { leaf: false, results: [
+          L('GRDC', 'Station', 'Free (request)', 'Global', 'Global Runoff Data Centre. ~10k stations, request-based access.', 'GRDC'),
+          L('USGS Water Data', 'Station', 'Free', 'USA', 'USGS National Water Information System. API access.', 'USGS Water')
+        ]}},
+        { label: 'Flood risk maps', next: { leaf: false, results: [
+          L('Fathom', '30 m', 'Paid', 'Global', 'Commercial flood hazard maps (fluvial, pluvial, coastal).', 'Fathom'),
+          L('GloFAS', '~10 km', 'Free', 'Global', 'Copernicus Global Flood Awareness System. Forecasts + reanalysis.', 'GloFAS')
+        ]}},
+        { label: 'Soil moisture', next: { leaf: false, results: [
+          L('SMAP', '9\u201336 km', 'Free', 'Global', 'NASA Soil Moisture Active Passive. L-band radiometer.', 'SMAP'),
+          L('SMOS', '~40 km', 'Free', 'Global', 'ESA Soil Moisture and Ocean Salinity mission.', 'SMOS'),
+          L('ERA5-Land soil moisture', '~9 km', 'Free', 'Global land', 'Modeled soil moisture at 4 depth layers, hourly.', 'ERA5-Land')
+        ]}},
+        { label: 'Surface water extent', next: { leaf: false, results: [
+          L('Copernicus Global Surface Water Explorer', '30 m', 'Free', 'Global', 'JRC surface water mapping 1984\u2013present. Water occurrence, change, seasonality.', 'Global Surface Water'),
+        ]}},
+        { label: 'Drainage networks / catchments', next: { leaf: false, results: [
+          L('HydroSHEDS', 'Various', 'Free', 'Global', 'Hydrological data and maps from SRTM. River networks, basins, flow accumulation.', 'HydroSHEDS'),
+          L('EU-Hydro', '1:25k', 'Free', 'Europe', 'Copernicus reference hydrography dataset for Europe.', 'EU-Hydro')
+        ]}}
+      ]
+    }
+  }
+];
+
+/* ═══════════════════════════════════════════════════════
+   Rendering Engine
+   ═══════════════════════════════════════════════════════ */
+
+// State per tree: { path: [{label, node}], currentNode }
+const treeState = {};
+
+function initTrees() {
+  const container = document.getElementById('treesContainer');
+  container.innerHTML = '';
+  TREES.forEach(tree => {
+    treeState[tree.id] = { path: [], currentNode: tree.root };
+    const card = document.createElement('div');
+    card.className = 'tree-card';
+    card.id = 'tree-' + tree.id;
+    card.innerHTML =
+      '<div class="tree-header" onclick="toggleTree(\'' + tree.id + '\')">' +
+        '<div class="tree-icon ' + tree.iconClass + '">' + tree.icon + '</div>' +
+        '<h3>' + tree.title + '<small>' + tree.subtitle + '</small></h3>' +
+        '<span class="tree-chevron">&#9656;</span>' +
+      '</div>' +
+      '<div class="tree-body" id="body-' + tree.id + '"></div>';
+    container.appendChild(card);
+  });
+}
+
+function toggleTree(id) {
+  const card = document.getElementById('tree-' + id);
+  const wasOpen = card.classList.contains('open');
+  // close all
+  document.querySelectorAll('.tree-card').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) {
+    card.classList.add('open');
+    renderTree(id);
+    // scroll into view
+    setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+  }
+}
+
+function renderTree(id) {
+  const body = document.getElementById('body-' + id);
+  const state = treeState[id];
+  const node = state.currentNode;
+  let html = renderBreadcrumb(id, state.path);
+
+  if (node.results) {
+    // leaf results
+    html += '<div class="result-panel">' + renderResults(node.results) + '</div>';
+    html += renderActions(id);
+  } else if (node.question) {
+    html += '<div class="question-panel">';
+    html += '<div class="question-text">' + node.question + '</div>';
+    html += '<div class="choices">';
+    node.choices.forEach((c, i) => {
+      html += '<button class="choice-btn" onclick="selectChoice(\'' + id + '\',' + i + ')">' +
+        c.label + '<span class="choice-arrow">&#8250;</span></button>';
+    });
+    html += '</div></div>';
+    html += renderActions(id);
+  }
+
+  body.innerHTML = html;
+}
+
+function renderBreadcrumb(id, path) {
+  if (path.length === 0) return '<div class="breadcrumb"></div>';
+  let html = '<div class="breadcrumb">';
+  html += '<span class="breadcrumb-item" onclick="goToStep(\'' + id + '\', -1)">Start</span>';
+  path.forEach((step, i) => {
+    html += '<span class="breadcrumb-sep">&#9656;</span>';
+    if (i < path.length - 1) {
+      html += '<span class="breadcrumb-item" onclick="goToStep(\'' + id + '\',' + i + ')">' + step.label + '</span>';
+    } else {
+      html += '<span class="breadcrumb-current">' + step.label + '</span>';
+    }
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderResults(results) {
+  let html = '<div class="result-cards">';
+  results.forEach(r => {
+    const costClass = (r.cost === 'Free' || r.cost.startsWith('Free')) ? 'badge-free' : 'badge-paid';
+    html += '<div class="result-item">' +
+      '<h4>' + r.name + '</h4>' +
+      '<div class="result-meta">' +
+        '<span class="result-badge badge-res">' + r.resolution + '</span>' +
+        '<span class="result-badge ' + costClass + '">' + r.cost + '</span>' +
+        '<span class="result-badge badge-scope">' + r.scope + '</span>' +
+      '</div>' +
+      '<div class="result-desc">' + r.desc + '</div>' +
+      '<a class="result-link" href="index.html#q=' + encodeURIComponent(r.query) + '">View in Catalog &#8594;</a>' +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderActions(id) {
+  const state = treeState[id];
+  if (state.path.length === 0) return '';
+  return '<div class="action-row"><button class="btn-restart" onclick="restartTree(\'' + id + '\')">&#8634; Start Over</button></div>';
+}
+
+function selectChoice(id, idx) {
+  const state = treeState[id];
+  const choice = state.currentNode.choices[idx];
+  state.path.push({ label: choice.label, node: state.currentNode });
+  state.currentNode = choice.next;
+  renderTree(id);
+}
+
+function goToStep(id, stepIdx) {
+  const state = treeState[id];
+  if (stepIdx === -1) {
+    // back to root
+    const tree = TREES.find(t => t.id === id);
+    state.path = [];
+    state.currentNode = tree.root;
+  } else {
+    const target = state.path[stepIdx];
+    state.path = state.path.slice(0, stepIdx);
+    state.currentNode = target.node;
+    // re-select the choice to go to next
+    // Actually, we want to show the node at that step
+    state.currentNode = target.node;
+  }
+  renderTree(id);
+}
+
+function restartTree(id) {
+  const tree = TREES.find(t => t.id === id);
+  treeState[id] = { path: [], currentNode: tree.root };
+  renderTree(id);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Theme Toggle
+   ═══════════════════════════════════════════════════════ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('dc-theme', next);
+}
+
+(function loadTheme() {
+  const saved = localStorage.getItem('dc-theme');
+  if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  else if (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+})();
+
+/* ── Init ────────────────────────────────────────────── */
+initTrees();
+</script>
+</body>
+</html>

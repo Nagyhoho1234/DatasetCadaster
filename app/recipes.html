@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Processing Recipes — Dataset Cadaster</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr:#1a2634;
+  --hdr-accent:#2e4057;
+  --body-bg:#f0f2f5;
+  --card-bg:#fff;
+  --text:#2c3e50;
+  --text-light:#5a6a7a;
+  --border:#dce1e8;
+  --accent:#2980b9;
+  --accent-hover:#1f6da0;
+  --green:#27ae60;
+  --green-bg:#e8f8f0;
+  --yellow:#e67e22;
+  --yellow-bg:#fdf3e6;
+  --red:#c0392b;
+  --red-bg:#fbeaea;
+  --blue:#2980b9;
+  --blue-bg:#e4f0fa;
+  --teal:#16a085;
+  --radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --nav-h:44px;
+  --header-h:56px;
+}
+/* ── Dark Mode ────────────────────────────────────────── */
+[data-theme="dark"]{
+  --hdr:#0d1520;
+  --hdr-accent:#1a2a3e;
+  --body-bg:#181e26;
+  --card-bg:#1e2733;
+  --text:#d0d8e0;
+  --text-light:#8899aa;
+  --border:#2a3545;
+  --accent:#4ba3d9;
+  --accent-hover:#3a8ec4;
+  --green:#2ecc71;
+  --green-bg:#1a3328;
+  --yellow:#f39c12;
+  --yellow-bg:#332a14;
+  --red:#e74c3c;
+  --red-bg:#331a1a;
+  --blue:#4ba3d9;
+  --blue-bg:#1a2a3e;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
+}
+[data-theme="dark"] .recipe-card{background:var(--card-bg);border-color:var(--border)}
+[data-theme="dark"] .code-block{background:#111820;border-color:#2a3545}
+[data-theme="dark"] .code-block code{color:#c8d8e8}
+[data-theme="dark"] .prereq{background:#151c24;border-color:var(--border)}
+[data-theme="dark"] .output-box{background:#151c24;border-color:var(--border)}
+[data-theme="dark"] .copy-btn{background:#253040;color:var(--text-light);border-color:var(--border)}
+[data-theme="dark"] .copy-btn:hover{background:#2e4058;color:#fff}
+
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
+
+/* ── Navigation Bar ──────────────────────────────────── */
+.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
+.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
+.navbar-links{display:flex;gap:4px}
+.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
+.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
+
+/* ── Header ───────────────────────────────────────────── */
+.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
+.header h1 span{color:#5dade2;margin-right:6px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.header-right .subtitle{font-size:.82rem;color:#a0b4c8}
+.btn-dark-toggle{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:5px}
+.btn-dark-toggle:hover{border-color:#5a7a9a;color:#fff}
+
+/* ── Container ────────────────────────────────────────── */
+.container{max-width:900px;width:100%;margin:0 auto;padding:24px 24px 60px}
+.page-title{font-size:1.6rem;font-weight:700;margin-bottom:6px}
+.page-subtitle{font-size:.92rem;color:var(--text-light);margin-bottom:28px;line-height:1.5}
+
+/* ── Filter Bar ───────────────────────────────────────── */
+.filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+.filter-btn{
+  padding:7px 14px;font-size:.82rem;border:1px solid var(--border);border-radius:var(--radius);
+  background:var(--card-bg);cursor:pointer;font-family:var(--font);color:var(--text-light);transition:all .15s
+}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── Recipe Card ──────────────────────────────────────── */
+.recipe-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px 24px;margin-bottom:18px;transition:box-shadow .2s
+}
+.recipe-card:hover{box-shadow:var(--shadow-hover)}
+.recipe-card.hidden{display:none}
+.recipe-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:6px}
+.recipe-number{
+  background:var(--accent);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-size:.8rem;font-weight:700;flex-shrink:0
+}
+.recipe-title{font-size:1.05rem;font-weight:700}
+.recipe-desc{font-size:.88rem;color:var(--text-light);margin-bottom:14px;line-height:1.45}
+
+/* ── Prerequisites ────────────────────────────────────── */
+.prereq{
+  background:#f7f9fb;border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 14px;margin-bottom:12px;font-size:.82rem;font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  color:var(--text-light);overflow-x:auto;white-space:pre
+}
+.prereq-label{font-family:var(--font);font-weight:600;color:var(--text);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:block}
+
+/* ── Code Block ───────────────────────────────────────── */
+.code-wrapper{position:relative;margin-bottom:12px}
+.code-block{
+  background:#1a2634;border:1px solid #2e4057;border-radius:var(--radius);
+  padding:16px 18px;overflow-x:auto;font-size:.82rem;line-height:1.6;
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  tab-size:4;-moz-tab-size:4
+}
+.code-block code{color:#e0e8f0;display:block;white-space:pre}
+.copy-btn{
+  position:absolute;top:8px;right:8px;background:#2e4057;color:#a0b4c8;border:1px solid #3a5068;
+  border-radius:var(--radius);padding:4px 10px;font-size:.75rem;cursor:pointer;font-family:var(--font);
+  transition:all .15s;z-index:2
+}
+.copy-btn:hover{background:#3a5068;color:#fff}
+.copy-btn.copied{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* ── Output Box ───────────────────────────────────────── */
+.output-box{
+  background:#f7f9fb;border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 14px;font-size:.82rem;color:var(--text-light);line-height:1.5
+}
+.output-label{font-weight:600;color:var(--text);font-size:.78rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:block}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media(max-width:600px){
+  .container{padding:16px}
+  .recipe-card{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.html">Dataset Cadaster</a>
+  <div class="navbar-links">
+    <a href="index.html">Catalog</a>
+    <a href="estimator.html">GeoEstimator</a>
+    <a href="recipes.html" class="active">Recipes</a>
+  </div>
+</nav>
+
+<!-- Header -->
+<header class="header">
+  <h1><span>&#9672;</span>Processing Recipes</h1>
+  <div class="header-right">
+    <span class="subtitle">Copy-paste code snippets for common geospatial data workflows</span>
+    <button class="btn-dark-toggle" onclick="toggleDark()" id="darkBtn">Dark</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="page-title">Data Download &amp; Processing Recipes</div>
+  <div class="page-subtitle">Ready-to-use Python snippets for downloading and processing the most common geospatial and environmental datasets. Each recipe is self-contained and functional.</div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-filter="all" onclick="filterRecipes('all',this)">All</button>
+    <button class="filter-btn" data-filter="satellite" onclick="filterRecipes('satellite',this)">Satellite</button>
+    <button class="filter-btn" data-filter="climate" onclick="filterRecipes('climate',this)">Climate</button>
+    <button class="filter-btn" data-filter="terrain" onclick="filterRecipes('terrain',this)">Terrain</button>
+    <button class="filter-btn" data-filter="land" onclick="filterRecipes('land',this)">Land Cover</button>
+    <button class="filter-btn" data-filter="vector" onclick="filterRecipes('vector',this)">Vector / Tabular</button>
+    <button class="filter-btn" data-filter="population" onclick="filterRecipes('population',this)">Population</button>
+  </div>
+
+  <!-- Recipe 1: Sentinel-2 -->
+  <div class="recipe-card" data-tags="satellite">
+    <div class="recipe-header">
+      <div class="recipe-number">1</div>
+      <div class="recipe-title">Sentinel-2 Download via Copernicus Data Space</div>
+    </div>
+    <div class="recipe-desc">Search and download Sentinel-2 L2A scenes from the Copernicus Data Space Ecosystem using the cdsetool library.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install cdsetool</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>from cdsetool.query import query_features
+from cdsetool.credentials import Credentials
+from cdsetool.download import download_features
+
+credentials = Credentials("your_username", "your_password")
+
+features = query_features(
+    "Sentinel2",
+    {"startDate": "2025-06-01", "completionDate": "2025-08-31",
+     "processingLevel": "S2MSI2A",
+     "box": [16.8, 46.6, 17.2, 46.9],  # [west, south, east, north]
+     "cloudCover": "[0,30]"}
+)
+feature_list = list(features)
+print(f"Found {len(feature_list)} scenes")
+
+download_features(feature_list, "./sentinel2_data", credentials)</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">SAFE-format .zip files in <code>./sentinel2_data/</code>, each ~800 MB containing 13 spectral bands as JP2 rasters at 10/20/60 m resolution.</div>
+  </div>
+
+  <!-- Recipe 2: Landsat -->
+  <div class="recipe-card" data-tags="satellite">
+    <div class="recipe-header">
+      <div class="recipe-number">2</div>
+      <div class="recipe-title">Landsat Download via USGS M2M API</div>
+    </div>
+    <div class="recipe-desc">Search and download Landsat 8/9 Collection 2 Level-2 scenes using the landsatxplore library wrapping the USGS M2M API.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install landsatxplore</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>from landsatxplore.api import API
+from landsatxplore.earthexplorer import EarthExplorer
+
+api = API("your_usgs_username", "your_usgs_password")
+
+scenes = api.search(
+    dataset="landsat_ot_c2_l2",
+    latitude=47.5, longitude=19.0,
+    start_date="2025-06-01", end_date="2025-08-31",
+    max_cloud_cover=20
+)
+print(f"Found {len(scenes)} Landsat scenes")
+api.logout()
+
+ee = EarthExplorer("your_usgs_username", "your_usgs_password")
+for scene in scenes[:3]:  # download first 3
+    ee.download(scene["entity_id"], output_dir="./landsat_data")
+ee.logout()</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">Tar archives in <code>./landsat_data/</code>, each ~200 MB containing 11 bands as GeoTIFF at 30 m (optical) and 100 m (thermal) resolution.</div>
+  </div>
+
+  <!-- Recipe 3: ERA5 -->
+  <div class="recipe-card" data-tags="climate">
+    <div class="recipe-header">
+      <div class="recipe-number">3</div>
+      <div class="recipe-title">ERA5 Climate Reanalysis via CDS API</div>
+    </div>
+    <div class="recipe-desc">Download ERA5 hourly or monthly reanalysis data (temperature, precipitation, wind) from the Copernicus Climate Data Store.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install cdsapi
+# Create ~/.cdsapirc with your CDS API key (https://cds.climate.copernicus.eu/)</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>import cdsapi
+
+client = cdsapi.Client()
+
+client.retrieve("reanalysis-era5-single-levels", {
+    "product_type": "reanalysis",
+    "variable": ["2m_temperature", "total_precipitation"],
+    "year": "2024",
+    "month": [f"{m:02d}" for m in range(1, 13)],
+    "day": [f"{d:02d}" for d in range(1, 32)],
+    "time": ["00:00", "06:00", "12:00", "18:00"],
+    "area": [48, 16, 46, 23],  # [N, W, S, E] — Hungary
+    "format": "netcdf"
+}, "era5_hungary_2024.nc")
+
+print("Downloaded: era5_hungary_2024.nc")</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">NetCDF file (<code>.nc</code>) with gridded data at 0.25 degree resolution (~31 km). Typical size: 200-500 MB per variable per year for a country-scale area.</div>
+  </div>
+
+  <!-- Recipe 4: SRTM / Copernicus DEM -->
+  <div class="recipe-card" data-tags="terrain">
+    <div class="recipe-header">
+      <div class="recipe-number">4</div>
+      <div class="recipe-title">SRTM / Copernicus DEM via OpenTopography</div>
+    </div>
+    <div class="recipe-desc">Download the Copernicus GLO-30 DEM or SRTM 30m elevation data through the OpenTopography API with a free API key.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install requests
+# Get free API key at https://opentopography.org/</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>import requests
+
+API_KEY = "your_opentopography_api_key"
+params = {
+    "demtype": "COP30",  # or "SRTMGL1" for SRTM 30m
+    "south": 46.5, "north": 47.0,
+    "west": 18.5, "east": 19.5,
+    "outputFormat": "GTiff",
+    "API_Key": API_KEY
+}
+
+r = requests.get("https://portal.opentopography.org/API/globaldem",
+                  params=params, stream=True)
+r.raise_for_status()
+
+with open("dem_budapest.tif", "wb") as f:
+    for chunk in r.iter_content(chunk_size=8192):
+        f.write(chunk)
+print(f"Downloaded: dem_budapest.tif ({r.headers.get('Content-Length', '?')} bytes)")</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">Single-band GeoTIFF at 30 m resolution. ~25 MB per 1 degree x 1 degree tile. Values are elevation in meters (WGS84 / EGM2008 geoid).</div>
+  </div>
+
+  <!-- Recipe 5: SoilGrids -->
+  <div class="recipe-card" data-tags="terrain">
+    <div class="recipe-header">
+      <div class="recipe-number">5</div>
+      <div class="recipe-title">SoilGrids via WCS</div>
+    </div>
+    <div class="recipe-desc">Download global soil property maps (clay, sand, organic carbon, pH, etc.) from ISRIC SoilGrids at 250 m resolution using the WCS endpoint.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install owslib rasterio</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>from owslib.wcs import WebCoverageService
+import rasterio
+from rasterio.io import MemoryFile
+
+wcs = WebCoverageService(
+    "https://maps.isric.org/mapserv?map=/map/ocs.map", version="2.0.1")
+
+response = wcs.getCoverage(
+    identifier=["ocs_0-30cm_mean"],  # organic carbon stock 0-30 cm
+    subsets=[("X", 18.5, 19.5), ("Y", 46.5, 47.0)],
+    format="image/tiff"
+)
+
+with MemoryFile(response.read()) as memfile:
+    with memfile.open() as ds:
+        data = ds.read(1)
+        profile = ds.profile
+        print(f"Shape: {data.shape}, CRS: {ds.crs}, Range: {data.min()}-{data.max()}")
+
+with open("soilgrids_ocs.tif", "wb") as f:
+    response.seek(0)
+    f.write(response.read())</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">GeoTIFF at 250 m resolution in Homolosine projection. Values are soil property values (units vary by layer). Available properties: clay, sand, silt, pH, SOC, bulk density, CEC, nitrogen.</div>
+  </div>
+
+  <!-- Recipe 6: OpenStreetMap -->
+  <div class="recipe-card" data-tags="vector">
+    <div class="recipe-header">
+      <div class="recipe-number">6</div>
+      <div class="recipe-title">OpenStreetMap Extract via Overpass API</div>
+    </div>
+    <div class="recipe-desc">Query and download OSM vector data (roads, buildings, land use) for a bounding box using the Overpass API, or download country PBF extracts from Geofabrik.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install osmnx geopandas</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>import osmnx as ox
+import geopandas as gpd
+
+# Option 1: Download by place name
+buildings = ox.features_from_place("Budapest, Hungary",
+                                    tags={"building": True})
+print(f"Buildings: {len(buildings)}")
+buildings.to_file("budapest_buildings.gpkg", driver="GPKG")
+
+# Option 2: Download by bounding box
+roads = ox.features_from_bbox(bbox=(47.4, 47.6, 19.0, 19.2),
+                               tags={"highway": True})
+roads.to_file("budapest_roads.gpkg", driver="GPKG")
+
+# Option 3: Geofabrik country extract (download PBF)
+import urllib.request
+url = "https://download.geofabrik.de/europe/hungary-latest.osm.pbf"
+urllib.request.urlretrieve(url, "hungary-latest.osm.pbf")</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">GeoPackage files with vector geometries (polygons for buildings, lines for roads). Geofabrik PBF is a compressed OSM extract (~200 MB for Hungary). CRS: WGS84 (EPSG:4326).</div>
+  </div>
+
+  <!-- Recipe 7: GBIF -->
+  <div class="recipe-card" data-tags="vector">
+    <div class="recipe-header">
+      <div class="recipe-number">7</div>
+      <div class="recipe-title">GBIF Species Occurrences via pygbif</div>
+    </div>
+    <div class="recipe-desc">Download species occurrence records from the Global Biodiversity Information Facility (GBIF) for a given taxon and geographic area.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install pygbif pandas geopandas shapely</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>from pygbif import occurrences, species
+import pandas as pd
+import geopandas as gpd
+from shapely.geometry import Point
+
+# Find taxon key
+result = species.name_backbone(name="Bufo bufo", rank="species")
+taxon_key = result["usageKey"]
+
+# Download occurrences (Hungary bounding box)
+records = occurrences.search(taxonKey=taxon_key, country="HU",
+                              hasCoordinate=True, limit=300)
+df = pd.json_normalize(records["results"])
+print(f"Records: {len(df)}")
+
+# Convert to GeoDataFrame
+geometry = [Point(r.decimalLongitude, r.decimalLatitude) for _, r in df.iterrows()]
+gdf = gpd.GeoDataFrame(df, geometry=geometry, crs="EPSG:4326")
+gdf.to_file("bufo_bufo_hungary.gpkg", driver="GPKG")</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">GeoPackage with point geometries. Each record includes species name, coordinates, date, institution, basis of record. CRS: WGS84 (EPSG:4326).</div>
+  </div>
+
+  <!-- Recipe 8: WorldPop -->
+  <div class="recipe-card" data-tags="population">
+    <div class="recipe-header">
+      <div class="recipe-number">8</div>
+      <div class="recipe-title">WorldPop Population Grid via API</div>
+    </div>
+    <div class="recipe-desc">Download high-resolution (100 m) gridded population estimates from WorldPop for any country and year.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install requests rasterio</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>import requests, rasterio
+from rasterio.plot import show
+
+# WorldPop constrained individual countries UN-adjusted 100m
+iso3 = "HUN"
+year = 2020
+url = (f"https://data.worldpop.org/GIS/Population/Global_2000_2020_Constrained/"
+       f"2020/maxar_v1/{iso3}/{iso3.lower()}_ppp_{year}_UNadj_constrained.tif")
+
+print(f"Downloading WorldPop {iso3} {year}...")
+r = requests.get(url, stream=True)
+r.raise_for_status()
+fname = f"worldpop_{iso3}_{year}.tif"
+with open(fname, "wb") as f:
+    for chunk in r.iter_content(chunk_size=8192):
+        f.write(chunk)
+
+with rasterio.open(fname) as ds:
+    print(f"Shape: {ds.shape}, CRS: {ds.crs}, Res: {ds.res}")</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">Single-band GeoTIFF at ~100 m resolution. Pixel values = estimated number of people. CRS: WGS84 (EPSG:4326). Typical file size: 50-200 MB per country.</div>
+  </div>
+
+  <!-- Recipe 9: GloFAS -->
+  <div class="recipe-card" data-tags="climate">
+    <div class="recipe-header">
+      <div class="recipe-number">9</div>
+      <div class="recipe-title">GloFAS Flood Data via CDS API</div>
+    </div>
+    <div class="recipe-desc">Download Global Flood Awareness System (GloFAS) river discharge reanalysis or forecast data from the Copernicus Climate Data Store.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install cdsapi xarray netCDF4
+# Create ~/.cdsapirc with your CDS API key</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>import cdsapi
+import xarray as xr
+
+client = cdsapi.Client()
+
+client.retrieve("cems-glofas-historical", {
+    "system_version": "version_4_0",
+    "hydrological_model": "lisflood",
+    "product_type": "consolidated",
+    "variable": "river_discharge_in_the_last_24_hours",
+    "hyear": "2023",
+    "hmonth": ["january", "february", "march"],
+    "hday": [f"{d:02d}" for d in range(1, 32)],
+    "area": [48, 16, 46, 23],  # [N, W, S, E]
+    "format": "grib"
+}, "glofas_discharge_2023.grib")
+
+ds = xr.open_dataset("glofas_discharge_2023.grib", engine="cfgrib")
+print(ds)</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">GRIB or NetCDF file with daily river discharge values at ~0.05 degree (~5 km) resolution along river networks. Variable: <code>dis24</code> in m3/s.</div>
+  </div>
+
+  <!-- Recipe 10: CORINE Land Cover -->
+  <div class="recipe-card" data-tags="land">
+    <div class="recipe-header">
+      <div class="recipe-number">10</div>
+      <div class="recipe-title">CORINE Land Cover via Copernicus CLMS</div>
+    </div>
+    <div class="recipe-desc">Download CORINE Land Cover raster or vector data from the Copernicus Land Monitoring Service. Covers all of Europe at 100 m resolution with 44 land cover classes.</div>
+    <span class="prereq-label">Prerequisites</span>
+    <div class="prereq">pip install requests zipfile-deflate64 rasterio geopandas</div>
+    <div class="code-wrapper">
+      <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+      <div class="code-block"><code>import requests, zipfile, os, rasterio
+from rasterio.mask import mask
+import geopandas as gpd
+from shapely.geometry import box
+
+# Download CORINE 2018 raster (100m) — requires Copernicus account
+# Direct download link (register at land.copernicus.eu first):
+url = ("https://land.copernicus.eu/en/products/corine-land-cover/"
+       "clc2018?tab=download")
+print(f"Register and download manually from:\n{url}")
+
+# After download, clip to your AOI:
+aoi = gpd.GeoDataFrame(geometry=[box(18.5, 46.5, 19.5, 47.5)],
+                         crs="EPSG:4326").to_crs("EPSG:3035")
+with rasterio.open("U2018_CLC2018_V2020_20u1.tif") as src:
+    clipped, transform = mask(src, aoi.geometry, crop=True)
+    meta = src.meta.copy()
+    meta.update({"height": clipped.shape[1], "width": clipped.shape[2],
+                 "transform": transform})
+    with rasterio.open("corine_clipped.tif", "w", **meta) as dst:
+        dst.write(clipped)
+print("Clipped CORINE saved to corine_clipped.tif")</code></div>
+    </div>
+    <span class="output-label">Expected Output</span>
+    <div class="output-box">GeoTIFF raster at 100 m resolution in ETRS89/LAEA (EPSG:3035). Pixel values are CLC class codes (111-523). Full European raster is ~1.5 GB; clipped subsets are much smaller.</div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+(function(){
+"use strict";
+
+/* ── Copy button ─────────────────────────────── */
+window.copyCode = function(btn) {
+  var codeEl = btn.parentElement.querySelector('code');
+  var text = codeEl.textContent;
+  navigator.clipboard.writeText(text).then(function(){
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function(){
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+};
+
+/* ── Filter recipes ──────────────────────────── */
+window.filterRecipes = function(tag, btn) {
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.recipe-card').forEach(function(card){
+    if (tag === 'all' || card.getAttribute('data-tags').indexOf(tag) !== -1) {
+      card.classList.remove('hidden');
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+};
+
+/* ── Dark mode ───────────────────────────────── */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  var btn = document.getElementById('darkBtn');
+  if (btn) btn.textContent = theme === 'dark' ? 'Light' : 'Dark';
+}
+
+window.toggleDark = function() {
+  var current = document.documentElement.getAttribute('data-theme') || 'light';
+  var next = current === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('dc-theme', next);
+  applyTheme(next);
+};
+
+// Init theme from localStorage
+var saved = localStorage.getItem('dc-theme');
+if (saved) applyTheme(saved);
+
+})();
+</script>
+</body>
+</html>

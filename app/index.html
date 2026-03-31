@@ -289,6 +289,55 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 [data-theme="dark"] .btn-bookmark-filter.active{background:rgba(230,194,0,.15);border-color:#e6c200;color:#e6c200}
 [data-theme="dark"] .card.bookmarked{border-color:#b89a00;box-shadow:0 0 0 1px rgba(184,154,0,.3)}
 
+/* ── Notes / Annotations ────────────────────────────── */
+.note-indicator{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-left:6px;vertical-align:middle;flex-shrink:0}
+.used-badge{display:inline-flex;align-items:center;gap:3px;font-size:.65rem;color:var(--green);font-weight:700;margin-left:6px;vertical-align:middle}
+.note-stars-display{display:flex;gap:1px;margin-top:2px}
+.note-stars-display .star-filled{color:#e6a817;font-size:.72rem}
+.note-stars-display .star-empty{color:var(--border);font-size:.72rem}
+.notes-btn{background:none;border:1px solid var(--border);color:var(--text-light);padding:3px 8px;border-radius:var(--radius);cursor:pointer;font-size:.7rem;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.notes-btn:hover{border-color:var(--accent);color:var(--accent)}
+.notes-btn.has-note{border-color:var(--accent);color:var(--accent);background:rgba(41,128,185,.06)}
+.notes-panel{background:var(--body-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-top:8px;display:none;flex-direction:column;gap:10px}
+.notes-panel.visible{display:flex}
+.notes-panel textarea{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font:inherit;font-size:.85rem;resize:vertical;min-height:60px;max-height:120px;background:var(--card-bg);color:var(--text)}
+.notes-panel textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(41,128,185,.15)}
+.notes-panel-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.notes-stars{display:flex;gap:2px;cursor:pointer}
+.notes-stars .star{font-size:1.2rem;color:var(--border);cursor:pointer;transition:color .1s;user-select:none}
+.notes-stars .star.active{color:#e6a817}
+.notes-stars .star:hover{color:#e6a817}
+.notes-panel input[type="text"]{flex:1;min-width:120px;padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius);font:inherit;font-size:.82rem;background:var(--card-bg);color:var(--text)}
+.notes-panel input[type="text"]:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(41,128,185,.15)}
+.notes-panel label.notes-checkbox{display:flex;align-items:center;gap:5px;font-size:.82rem;color:var(--text);cursor:pointer;white-space:nowrap}
+.notes-panel-actions{display:flex;gap:8px;margin-top:2px}
+.notes-panel-actions button{padding:5px 14px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;font:inherit;font-size:.78rem;transition:all .15s}
+.notes-save-btn{background:var(--accent);color:#fff;border-color:var(--accent)!important}
+.notes-save-btn:hover{background:var(--accent-hover)}
+.notes-delete-btn{color:var(--red);border-color:var(--red)!important;background:var(--card-bg)}
+.notes-delete-btn:hover{background:var(--red-bg)}
+.notes-user-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.notes-user-tag{display:inline-block;padding:1px 7px;background:rgba(41,128,185,.1);color:var(--accent);border-radius:8px;font-size:.68rem}
+.notes-filter-btn{
+  padding:8px 14px;font-size:.82rem;border:1px solid var(--border);border-radius:var(--radius);
+  background:#fafbfc;cursor:pointer;font-family:var(--font);color:var(--text-light);transition:all .15s;width:100%;text-align:left
+}
+.notes-filter-btn:hover{background:#eef1f5;color:var(--text)}
+.notes-filter-btn.active{background:rgba(41,128,185,.12);border-color:var(--accent);color:var(--accent)}
+.notes-export-import{display:flex;gap:6px;margin-top:4px}
+.notes-export-import button{flex:1;padding:6px 10px;font-size:.78rem;border:1px solid var(--border);border-radius:var(--radius);background:#fafbfc;cursor:pointer;font-family:var(--font);color:var(--text-light);transition:all .15s}
+.notes-export-import button:hover{background:#eef1f5;color:var(--text)}
+.notes-import-input{display:none}
+[data-theme="dark"] .notes-panel{background:#151c24}
+[data-theme="dark"] .notes-panel textarea,[data-theme="dark"] .notes-panel input[type="text"]{background:var(--card-bg);color:var(--text);border-color:var(--border)}
+[data-theme="dark"] .notes-filter-btn{background:#151c24;color:var(--text-light);border-color:var(--border)}
+[data-theme="dark"] .notes-filter-btn:hover{background:#1e2733;color:var(--text)}
+[data-theme="dark"] .notes-filter-btn.active{background:rgba(41,128,185,.18);border-color:var(--accent);color:var(--accent)}
+[data-theme="dark"] .notes-export-import button{background:#151c24;color:var(--text-light);border-color:var(--border)}
+[data-theme="dark"] .notes-export-import button:hover{background:#1e2733;color:var(--text)}
+[data-theme="dark"] .notes-btn.has-note{background:rgba(75,163,217,.1)}
+[data-theme="dark"] .notes-user-tag{background:rgba(75,163,217,.15);color:var(--accent)}
+
 /* ── Citation Popup ──────────────────────────────────── */
 .cite-btn{background:none;border:1px solid var(--border);color:var(--text-light);padding:3px 8px;border-radius:var(--radius);cursor:pointer;font-size:.7rem;font-family:var(--font);transition:all .15s;white-space:nowrap}
 .cite-btn:hover{border-color:var(--accent);color:var(--accent)}
@@ -351,6 +400,9 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <div class="navbar-links">
     <a href="index.html" class="active">Catalog</a>
     <a href="estimator.html">GeoEstimator</a>
+    <a href="recipes.html">Recipes</a>
+    <a href="guide.html">Guide</a>
+    <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
   </div>
 </nav>
@@ -374,6 +426,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <div class="stat">With API: <strong id="statApi">&#8212;</strong></div>
   <div class="stat">Categories: <strong id="statCats">&#8212;</strong></div>
   <div class="stat">&#9733; Bookmarked: <strong id="statBookmarks">0</strong></div>
+  <div class="stat">&#9998; Annotated: <strong id="statAnnotated">0</strong></div>
 </div>
 
 <!-- Category Bar Chart -->
@@ -458,6 +511,24 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
     <button class="btn-clear" id="btnClear">Clear filters</button>
     <button class="btn-bookmark-filter" id="btnBookmarkFilter">&#9733; Show Bookmarks Only</button>
+    <button class="notes-filter-btn" id="btnUsedFilter">&#10003; Show Only Datasets I've Used</button>
+    <button class="notes-filter-btn" id="btnNotesFilter">&#9998; Show Only Datasets with Notes</button>
+    <div class="filter-group">
+      <label for="filterMinRating">Minimum Rating</label>
+      <select id="filterMinRating">
+        <option value="0">Any rating</option>
+        <option value="1">&#9733; 1+</option>
+        <option value="2">&#9733; 2+</option>
+        <option value="3">&#9733; 3+</option>
+        <option value="4">&#9733; 4+</option>
+        <option value="5">&#9733; 5</option>
+      </select>
+    </div>
+    <div class="notes-export-import">
+      <button id="btnExportNotes" title="Download all notes as JSON">Export Notes</button>
+      <button id="btnImportNotes" title="Import notes from a JSON file">Import Notes</button>
+    </div>
+    <input type="file" id="notesImportInput" class="notes-import-input" accept=".json">
     <div class="match-count" id="matchCount"></div>
   </aside>
 
@@ -549,6 +620,9 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   let activeCatFilter = ""; // from chart click
   let bookmarks = [];       // array of dataset IDs
   let showBookmarksOnly = false;
+  let showUsedOnly = false;
+  let showNotesOnly = false;
+  let minRating = 0;
 
   /* ── Bookmark Persistence ───────────────────────── */
   function loadBookmarks(){
@@ -559,6 +633,32 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     localStorage.setItem("dc-bookmarks", JSON.stringify(bookmarks));
   }
   loadBookmarks();
+
+  /* ── Notes Persistence ─────────────────────────── */
+  const NOTES_KEY = "dc-notes";
+  function loadNotes(){
+    try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || {}; }
+    catch(e){ return {}; }
+  }
+  function saveNotes(notes){
+    localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+  }
+  function getNote(id){
+    return loadNotes()[id] || null;
+  }
+  function setNote(id, data){
+    const notes = loadNotes();
+    notes[id] = { ...data, lastUpdated: new Date().toISOString().slice(0,10) };
+    saveNotes(notes);
+  }
+  function deleteNote(id){
+    const notes = loadNotes();
+    delete notes[id];
+    saveNotes(notes);
+  }
+  function getAnnotatedCount(){
+    return Object.keys(loadNotes()).length;
+  }
 
   /* ── DOM refs ────────────────────────────────────── */
   const $ = id => document.getElementById(id);
@@ -587,6 +687,13 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   const toastEl        = $("toast");
   const btnBookmarkFilter = $("btnBookmarkFilter");
   const statBookmarks  = $("statBookmarks");
+  const statAnnotated  = $("statAnnotated");
+  const btnUsedFilter  = $("btnUsedFilter");
+  const btnNotesFilter = $("btnNotesFilter");
+  const filterMinRating= $("filterMinRating");
+  const btnExportNotes = $("btnExportNotes");
+  const btnImportNotes = $("btnImportNotes");
+  const notesImportInput=$("notesImportInput");
   const recentlyAddedSection = $("recentlyAddedSection");
   const recentlyAddedContent = $("recentlyAddedContent");
   const recentlyAddedHeader  = $("recentlyAddedHeader");
@@ -659,6 +766,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
       allData = Array.isArray(data) ? data : (data.datasets || []);
       updateStats();
       buildCategoryChart();
+      buildRecentlyAdded();
       readHashFilters();
       applyFilters();
     })
@@ -675,9 +783,13 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     const cats = new Set(allData.map(d => d.category).filter(Boolean));
     $("statCats").textContent  = cats.size;
     updateBookmarkCount();
+    updateAnnotatedCount();
   }
   function updateBookmarkCount(){
     statBookmarks.textContent = bookmarks.length;
+  }
+  function updateAnnotatedCount(){
+    statAnnotated.textContent = getAnnotatedCount();
   }
 
   /* ── Category Bar Chart ─────────────────────────── */
@@ -738,8 +850,12 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     const cos = filterCost.value;
     const api = apiValue;
 
+    const allNotes = loadNotes();
     filtered = allData.filter(d => {
       if(showBookmarksOnly && !bookmarks.includes(d.id)) return false;
+      if(showUsedOnly){ const n = allNotes[d.id]; if(!n || !n.used) return false; }
+      if(showNotesOnly){ if(!allNotes[d.id]) return false; }
+      if(minRating > 0){ const n = allNotes[d.id]; if(!n || (n.rating||0) < minRating) return false; }
       if(cat && d.category !== cat) return false;
       if(sco && d.scope !== sco) return false;
       if(cos && d.cost !== cos) return false;
@@ -794,11 +910,20 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
   function esc(s){ const d=document.createElement("div"); d.textContent=s||""; return d.innerHTML; }
 
+  function buildStarsHTML(rating){
+    let h = "";
+    for(let i=1;i<=5;i++){
+      h += '<span class="star' + (i<=rating ? ' active' : '') + '" data-star="' + i + '">&#9733;</span>';
+    }
+    return h;
+  }
+
   function cardHTML(d){
     const costClass = d.cost === "free" ? "badge-free" : d.cost === "freemium" ? "badge-freemium" : "badge-commercial";
     const catClass  = "badge-cat-" + (d.category || "");
     const catLabel  = formatCategory(d.category);
     const inCompare = compareList.some(c => c.name === d.name);
+    const note = getNote(d.id);
 
     let badges = '<span class="badge ' + catClass + '">' + esc(catLabel) + '</span>';
     if(d.scope) badges += '<span class="badge badge-scope">' + esc(d.scope) + '</span>';
@@ -821,21 +946,81 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
       tags = '<div class="tags">' + d.tags.map(t => '<span class="tag">' + esc(t) + '</span>').join("") + '</div>';
     }
 
-    return '<div class="card">' +
+    const isBookmarked = bookmarks.includes(d.id);
+    const safeId = esc(d.id||"").replace(/'/g,"\\'");
+    const safeName = esc(d.name||"").replace(/'/g,"\\'");
+    const safeUrl = esc(d.url||"").replace(/'/g,"\\'");
+
+    // Note indicators for card header
+    let noteIndicators = "";
+    if(note){
+      noteIndicators += '<span class="note-indicator" title="Has personal note"></span>';
+      if(note.used) noteIndicators += '<span class="used-badge" title="You have used this dataset">&#10003; Used</span>';
+    }
+
+    // Star rating display below description
+    let starsDisplay = "";
+    if(note && note.rating > 0){
+      starsDisplay = '<div class="note-stars-display">';
+      for(let i=1;i<=5;i++){
+        starsDisplay += '<span class="' + (i<=note.rating ? 'star-filled' : 'star-empty') + '">&#9733;</span>';
+      }
+      starsDisplay += '</div>';
+    }
+
+    // User tags from notes
+    let userTagsDisplay = "";
+    if(note && note.tags && note.tags.length){
+      userTagsDisplay = '<div class="notes-user-tags">' + note.tags.map(function(t){ return '<span class="notes-user-tag">' + esc(t) + '</span>'; }).join("") + '</div>';
+    }
+
+    // Inline notes panel
+    var noteText = note ? esc(note.note||"") : "";
+    var noteRating = note ? (note.rating||0) : 0;
+    var noteTags = note ? (note.tags||[]).join(", ") : "";
+    var noteUsed = note && note.used;
+    var notesPanel = '<div class="notes-panel" id="notes-panel-' + esc(d.id) + '">' +
+      '<textarea maxlength="500" placeholder="Your personal note about this dataset..." id="notes-text-' + esc(d.id) + '">' + noteText + '</textarea>' +
+      '<div class="notes-panel-row">' +
+        '<span style="font-size:.82rem;color:var(--text-light)">Rating:</span>' +
+        '<div class="notes-stars" id="notes-stars-' + esc(d.id) + '" data-rating="' + noteRating + '">' +
+          buildStarsHTML(noteRating) +
+        '</div>' +
+      '</div>' +
+      '<div class="notes-panel-row">' +
+        '<span style="font-size:.82rem;color:var(--text-light);white-space:nowrap">Tags:</span>' +
+        '<input type="text" placeholder="comma-separated, e.g. used-2024, reliable" id="notes-tags-' + esc(d.id) + '" value="' + esc(noteTags) + '">' +
+      '</div>' +
+      '<div class="notes-panel-row">' +
+        '<label class="notes-checkbox"><input type="checkbox" id="notes-used-' + esc(d.id) + '"' + (noteUsed ? ' checked' : '') + '> I\'ve used this dataset</label>' +
+      '</div>' +
+      '<div class="notes-panel-actions">' +
+        '<button class="notes-save-btn" onclick="window._saveNote(\'' + safeId + '\')">Save Note</button>' +
+        (note ? '<button class="notes-delete-btn" onclick="window._deleteNote(\'' + safeId + '\')">Delete Note</button>' : '') +
+      '</div>' +
+    '</div>';
+
+    return '<div class="card' + (isBookmarked ? ' bookmarked' : '') + '" data-id="' + esc(d.id) + '">' +
       '<div class="card-header">' +
-        '<div class="card-title"><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.name) + '</a></div>' +
+        '<div class="card-title"><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.name) + '</a>' + noteIndicators + '</div>' +
         '<div class="card-actions">' +
-          '<button class="card-action-btn" onclick="window._copyLink(\'' + esc(d.url||"").replace(/'/g,"\\'") + '\')" title="Copy dataset URL">Copy link</button>' +
-          '<button class="card-action-btn' + (inCompare ? ' in-compare' : '') + '" onclick="window._toggleCompare(\'' + esc(d.name||"").replace(/'/g,"\\'") + '\')" title="' + (inCompare ? 'Remove from comparison' : 'Add to comparison') + '">' + (inCompare ? 'Comparing' : 'Compare') + '</button>' +
-          '<button class="price-update-btn" onclick="window._openPriceModal(\'' + esc(d.id||"").replace(/'/g,"\\'") + '\')" title="Report a price update">Update Price</button>' +
+          '<button class="bookmark-btn' + (isBookmarked ? ' bookmarked' : '') + '" onclick="window._toggleBookmark(\'' + safeId + '\')" title="' + (isBookmarked ? 'Remove bookmark' : 'Add bookmark') + '">' + (isBookmarked ? '\u2605' : '\u2606') + '</button>' +
+          '<button class="cite-btn" onclick="window._toggleCite(event,\'' + safeId + '\')" title="Generate citation">Cite</button>' +
+          '<button class="notes-btn' + (note ? ' has-note' : '') + '" onclick="window._toggleNotes(\'' + safeId + '\')" title="Personal notes">Notes</button>' +
+          '<button class="card-action-btn" onclick="window._copyLink(\'' + safeUrl + '\')" title="Copy dataset URL">Copy link</button>' +
+          '<button class="card-action-btn' + (inCompare ? ' in-compare' : '') + '" onclick="window._toggleCompare(\'' + safeName + '\')" title="' + (inCompare ? 'Remove from comparison' : 'Add to comparison') + '">' + (inCompare ? 'Comparing' : 'Compare') + '</button>' +
+          '<button class="price-update-btn" onclick="window._openPriceModal(\'' + safeId + '\')" title="Report a price update">Update Price</button>' +
         '</div>' +
       '</div>' +
       (d.operator ? '<div class="card-operator">' + esc(d.operator) + '</div>' : '') +
       '<div class="badges">' + badges + '</div>' +
       (d.description ? '<div class="card-desc">' + esc(d.description) + '</div>' : '') +
+      starsDisplay +
       (meta ? '<div class="card-meta">' + meta + '</div>' : '') +
       (extra ? '<div class="card-extra">' + extra + '</div>' : '') +
       tags +
+      userTagsDisplay +
+      notesPanel +
     '</div>';
   }
 
@@ -1057,6 +1242,130 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     showToast("Opening GitHub to submit price update...");
   });
 
+  /* ── Notes System ─────────────────────────────────── */
+  window._toggleNotes = function(datasetId){
+    const panel = document.getElementById("notes-panel-" + datasetId);
+    if(!panel) return;
+    panel.classList.toggle("visible");
+  };
+
+  // Star click handler (delegated)
+  document.addEventListener("click", function(e){
+    const star = e.target.closest(".notes-stars .star");
+    if(!star) return;
+    const container = star.closest(".notes-stars");
+    if(!container) return;
+    const val = parseInt(star.dataset.star);
+    const current = parseInt(container.dataset.rating)||0;
+    // clicking same star again clears rating
+    const newRating = (val === current) ? 0 : val;
+    container.dataset.rating = newRating;
+    container.innerHTML = buildStarsHTML(newRating);
+  });
+
+  window._saveNote = function(datasetId){
+    var textEl = document.getElementById("notes-text-" + datasetId);
+    var starsEl = document.getElementById("notes-stars-" + datasetId);
+    var tagsEl = document.getElementById("notes-tags-" + datasetId);
+    var usedEl = document.getElementById("notes-used-" + datasetId);
+    if(!textEl) return;
+    var noteText = textEl.value.trim();
+    var rating = parseInt(starsEl ? starsEl.dataset.rating : "0") || 0;
+    var rawTags = tagsEl ? tagsEl.value : "";
+    var tagsList = rawTags.split(",").map(function(t){ return t.trim(); }).filter(function(t){ return t.length > 0; });
+    var used = usedEl ? usedEl.checked : false;
+
+    if(!noteText && !rating && !tagsList.length && !used){
+      showToast("Nothing to save - add a note, rating, tags, or mark as used");
+      return;
+    }
+
+    setNote(datasetId, {
+      note: noteText,
+      rating: rating,
+      tags: tagsList,
+      used: used
+    });
+    updateAnnotatedCount();
+    render();
+    showToast("Note saved");
+  };
+
+  window._deleteNote = function(datasetId){
+    deleteNote(datasetId);
+    updateAnnotatedCount();
+    render();
+    showToast("Note deleted");
+  };
+
+  /* ── Notes Filters ──────────────────────────────── */
+  btnUsedFilter.addEventListener("click", function(){
+    showUsedOnly = !showUsedOnly;
+    btnUsedFilter.classList.toggle("active", showUsedOnly);
+    applyFilters();
+  });
+
+  btnNotesFilter.addEventListener("click", function(){
+    showNotesOnly = !showNotesOnly;
+    btnNotesFilter.classList.toggle("active", showNotesOnly);
+    applyFilters();
+  });
+
+  filterMinRating.addEventListener("change", function(){
+    minRating = parseInt(filterMinRating.value) || 0;
+    applyFilters();
+  });
+
+  /* ── Notes Export / Import ──────────────────────── */
+  btnExportNotes.addEventListener("click", function(){
+    var notes = loadNotes();
+    var count = Object.keys(notes).length;
+    if(!count){ showToast("No notes to export"); return; }
+    var blob = new Blob([JSON.stringify(notes, null, 2)], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "dataset_cadaster_notes.json";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Exported " + count + " notes");
+  });
+
+  btnImportNotes.addEventListener("click", function(){
+    notesImportInput.click();
+  });
+
+  notesImportInput.addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try {
+        var imported = JSON.parse(evt.target.result);
+        if(typeof imported !== "object" || Array.isArray(imported)){
+          showToast("Invalid notes file format");
+          return;
+        }
+        var existing = loadNotes();
+        var importCount = 0;
+        for(var key in imported){
+          if(imported.hasOwnProperty(key)){
+            existing[key] = imported[key];
+            importCount++;
+          }
+        }
+        saveNotes(existing);
+        updateAnnotatedCount();
+        render();
+        showToast("Imported " + importCount + " notes (merged with existing)");
+      } catch(err){
+        showToast("Error reading notes file: " + err.message);
+      }
+    };
+    reader.readAsText(file);
+    notesImportInput.value = "";
+  });
+
   /* ── Event Wiring ────────────────────────────────── */
   searchBox.addEventListener("input", () => {
     clearTimeout(searchTimer);
@@ -1089,6 +1398,14 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     filterCost.value = "";
     apiValue = "";
     activeCatFilter = "";
+    showBookmarksOnly = false;
+    btnBookmarkFilter.classList.remove("active");
+    showUsedOnly = false;
+    btnUsedFilter.classList.remove("active");
+    showNotesOnly = false;
+    btnNotesFilter.classList.remove("active");
+    minRating = 0;
+    filterMinRating.value = "0";
     apiToggle.querySelectorAll("button").forEach(b => b.classList.remove("active"));
     apiToggle.querySelector('[data-value=""]').classList.add("active");
     sortSelect.value = "alpha";
@@ -1109,6 +1426,190 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     readHashFilters();
     applyFilters();
   });
+
+  /* ── FEATURE 1: Bookmarks / Favorites ───────────── */
+  window._toggleBookmark = function(datasetId){
+    const idx = bookmarks.indexOf(datasetId);
+    if(idx >= 0){
+      bookmarks.splice(idx, 1);
+      showToast("Bookmark removed");
+    } else {
+      bookmarks.push(datasetId);
+      showToast("Bookmarked!");
+    }
+    saveBookmarks();
+    updateBookmarkCount();
+    render();
+  };
+
+  btnBookmarkFilter.addEventListener("click", () => {
+    showBookmarksOnly = !showBookmarksOnly;
+    btnBookmarkFilter.classList.toggle("active", showBookmarksOnly);
+    applyFilters();
+  });
+
+  /* ── FEATURE 2: Citation Generator ──────────────── */
+  let openCiteId = null;
+
+  window._toggleCite = function(event, datasetId){
+    event.stopPropagation();
+    // close any existing cite popup
+    const existing = document.querySelector(".cite-popup.visible");
+    if(existing){
+      existing.classList.remove("visible");
+      if(openCiteId === datasetId){ openCiteId = null; return; }
+    }
+    openCiteId = datasetId;
+    const d = allData.find(x => x.id === datasetId);
+    if(!d) return;
+
+    const card = event.target.closest(".card");
+    if(!card) return;
+
+    // remove any old popup in this card
+    const oldPopup = card.querySelector(".cite-popup");
+    if(oldPopup) oldPopup.remove();
+
+    const today = new Date().toISOString().slice(0,10);
+    const year = d.temporalCoverage ? d.temporalCoverage.replace(/.*(\d{4}).*/, "$1") : new Date().getFullYear();
+    const citeText = (d.operator || "Unknown") + " (" + year + "). " + d.name + ". Available at: " + (d.url || "N/A") + ". Accessed: " + today + ".";
+    const safeIdBib = (d.id || d.name || "dataset").replace(/[^a-zA-Z0-9_-]/g, "-");
+    const bibtex = "@misc{" + safeIdBib + ",\n  title={" + (d.name||"") + "},\n  author={" + (d.operator||"") + "},\n  url={" + (d.url||"") + "},\n  year={" + year + "}\n}";
+
+    const popup = document.createElement("div");
+    popup.className = "cite-popup visible";
+    popup.innerHTML =
+      '<button class="cite-popup-close" onclick="this.parentElement.classList.remove(\'visible\')">&times;</button>' +
+      '<h4>Citation</h4>' +
+      '<div class="cite-text" id="citeText-' + safeIdBib + '">' + esc(citeText) + '</div>' +
+      '<div class="cite-bibtex" id="citeBib-' + safeIdBib + '">' + esc(bibtex) + '</div>' +
+      '<div class="cite-actions">' +
+        '<button onclick="window._copyCite(this,\'text\',\'' + safeIdBib + '\')">Copy Citation</button>' +
+        '<button onclick="window._toggleBibtex(\'' + safeIdBib + '\',this)">Show BibTeX</button>' +
+        '<button onclick="window._copyCite(this,\'bib\',\'' + safeIdBib + '\')">Copy BibTeX</button>' +
+      '</div>';
+    card.style.position = "relative";
+    card.appendChild(popup);
+  };
+
+  window._toggleBibtex = function(id, btn){
+    const el = document.getElementById("citeBib-" + id);
+    if(!el) return;
+    const show = !el.classList.contains("visible");
+    el.classList.toggle("visible", show);
+    btn.textContent = show ? "Hide BibTeX" : "Show BibTeX";
+  };
+
+  window._copyCite = function(btn, type, id){
+    const el = type === "bib" ? document.getElementById("citeBib-" + id) : document.getElementById("citeText-" + id);
+    if(!el) return;
+    navigator.clipboard.writeText(el.textContent).then(() => {
+      showToast(type === "bib" ? "BibTeX copied!" : "Citation copied!");
+    }).catch(() => {
+      showToast("Could not copy to clipboard");
+    });
+  };
+
+  // close cite popup when clicking outside
+  document.addEventListener("click", e => {
+    if(!e.target.closest(".cite-popup") && !e.target.closest(".cite-btn")){
+      const popup = document.querySelector(".cite-popup.visible");
+      if(popup){ popup.classList.remove("visible"); openCiteId = null; }
+    }
+  });
+
+  /* ── FEATURE 3: Recently Added / What's New ─────── */
+  function buildRecentlyAdded(){
+    recentlyAddedSection.style.display = "";
+    const withDate = allData.filter(d => d.dateAdded);
+    let recentItems = [];
+    let noteText = "";
+
+    if(withDate.length > 0){
+      // sort by dateAdded descending
+      withDate.sort((a,b) => (b.dateAdded||"").localeCompare(a.dateAdded||""));
+      recentItems = withDate.slice(0, 10);
+      noteText = recentItems.length + " recently added datasets";
+
+      // check if any are < 30 days old for the "New" badge
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const hasRecent = withDate.some(d => new Date(d.dateAdded) >= thirtyDaysAgo);
+      if(hasRecent) whatsNewBadge.style.display = "inline";
+    } else {
+      // no dateAdded fields - show fallback
+      const sorted = [...allData].sort((a,b) => (a.name||"").localeCompare(b.name||""));
+      recentItems = sorted.slice(-10).reverse();
+      noteText = "All " + allData.length + " datasets cataloged March 2026";
+
+      // pick a few featured highlights from different categories
+      const cats = {};
+      allData.forEach(d => { if(d.category && !cats[d.category]){ cats[d.category] = d; }});
+      const featured = Object.values(cats).slice(0, 5);
+
+      if(recentItems.length === 0 && featured.length > 0){
+        recentItems = featured;
+      }
+    }
+
+    recentlyAddedNote.textContent = noteText;
+
+    if(recentItems.length === 0){
+      recentlyAddedContent.innerHTML = '<div class="recent-featured">' + esc(noteText) + '</div>';
+      return;
+    }
+
+    let html = '<div class="recent-scroll">';
+    recentItems.forEach(d => {
+      const catClass = "badge-cat-" + (d.category || "");
+      const catLabel = formatCategory(d.category);
+      html += '<div class="recent-card" data-id="' + esc(d.id) + '" onclick="window._scrollToDataset(\'' + esc(d.id||"").replace(/'/g,"\\'") + '\')">' +
+        '<div class="recent-card-name" title="' + esc(d.name) + '">' + esc(d.name) + '</div>' +
+        '<div class="recent-card-badges">' +
+          '<span class="badge ' + catClass + '">' + esc(catLabel) + '</span>' +
+          (d.scope ? '<span class="badge badge-scope">' + esc(d.scope) + '</span>' : '') +
+        '</div>' +
+      '</div>';
+    });
+    html += '</div>';
+    recentlyAddedContent.innerHTML = html;
+  }
+
+  // collapse/expand recently added
+  recentlyAddedHeader.addEventListener("click", () => {
+    recentlyAddedSection.classList.toggle("collapsed");
+  });
+
+  window._scrollToDataset = function(datasetId){
+    const card = document.querySelector('.card[data-id="' + datasetId + '"]');
+    if(card){
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      card.classList.remove("card-highlight");
+      void card.offsetWidth; // force reflow
+      card.classList.add("card-highlight");
+    } else {
+      // dataset might be filtered out - clear filters and try again
+      showBookmarksOnly = false;
+      btnBookmarkFilter.classList.remove("active");
+      searchBox.value = "";
+      filterCategory.value = "";
+      filterScope.value = "";
+      filterCost.value = "";
+      apiValue = "";
+      activeCatFilter = "";
+      apiToggle.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+      apiToggle.querySelector('[data-value=""]').classList.add("active");
+      updateChartHighlight();
+      applyFilters();
+      setTimeout(() => {
+        const c2 = document.querySelector('.card[data-id="' + datasetId + '"]');
+        if(c2){
+          c2.scrollIntoView({ behavior: "smooth", block: "center" });
+          c2.classList.add("card-highlight");
+        }
+      }, 100);
+    }
+  };
 
 })();
 </script>
