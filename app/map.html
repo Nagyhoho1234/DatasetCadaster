@@ -324,6 +324,9 @@ europeRect = L.rectangle(EUROPE_BOUNDS,{
 }).addTo(map);
 europeRect.bindTooltip("Europe Region (click for European datasets)",{sticky:true,className:"europe-tooltip"});
 europeRect.on("click", function(){
+  manualOverride = true;
+  showAllOverride = false;
+  document.getElementById("btnShowAll").classList.remove("active");
   filterByRegion("europe");
 });
 
@@ -489,8 +492,13 @@ function showGlobalDatasets(){
 function clearFilter(){
   currentFilter = {type:null, country:null, includeGlobal:false};
   filteredDatasets = [];
+  manualOverride = false;
+  showAllOverride = false;
+  lastAutoCountry = null;
   document.getElementById("sidebarTitle").textContent = "Datasets";
   document.getElementById("searchBox").value = "";
+  document.getElementById("autoDetectBanner").style.display = "none";
+  document.getElementById("btnShowAll").classList.remove("active");
   clearHighlight();
   updateStats(null);
   document.getElementById("btnGlobal").classList.remove("active");
@@ -627,12 +635,14 @@ function escHtml(s){
 
 /* ── Button handlers ──────────────────────────────────── */
 document.getElementById("btnGlobal").addEventListener("click", function(){
+  manualOverride = true;
+  showAllOverride = false;
+  document.getElementById("btnShowAll").classList.remove("active");
   var isActive = this.classList.contains("active");
   document.getElementById("btnGlobal").classList.toggle("active");
   document.getElementById("btnEurope").classList.remove("active");
 
   if(isActive){
-    /* If was showing global and a country was selected, revert to country */
     if(currentFilter.country){
       filterByCountry(currentFilter.country);
     } else {
@@ -644,6 +654,9 @@ document.getElementById("btnGlobal").addEventListener("click", function(){
 });
 
 document.getElementById("btnEurope").addEventListener("click", function(){
+  manualOverride = true;
+  showAllOverride = false;
+  document.getElementById("btnShowAll").classList.remove("active");
   var isActive = this.classList.contains("active");
   document.getElementById("btnEurope").classList.toggle("active");
   document.getElementById("btnGlobal").classList.remove("active");
@@ -657,6 +670,162 @@ document.getElementById("btnEurope").addEventListener("click", function(){
 
 document.getElementById("btnClear").addEventListener("click", function(){
   clearFilter();
+});
+
+/* ── Auto-detect banner update ────────────────────────── */
+function updateAutoDetectBanner(countryCode, regionLabel){
+  var banner = document.getElementById("autoDetectBanner");
+  var label = document.getElementById("detectLabel");
+  var counts = document.getElementById("detectCounts");
+
+  if(!countryCode && !regionLabel){
+    banner.style.display = "none";
+    return;
+  }
+
+  banner.style.display = "flex";
+
+  var areaName = regionLabel || (COUNTRIES[countryCode] ? COUNTRIES[countryCode].name : countryCode);
+  label.textContent = "Showing datasets for: " + areaName;
+
+  /* Count by scope */
+  var cNat=0, cReg=0, cEur=0, cGlob=0;
+  filteredDatasets.forEach(function(d){
+    if(d.scope==="national") cNat++;
+    else if(d.scope==="regional") cReg++;
+    else if(d.scope==="europe") cEur++;
+    else if(d.scope==="global") cGlob++;
+  });
+  var parts = [];
+  if(cNat) parts.push(cNat + " national");
+  if(cReg) parts.push(cReg + " regional");
+  if(cEur) parts.push(cEur + " European");
+  if(cGlob) parts.push(cGlob + " global");
+  counts.textContent = parts.length ? parts.join(" + ") + " datasets" : "No datasets found";
+}
+
+/* ── Pulse a marker briefly ──────────────────────────── */
+function pulseMarker(code){
+  var m = markers[code];
+  if(!m || !m._path) return;
+  m._path.classList.add("leaflet-marker-pulse");
+  setTimeout(function(){ if(m._path) m._path.classList.remove("leaflet-marker-pulse"); }, 2200);
+}
+
+/* ── Point-in-bounding-box country detection ─────────── */
+function detectCountryAt(lat, lng){
+  var matched = [];
+  Object.keys(COUNTRIES).forEach(function(code){
+    var b = COUNTRIES[code].bounds;
+    if(!b) return;
+    if(lat >= b.latMin && lat <= b.latMax && lng >= b.lonMin && lng <= b.lonMax){
+      /* compute how close center is to centroid (rough priority) */
+      var c = COUNTRIES[code];
+      var dist = Math.sqrt(Math.pow(lat - c.lat, 2) + Math.pow(lng - c.lng, 2));
+      matched.push({code:code, dist:dist});
+    }
+  });
+  if(matched.length === 0) return null;
+  /* pick smallest bounding box area among matches, then closest centroid */
+  matched.sort(function(a,b){
+    var areaA = COUNTRIES[a.code].bounds;
+    var areaB = COUNTRIES[b.code].bounds;
+    var sA = (areaA.latMax-areaA.latMin)*(areaA.lonMax-areaA.lonMin);
+    var sB = (areaB.latMax-areaB.latMin)*(areaB.lonMax-areaB.lonMin);
+    if(Math.abs(sA-sB) > 10) return sA - sB; /* prefer smaller country box */
+    return a.dist - b.dist;
+  });
+  return matched[0].code;
+}
+
+function detectContinentAt(lat, lng){
+  var found = null;
+  Object.keys(CONTINENT_BOUNDS).forEach(function(key){
+    var b = CONTINENT_BOUNDS[key];
+    if(lat >= b.latMin && lat <= b.latMax && lng >= b.lonMin && lng <= b.lonMax){
+      found = key;
+    }
+  });
+  return found;
+}
+
+/* ── Debounced moveend handler ───────────────────────── */
+function onMapMoveEnd(){
+  if(manualOverride) return;
+  if(showAllOverride) return;
+
+  var zoom = map.getZoom();
+  var center = map.getCenter();
+  var lat = center.lat;
+  var lng = center.lng;
+
+  if(zoom >= 5){
+    /* Country-level: detect country */
+    var code = detectCountryAt(lat, lng);
+    if(code && code !== lastAutoCountry){
+      lastAutoCountry = code;
+      filterByCountry(code, {noPan:true});
+      pulseMarker(code);
+      sidebar.classList.remove("collapsed");
+      sidebarToggle.innerHTML = "&#9664;";
+    } else if(!code){
+      /* Zoomed in but no country matched */
+      lastAutoCountry = null;
+      var continent = detectContinentAt(lat, lng);
+      if(continent === "europe"){
+        filterByRegion("europe", {noPan:true});
+      } else {
+        showGlobalDatasets();
+        document.getElementById("sidebarTitle").textContent = "No country detected";
+        updateAutoDetectBanner(null, "Zoom in on a country");
+      }
+    }
+  } else if(zoom >= 4){
+    lastAutoCountry = null;
+    /* Continental level */
+    var continent = detectContinentAt(lat, lng);
+    if(continent === "europe"){
+      filterByRegion("europe", {noPan:true});
+    } else {
+      /* Other continent at medium zoom: show global */
+      showGlobalDatasets();
+      updateAutoDetectBanner(null, "Global (zoom in for country datasets)");
+    }
+  } else {
+    /* World view */
+    lastAutoCountry = null;
+    showGlobalDatasets();
+    updateAutoDetectBanner(null, "Global view — zoom in for country datasets");
+  }
+}
+
+map.on("moveend", function(){
+  clearTimeout(moveendTimer);
+  moveendTimer = setTimeout(onMapMoveEnd, 300);
+});
+
+/* Reset manual override when user pans significantly */
+map.on("dragstart", function(){
+  manualOverride = false;
+});
+
+/* ── "Show All" toggle ───────────────────────────────── */
+document.getElementById("btnShowAll").addEventListener("click", function(){
+  showAllOverride = !showAllOverride;
+  this.classList.toggle("active", showAllOverride);
+
+  if(showAllOverride){
+    currentFilter = {type:"all", country:null, includeGlobal:true};
+    filteredDatasets = allDatasets.slice();
+    document.getElementById("sidebarTitle").textContent = "All Datasets";
+    updateAutoDetectBanner(null, "All datasets (filter override)");
+    applySearch();
+    updateStats("All");
+  } else {
+    /* Re-trigger auto-detect */
+    lastAutoCountry = null;
+    onMapMoveEnd();
+  }
 });
 
 /* ── Legend ────────────────────────────────────────────── */
