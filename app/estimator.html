@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoEstimator — GIS Data Cost & Structure Estimator</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr:#1a2634;
+  --hdr-accent:#2e4057;
+  --body-bg:#f0f2f5;
+  --card-bg:#fff;
+  --text:#2c3e50;
+  --text-light:#5a6a7a;
+  --border:#dce1e8;
+  --accent:#2980b9;
+  --accent-hover:#1f6da0;
+  --green:#27ae60;
+  --green-bg:#e8f8f0;
+  --yellow:#e67e22;
+  --yellow-bg:#fdf3e6;
+  --red:#c0392b;
+  --red-bg:#fbeaea;
+  --blue:#2980b9;
+  --blue-bg:#e4f0fa;
+  --teal:#16a085;
+  --radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
+
+/* ── Header ───────────────────────────────────────────── */
+.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
+.header h1 span{color:#5dade2;margin-right:6px}
+.header-nav{margin-left:auto;display:flex;gap:20px;font-size:.88rem}
+.header-nav a{color:#a0b4c8;text-decoration:none;transition:color .2s}
+.header-nav a:hover,.header-nav a.active{color:#fff}
+
+/* ── Container ────────────────────────────────────────── */
+.container{max-width:1100px;width:100%;margin:0 auto;padding:24px}
+
+/* ── Scenarios Bar ────────────────────────────────────── */
+.scenarios-bar{background:#fff;border-bottom:1px solid var(--border);padding:14px 24px}
+.scenarios-bar h3{font-size:.82rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);margin-bottom:10px}
+.scenario-btns{display:flex;flex-wrap:wrap;gap:8px}
+.scenario-btn{
+  padding:8px 14px;font-size:.82rem;border:1px solid var(--border);border-radius:var(--radius);
+  background:#fafbfc;cursor:pointer;font-family:var(--font);color:var(--text);transition:all .15s
+}
+.scenario-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+/* ── Progress Steps ───────────────────────────────────── */
+.progress{display:flex;align-items:center;justify-content:center;gap:0;margin:24px auto 30px;max-width:700px}
+.progress-step{display:flex;align-items:center;gap:0}
+.progress-circle{
+  width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:700;border:2px solid var(--border);color:var(--text-light);background:#fff;transition:all .3s;flex-shrink:0
+}
+.progress-label{font-size:.78rem;color:var(--text-light);margin-left:8px;white-space:nowrap;transition:color .3s}
+.progress-line{width:60px;height:2px;background:var(--border);margin:0 8px;transition:background .3s;flex-shrink:0}
+.progress-step.active .progress-circle{background:var(--accent);color:#fff;border-color:var(--accent)}
+.progress-step.active .progress-label{color:var(--accent);font-weight:600}
+.progress-step.done .progress-circle{background:var(--green);color:#fff;border-color:var(--green)}
+.progress-step.done .progress-label{color:var(--green)}
+.progress-line.done{background:var(--green)}
+.progress-line.active{background:var(--accent)}
+
+/* ── Wizard Panels ────────────────────────────────────── */
+.step-panel{display:none;animation:fadeIn .35s ease}
+.step-panel.visible{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.step-title{font-size:1.4rem;font-weight:700;margin-bottom:6px}
+.step-subtitle{font-size:.92rem;color:var(--text-light);margin-bottom:24px}
+
+/* ── Domain Cards ─────────────────────────────────────── */
+.domain-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.domain-card{
+  background:var(--card-bg);border:2px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;
+  transition:all .2s;text-align:center
+}
+.domain-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.domain-card.selected{border-color:var(--accent);background:var(--blue-bg)}
+.domain-icon{font-size:2rem;margin-bottom:8px}
+.domain-name{font-size:.95rem;font-weight:700;margin-bottom:4px}
+.domain-desc{font-size:.78rem;color:var(--text-light);line-height:1.4}
+
+/* ── Area Section ─────────────────────────────────────── */
+.area-presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.area-preset{
+  padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius);background:#fafbfc;
+  cursor:pointer;font-family:var(--font);font-size:.85rem;transition:all .15s
+}
+.area-preset:hover,.area-preset.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.form-row{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;align-items:flex-end}
+.form-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:200px}
+.form-group label{font-size:.82rem;font-weight:600;color:var(--text)}
+.form-group input,.form-group select{
+  padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:.9rem;
+  background:#fafbfc;font-family:var(--font);transition:border .2s
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(41,128,185,.15)}
+.form-group input[type="range"]{padding:4px 0;background:transparent}
+
+.area-display{font-size:1.1rem;font-weight:700;color:var(--accent);margin:8px 0}
+
+/* ── Requirements ─────────────────────────────────────── */
+.req-section{margin-bottom:24px}
+.req-section h3{font-size:.95rem;font-weight:700;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+
+.radio-group{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.radio-option{
+  padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius);background:#fafbfc;
+  cursor:pointer;font-size:.85rem;transition:all .15s;font-family:var(--font)
+}
+.radio-option:hover{border-color:var(--accent)}
+.radio-option.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.checkbox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.checkbox-option{
+  display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);
+  border-radius:var(--radius);background:#fafbfc;cursor:pointer;font-size:.85rem;transition:all .15s
+}
+.checkbox-option:hover{border-color:var(--accent)}
+.checkbox-option.selected{background:var(--blue-bg);border-color:var(--accent)}
+.checkbox-option input{display:none}
+.check-mark{width:18px;height:18px;border:2px solid var(--border);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;font-size:.7rem}
+.checkbox-option.selected .check-mark{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* ── Navigation Buttons ───────────────────────────────── */
+.step-nav{display:flex;justify-content:space-between;margin-top:30px;padding-top:20px;border-top:1px solid var(--border)}
+.btn{
+  padding:10px 24px;border:none;border-radius:var(--radius);font-size:.9rem;font-family:var(--font);
+  cursor:pointer;transition:all .15s;font-weight:600
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:#fff;color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:#f0f2f5}
+.btn-reset{background:var(--red-bg);color:var(--red);border:1px solid #f5c6cb}
+.btn-reset:hover{background:#f5c6cb}
+
+/* ── Results ──────────────────────────────────────────── */
+.results-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px;overflow-x:auto}
+.results-tab{
+  padding:12px 20px;font-size:.88rem;font-weight:600;color:var(--text-light);cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font)
+}
+.results-tab:hover{color:var(--text)}
+.results-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+.tab-content{display:none;animation:fadeIn .3s ease}
+.tab-content.visible{display:block}
+
+/* ── Result Cards ─────────────────────────────────────── */
+.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.rec-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;
+  transition:box-shadow .2s
+}
+.rec-card:hover{box-shadow:var(--shadow-hover)}
+.rec-card-title{font-size:1rem;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.rec-card-title a{color:var(--accent);text-decoration:none}
+.rec-card-title a:hover{text-decoration:underline}
+.rec-card-meta{font-size:.82rem;color:var(--text-light);margin-bottom:8px;line-height:1.5}
+.rec-card-desc{font-size:.85rem;color:var(--text);line-height:1.45}
+.rec-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.rec-badge-free{background:var(--green-bg);color:var(--green)}
+.rec-badge-commercial{background:var(--red-bg);color:var(--red)}
+
+/* ── Cost Table ───────────────────────────────────────── */
+.cost-table{width:100%;border-collapse:collapse;margin:16px 0}
+.cost-table th,.cost-table td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);font-size:.88rem}
+.cost-table th{background:#f7f9fb;font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.5px;color:var(--text-light)}
+.cost-table tr:last-child td{border-bottom:none}
+.cost-table .total-row{font-weight:700;background:#f7f9fb;font-size:.95rem}
+.cost-table .total-row td{border-top:2px solid var(--border)}
+.cost-low{color:var(--green)}
+.cost-med{color:var(--yellow)}
+.cost-high{color:var(--red)}
+
+/* ── Info Box ─────────────────────────────────────────── */
+.info-box{background:#f7f9fb;border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin:16px 0}
+.info-box h4{font-size:.9rem;margin-bottom:8px}
+.info-box p,.info-box li{font-size:.85rem;color:var(--text-light);line-height:1.5}
+.info-box ul{margin-left:18px;margin-top:6px}
+
+/* ── Stack Cards ──────────────────────────────────────── */
+.stack-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.stack-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.stack-card h4{font-size:.9rem;margin-bottom:10px;color:var(--accent)}
+.stack-item{display:flex;justify-content:space-between;padding:6px 0;font-size:.85rem;border-bottom:1px solid #f0f2f5}
+.stack-item:last-child{border-bottom:none}
+.stack-label{color:var(--text-light)}
+.stack-value{font-weight:600}
+
+/* ── Summary Header ───────────────────────────────────── */
+.results-summary{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:20px}
+.summary-item{display:flex;flex-direction:column;gap:2px}
+.summary-item .s-label{font-size:.75rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light);font-weight:600}
+.summary-item .s-value{font-size:1rem;font-weight:700}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media(max-width:700px){
+  .container{padding:16px}
+  .domain-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .form-row{flex-direction:column}
+  .progress-label{display:none}
+  .progress-line{width:30px}
+  .rec-grid{grid-template-columns:1fr}
+  .results-summary{flex-direction:column;gap:10px}
+}
+
+/* ── Print ────────────────────────────────────────────── */
+@media print{
+  .header,.scenarios-bar,.step-nav,.progress,.btn,.results-tabs,.scenario-btns{display:none!important}
+  body{background:#fff}
+  .container{max-width:100%;padding:0}
+  .results-summary,.rec-card,.cost-table,.stack-card,.info-box{break-inside:avoid}
+  .tab-content{display:block!important;margin-bottom:30px}
+  .tab-content::before{content:attr(data-print-title);display:block;font-size:1.2rem;font-weight:700;margin-bottom:12px;border-bottom:2px solid #333;padding-bottom:6px}
+  .step-panel{display:none!important}
+  #panelResults{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <h1><span>&#9672;</span>GeoEstimator</h1>
+  <nav class="header-nav">
+    <a href="index.html">&larr; Dataset Catalog</a>
+    <a href="estimator.html" class="active">GeoEstimator</a>
+  </nav>
+</header>
+
+<!-- Scenario Presets -->
+<div class="scenarios-bar">
+  <h3>Quick Scenarios</h3>
+  <div class="scenario-btns">
+    <button class="scenario-btn" onclick="loadScenario('farm')">10,000 ha Farm Monitoring</button>
+    <button class="scenario-btn" onclick="loadScenario('urban')">European City Heat Study</button>
+    <button class="scenario-btn" onclick="loadScenario('flood')">Watershed Flood Assessment</button>
+    <button class="scenario-btn" onclick="loadScenario('national')">National Land Cover Mapping</button>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- Progress Indicator -->
+<div class="progress" id="progressBar">
+  <div class="progress-step active" data-step="1">
+    <div class="progress-circle">1</div>
+    <div class="progress-label">Project</div>
+  </div>
+  <div class="progress-line" id="pline1"></div>
+  <div class="progress-step" data-step="2">
+    <div class="progress-circle">2</div>
+    <div class="progress-label">Area</div>
+  </div>
+  <div class="progress-line" id="pline2"></div>
+  <div class="progress-step" data-step="3">
+    <div class="progress-circle">3</div>
+    <div class="progress-label">Requirements</div>
+  </div>
+  <div class="progress-line" id="pline3"></div>
+  <div class="progress-step" data-step="4">
+    <div class="progress-circle">&#10003;</div>
+    <div class="progress-label">Results</div>
+  </div>
+</div>
+
+<!-- ═══════════════ STEP 1 ═══════════════ -->
+<div class="step-panel visible" id="panelStep1">
+  <div class="step-title">What's your project?</div>
+  <div class="step-subtitle">Select the domain that best describes your work. This helps us recommend the right data sources.</div>
+
+  <div class="domain-grid" id="domainGrid">
+    <div class="domain-card" data-domain="agriculture" onclick="selectDomain(this)">
+      <div class="domain-icon">&#x1F33E;</div>
+      <div class="domain-name">Agriculture</div>
+      <div class="domain-desc">Crop monitoring, precision farming, NDVI, soil moisture</div>
+    </div>
+    <div class="domain-card" data-domain="urban" onclick="selectDomain(this)">
+      <div class="domain-icon">&#x1F3D9;</div>
+      <div class="domain-name">Urban Planning</div>
+      <div class="domain-desc">Land use, building footprints, population, heat islands</div>
+    </div>
+    <div class="domain-card" data-domain="flood" onclick="selectDomain(this)">
+      <div class="domain-icon">&#x1F30A;</div>
+      <div class="domain-name">Flood / Water Risk</div>
+      <div class="domain-desc">DEM analysis, rainfall, flood mapping, hydrology</div>
+    </div>
+    <div class="domain-card" data-domain="ecology" onclick="selectDomain(this)">
+      <div class="domain-icon">&#x1F333;</div>
+      <div class="domain-name">Ecology / Conservation</div>
+      <div class="domain-desc">Habitat mapping, biodiversity, land cover change</div>
+    </div>
+    <div class="domain-card" data-domain="geology" onclick="selectDomain(this)">
+      <div class="domain-icon">&#x26F0;</div>
+      <div class="domain-name">Geology / Mining</div>
+      <div class="domain-desc">Geological maps, DEM, mineral exploration</div>
+    </div>
+    <div class="domain-card" data-domain="climate" onclick="selectDomain(this)">
+      <div class="domain-icon">&#x1F321;</div>
+      <div class="domain-name">Climate Analysis</div>
+      <div class="domain-desc">Temperature, precipitation, reanalysis, projections</div>
+    </div>
+    <div class="domain-card" data-domain="general" onclick="selectDomain(this)">
+      <div class="domain-icon">&#x1F5FA;</div>
+      <div class="domain-name">General Mapping</div>
+      <div class="domain-desc">Basemaps, boundaries, multi-purpose GIS work</div>
+    </div>
+    <div class="domain-card" data-domain="custom" onclick="selectDomain(this)">
+      <div class="domain-icon">&#x2699;</div>
+      <div class="domain-name">Custom</div>
+      <div class="domain-desc">I'll select everything manually</div>
+    </div>
+  </div>
+
+  <div class="step-nav">
+    <div></div>
+    <button class="btn btn-primary" onclick="goToStep(2)" id="btnNext1" disabled>Next: Define Your Area &rarr;</button>
+  </div>
+</div>
+
+<!-- ═══════════════ STEP 2 ═══════════════ -->
+<div class="step-panel" id="panelStep2">
+  <div class="step-title">Define your area</div>
+  <div class="step-subtitle">How large is your area of interest, and where is it located?</div>
+
+  <h3 style="font-size:.9rem;margin-bottom:10px;">Quick presets</h3>
+  <div class="area-presets" id="areaPresets">
+    <button class="area-preset" data-area="100" onclick="selectAreaPreset(this)">City (100 km&sup2;)</button>
+    <button class="area-preset" data-area="2500" onclick="selectAreaPreset(this)">County (2,500 km&sup2;)</button>
+    <button class="area-preset" data-area="25000" onclick="selectAreaPreset(this)">Region (25,000 km&sup2;)</button>
+    <button class="area-preset" data-area="93000" onclick="selectAreaPreset(this)">Hungary (93,000 km&sup2;)</button>
+    <button class="area-preset" data-area="0" onclick="selectAreaPreset(this)">Custom</button>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group" style="flex:2">
+      <label for="areaSlider">Area (km&sup2;)</label>
+      <input type="range" id="areaSlider" min="1" max="200000" value="100" step="1" oninput="syncArea('slider')">
+    </div>
+    <div class="form-group" style="flex:1;max-width:180px">
+      <label for="areaInput">Exact value</label>
+      <input type="number" id="areaInput" value="100" min="1" max="1000000" oninput="syncArea('input')">
+    </div>
+  </div>
+  <div class="area-display" id="areaDisplay">100 km&sup2;</div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <label for="regionSelect">Region</label>
+      <select id="regionSelect">
+        <option value="global">Global</option>
+        <option value="europe" selected>Europe</option>
+        <option value="hungary">Hungary</option>
+        <option value="germany">Germany</option>
+        <option value="france">France</option>
+        <option value="spain">Spain</option>
+        <option value="italy">Italy</option>
+        <option value="uk">United Kingdom</option>
+        <option value="usa">United States</option>
+        <option value="africa">Africa</option>
+        <option value="asia">Asia</option>
+        <option value="south-america">South America</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="step-nav">
+    <button class="btn btn-secondary" onclick="goToStep(1)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="goToStep(3)">Next: Requirements &rarr;</button>
+  </div>
+</div>
+
+<!-- ═══════════════ STEP 3 ═══════════════ -->
+<div class="step-panel" id="panelStep3">
+  <div class="step-title">What do you need?</div>
+  <div class="step-subtitle">Define your spatial, temporal, and data type requirements.</div>
+
+  <div class="req-section">
+    <h3>Spatial Resolution</h3>
+    <div class="radio-group" id="resolutionGroup">
+      <div class="radio-option" data-value="low" onclick="selectRadio(this,'resolutionGroup')">Low (&gt;100 m)</div>
+      <div class="radio-option selected" data-value="medium" onclick="selectRadio(this,'resolutionGroup')">Medium (10-100 m)</div>
+      <div class="radio-option" data-value="high" onclick="selectRadio(this,'resolutionGroup')">High (1-10 m)</div>
+      <div class="radio-option" data-value="very-high" onclick="selectRadio(this,'resolutionGroup')">Very High (&lt;1 m)</div>
+    </div>
+  </div>
+
+  <div class="req-section">
+    <h3>Temporal Frequency</h3>
+    <div class="radio-group" id="frequencyGroup">
+      <div class="radio-option" data-value="one-time" onclick="selectRadio(this,'frequencyGroup')">One-time</div>
+      <div class="radio-option" data-value="annual" onclick="selectRadio(this,'frequencyGroup')">Annual</div>
+      <div class="radio-option selected" data-value="monthly" onclick="selectRadio(this,'frequencyGroup')">Monthly</div>
+      <div class="radio-option" data-value="weekly" onclick="selectRadio(this,'frequencyGroup')">Weekly</div>
+      <div class="radio-option" data-value="daily" onclick="selectRadio(this,'frequencyGroup')">Daily</div>
+    </div>
+  </div>
+
+  <div class="req-section">
+    <h3>Historical Depth</h3>
+    <div class="radio-group" id="historyGroup">
+      <div class="radio-option selected" data-value="current" onclick="selectRadio(this,'historyGroup')">Current only</div>
+      <div class="radio-option" data-value="5" onclick="selectRadio(this,'historyGroup')">5 years</div>
+      <div class="radio-option" data-value="10" onclick="selectRadio(this,'historyGroup')">10 years</div>
+      <div class="radio-option" data-value="30" onclick="selectRadio(this,'historyGroup')">30+ years</div>
+    </div>
+  </div>
+
+  <div class="req-section">
+    <h3>Data Types Needed</h3>
+    <div class="checkbox-grid" id="dataTypesGrid">
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="optical"><span class="check-mark"></span> Optical Imagery</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="sar"><span class="check-mark"></span> SAR (Radar)</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="dem"><span class="check-mark"></span> DEM / Elevation</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="climate"><span class="check-mark"></span> Climate / Weather</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="soil"><span class="check-mark"></span> Soil</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="hydrology"><span class="check-mark"></span> Hydrology</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="landcover"><span class="check-mark"></span> Land Cover</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="airquality"><span class="check-mark"></span> Air Quality</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="population"><span class="check-mark"></span> Population</label>
+      <label class="checkbox-option" onclick="toggleCheck(this)"><input type="checkbox" value="boundaries"><span class="check-mark"></span> Admin Boundaries</label>
+    </div>
+  </div>
+
+  <div class="step-nav">
+    <button class="btn btn-secondary" onclick="goToStep(2)">&larr; Back</button>
+    <button class="btn btn-primary" onclick="generateResults()">Generate Estimate &#x2192;</button>
+  </div>
+</div>
+
+<!-- ═══════════════ RESULTS ═══════════════ -->
+<div class="step-panel" id="panelResults">
+
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+    <div class="step-title" style="margin-bottom:0">Your GeoEstimate</div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="window.print()">Print / PDF</button>
+      <button class="btn btn-reset" onclick="startOver()">Start Over</button>
+    </div>
+  </div>
+
+  <div class="results-summary" id="resultsSummary"></div>
+
+  <div class="results-tabs" id="resultsTabs">
+    <button class="results-tab active" data-tab="free" onclick="switchTab(this)">Free Sources</button>
+    <button class="results-tab" data-tab="commercial" onclick="switchTab(this)">Commercial Alternatives</button>
+    <button class="results-tab" data-tab="cost" onclick="switchTab(this)">Cost Breakdown</button>
+    <button class="results-tab" data-tab="stack" onclick="switchTab(this)">Recommended Stack</button>
+  </div>
+
+  <div class="tab-content visible" id="tabFree" data-print-title="Free Data Sources"></div>
+  <div class="tab-content" id="tabCommercial" data-print-title="Commercial Alternatives"></div>
+  <div class="tab-content" id="tabCost" data-print-title="Cost Breakdown"></div>
+  <div class="tab-content" id="tabStack" data-print-title="Recommended Stack"></div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+(function(){
+"use strict";
+
+/* ══════════════════════════════════════════════
+   STATE
+   ══════════════════════════════════════════════ */
+var state = {
+  domain: '',
+  area: 100,
+  region: 'europe',
+  resolution: 'medium',
+  frequency: 'monthly',
+  history: 'current',
+  dataTypes: []
+};
+
+/* ══════════════════════════════════════════════
+   FREE DATA SOURCE DATABASE
+   ══════════════════════════════════════════════ */
+var freeDB = {
+  'sentinel-2': {name:'Sentinel-2 L2A',provides:'Multispectral optical imagery (13 bands)',resolution:'10 m',link:'https://dataspace.copernicus.eu/',types:['optical','landcover']},
+  'landsat': {name:'Landsat 8/9',provides:'Multispectral optical + thermal (30 m optical, 100 m thermal)',resolution:'30 m',link:'https://earthexplorer.usgs.gov/',types:['optical']},
+  'sentinel-1': {name:'Sentinel-1',provides:'C-band SAR imagery for all-weather monitoring',resolution:'5-40 m',link:'https://dataspace.copernicus.eu/',types:['sar']},
+  'copernicus-dem': {name:'Copernicus GLO-30 DEM',provides:'Global digital elevation model',resolution:'30 m',link:'https://spacedata.copernicus.eu/collections/copernicus-digital-elevation-model',types:['dem']},
+  'era5': {name:'ERA5 Reanalysis',provides:'Hourly climate data: temperature, precipitation, wind, radiation (1940-present)',resolution:'31 km',link:'https://cds.climate.copernicus.eu/',types:['climate']},
+  'era5-land': {name:'ERA5-Land',provides:'Enhanced land-surface climate variables',resolution:'9 km',link:'https://cds.climate.copernicus.eu/',types:['climate']},
+  'soilgrids': {name:'SoilGrids',provides:'Global soil property maps (texture, organic carbon, pH, etc.)',resolution:'250 m',link:'https://soilgrids.org/',types:['soil']},
+  'corine': {name:'CORINE Land Cover',provides:'European land cover classification (2000-2018)',resolution:'100 m',link:'https://land.copernicus.eu/pan-european/corine-land-cover',types:['landcover']},
+  'chirps': {name:'CHIRPS',provides:'Rainfall estimates for trend analysis and drought monitoring',resolution:'5 km',link:'https://www.chc.ucsb.edu/data/chirps',types:['climate']},
+  'hydrosheds': {name:'HydroSHEDS',provides:'Hydrographic information: river networks, catchments, flow direction',resolution:'90 m - 500 m',link:'https://www.hydrosheds.org/',types:['hydrology']},
+  'glofas': {name:'GloFAS',provides:'Global flood monitoring and forecasting',resolution:'~10 km',link:'https://www.globalfloods.eu/',types:['hydrology']},
+  'grace-fo': {name:'GRACE-FO',provides:'Gravity-based groundwater and ice-sheet mass change data',resolution:'~300 km',link:'https://grace.jpl.nasa.gov/',types:['hydrology']},
+  'ghsl': {name:'GHSL (Global Human Settlement Layer)',provides:'Built-up area, population density, urbanization degree',resolution:'10-100 m',link:'https://ghsl.jrc.ec.europa.eu/',types:['population']},
+  'worldpop': {name:'WorldPop',provides:'Gridded population estimates at high resolution',resolution:'100 m',link:'https://www.worldpop.org/',types:['population']},
+  'urban-atlas': {name:'Urban Atlas',provides:'Detailed European urban land use/land cover maps',resolution:'2.5 m',link:'https://land.copernicus.eu/local/urban-atlas',types:['landcover']},
+  'viirs-ntl': {name:'VIIRS Nighttime Lights',provides:'Monthly nighttime light composites for urban and economic analysis',resolution:'500 m',link:'https://eogdata.mines.edu/products/vnl/',types:['optical']},
+  'osm': {name:'OpenStreetMap',provides:'Collaborative vector map data: roads, buildings, POIs, boundaries',resolution:'Vector',link:'https://www.openstreetmap.org/',types:['boundaries']},
+  'gbif': {name:'GBIF',provides:'Global biodiversity species occurrence records',resolution:'Point data',link:'https://www.gbif.org/',types:['ecology']},
+  'copernicus-hrl': {name:'Copernicus High Resolution Layers',provides:'European tree cover, grassland, wetland, water, imperviousness',resolution:'10-20 m',link:'https://land.copernicus.eu/pan-european/high-resolution-layers',types:['landcover']},
+  'global-forest-watch': {name:'Global Forest Watch',provides:'Forest cover, loss, gain, and fire alerts',resolution:'30 m',link:'https://www.globalforestwatch.org/',types:['landcover']},
+  'iucn': {name:'IUCN Red List Spatial Data',provides:'Species range maps for threatened species',resolution:'Vector',link:'https://www.iucnredlist.org/resources/spatial-data-download',types:['ecology']},
+  'onegeology': {name:'OneGeology',provides:'Global geological map data from national surveys',resolution:'Varies',link:'https://onegeology.org/',types:['geology']},
+  'egdi': {name:'EGDI (European Geological Data Infrastructure)',provides:'European geological, mineral, groundwater maps',resolution:'Varies',link:'https://www.europe-geology.eu/',types:['geology']},
+  'usgs-earthquake': {name:'USGS Earthquake Hazards',provides:'Seismicity data, earthquake catalogs, hazard maps',resolution:'Point/Vector',link:'https://earthquake.usgs.gov/',types:['geology']},
+  'cams': {name:'CAMS (Copernicus Atmosphere)',provides:'Air quality forecasts and reanalysis: PM2.5, ozone, NO2',resolution:'~40 km',link:'https://atmosphere.copernicus.eu/',types:['airquality','climate']},
+  'cru-ts': {name:'CRU TS',provides:'Monthly gridded climate observations (1901-present)',resolution:'0.5 deg (~50 km)',link:'https://crudata.uea.ac.uk/cru/data/hrg/',types:['climate']},
+  'e-obs': {name:'E-OBS',provides:'Daily European gridded temperature and precipitation',resolution:'0.1 deg (~10 km)',link:'https://www.ecad.eu/download/ensembles/download.php',types:['climate']},
+  'hungaromet': {name:'HungaroMet Open Data',provides:'Hungarian meteorological observation and forecast data',resolution:'Station/Grid',link:'https://odp.met.hu/',types:['climate']},
+  'ghcn': {name:'GHCN (Global Historical Climatology Network)',provides:'Long-term station-based climate records',resolution:'Station',link:'https://www.ncei.noaa.gov/products/land-based-station/global-historical-climatology-network-daily',types:['climate']},
+  'natural-earth': {name:'Natural Earth',provides:'Public domain vector and raster map data for cartography',resolution:'1:10m - 1:110m',link:'https://www.naturalearthdata.com/',types:['boundaries']}
+};
+
+/* Domain-to-dataset mapping */
+var domainRecommendations = {
+  agriculture: ['sentinel-2','landsat','corine','soilgrids','era5-land','chirps','copernicus-dem'],
+  flood: ['copernicus-dem','hydrosheds','glofas','era5','grace-fo','sentinel-1','corine'],
+  urban: ['ghsl','worldpop','urban-atlas','sentinel-2','viirs-ntl','osm','copernicus-dem'],
+  ecology: ['gbif','copernicus-hrl','corine','sentinel-2','global-forest-watch','iucn'],
+  geology: ['onegeology','egdi','usgs-earthquake','soilgrids','copernicus-dem','sentinel-2','landsat'],
+  climate: ['era5','cams','cru-ts','e-obs','hungaromet','ghcn','chirps'],
+  general: ['sentinel-2','copernicus-dem','osm','corine','natural-earth','landsat'],
+  custom: []
+};
+
+/* Commercial data */
+var commercialDB = {
+  'maxar': {name:'Maxar WorldView',resolution:'30-50 cm',priceMin:15,priceMax:65,unit:'km2',category:'optical-vhr',link:'https://www.maxar.com/'},
+  'pleiades-neo': {name:'Airbus Pleiades Neo',resolution:'30 cm',priceMin:26,priceMax:63,unit:'km2',category:'optical-vhr',link:'https://www.intelligence-airbusds.com/imagery/pleiades-neo/'},
+  'skysat': {name:'Planet SkySat',resolution:'50 cm',priceMin:7,priceMax:10,unit:'km2',category:'optical-vhr',link:'https://www.planet.com/products/hi-res-monitoring/'},
+  'planetscope': {name:'Planet PlanetScope',resolution:'3 m',priceMin:2700,priceMax:2700,unit:'year',category:'optical-hr',link:'https://www.planet.com/products/planet-imagery/'},
+  'spot': {name:'SPOT 6/7',resolution:'1.5 m',priceMin:2.5,priceMax:6,unit:'km2',category:'optical-hr',link:'https://www.intelligence-airbusds.com/imagery/spot/'},
+  'iceye': {name:'ICEYE SAR',resolution:'25 cm - 1 m',priceMin:15,priceMax:100,unit:'km2',category:'sar',link:'https://www.iceye.com/'},
+  'capella': {name:'Capella Space SAR',resolution:'50 cm',priceMin:15,priceMax:60,unit:'km2',category:'sar',link:'https://www.capellaspace.com/'}
+};
+
+/* ══════════════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════════════ */
+var currentStep = 1;
+
+window.goToStep = function(step) {
+  if (step === 2 && !state.domain) return;
+  currentStep = step;
+  document.querySelectorAll('.step-panel').forEach(function(p){ p.classList.remove('visible'); });
+  var panelId = step <= 3 ? 'panelStep' + step : 'panelResults';
+  document.getElementById(panelId).classList.add('visible');
+  updateProgress(step);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+};
+
+function updateProgress(step) {
+  var steps = document.querySelectorAll('.progress-step');
+  var lines = [document.getElementById('pline1'), document.getElementById('pline2'), document.getElementById('pline3')];
+  steps.forEach(function(s, i) {
+    var n = i + 1;
+    s.classList.remove('active', 'done');
+    if (n < step) s.classList.add('done');
+    else if (n === step) s.classList.add('active');
+  });
+  lines.forEach(function(l, i) {
+    l.classList.remove('active', 'done');
+    if (i + 1 < step - 1) l.classList.add('done');
+    else if (i + 1 === step - 1) l.classList.add('active');
+  });
+}
+
+/* ══════════════════════════════════════════════
+   STEP 1 — Domain
+   ══════════════════════════════════════════════ */
+window.selectDomain = function(el) {
+  document.querySelectorAll('.domain-card').forEach(function(c){ c.classList.remove('selected'); });
+  el.classList.add('selected');
+  state.domain = el.getAttribute('data-domain');
+  document.getElementById('btnNext1').disabled = false;
+  applyDomainDefaults(state.domain);
+};
+
+function applyDomainDefaults(domain) {
+  var defaults = {
+    agriculture: {resolution:'medium', frequency:'monthly', history:'5', dataTypes:['optical','climate','soil','dem','landcover']},
+    urban: {resolution:'high', frequency:'monthly', history:'10', dataTypes:['optical','population','dem','landcover','boundaries']},
+    flood: {resolution:'medium', frequency:'daily', history:'30', dataTypes:['dem','sar','climate','hydrology','landcover','soil']},
+    ecology: {resolution:'medium', frequency:'annual', history:'10', dataTypes:['optical','landcover','dem']},
+    geology: {resolution:'medium', frequency:'one-time', history:'current', dataTypes:['optical','dem','soil']},
+    climate: {resolution:'low', frequency:'monthly', history:'30', dataTypes:['climate','airquality']},
+    general: {resolution:'medium', frequency:'annual', history:'current', dataTypes:['optical','dem','boundaries','landcover']},
+    custom: {resolution:'medium', frequency:'monthly', history:'current', dataTypes:[]}
+  };
+  var d = defaults[domain];
+  if (!d) return;
+  state.resolution = d.resolution;
+  state.frequency = d.frequency;
+  state.history = d.history;
+  state.dataTypes = d.dataTypes.slice();
+  syncUIFromState();
+}
+
+/* ══════════════════════════════════════════════
+   STEP 2 — Area
+   ══════════════════════════════════════════════ */
+window.selectAreaPreset = function(el) {
+  document.querySelectorAll('.area-preset').forEach(function(b){ b.classList.remove('selected'); });
+  el.classList.add('selected');
+  var v = parseInt(el.getAttribute('data-area'));
+  if (v > 0) {
+    state.area = v;
+    document.getElementById('areaSlider').value = Math.min(v, 200000);
+    document.getElementById('areaInput').value = v;
+    document.getElementById('areaDisplay').textContent = formatNum(v) + ' km\u00B2';
+  }
+};
+
+window.syncArea = function(source) {
+  var v;
+  if (source === 'slider') {
+    v = parseInt(document.getElementById('areaSlider').value);
+    document.getElementById('areaInput').value = v;
+  } else {
+    v = parseInt(document.getElementById('areaInput').value) || 1;
+    document.getElementById('areaSlider').value = Math.min(v, 200000);
+  }
+  state.area = v;
+  document.getElementById('areaDisplay').textContent = formatNum(v) + ' km\u00B2';
+  document.querySelectorAll('.area-preset').forEach(function(b){ b.classList.remove('selected'); });
+};
+
+/* ══════════════════════════════════════════════
+   STEP 3 — Requirements
+   ══════════════════════════════════════════════ */
+window.selectRadio = function(el, groupId) {
+  var group = document.getElementById(groupId);
+  group.querySelectorAll('.radio-option').forEach(function(o){ o.classList.remove('selected'); });
+  el.classList.add('selected');
+  var val = el.getAttribute('data-value');
+  if (groupId === 'resolutionGroup') state.resolution = val;
+  else if (groupId === 'frequencyGroup') state.frequency = val;
+  else if (groupId === 'historyGroup') state.history = val;
+};
+
+window.toggleCheck = function(el) {
+  // Small delay to let the native checkbox toggle first
+  setTimeout(function(){
+    var cb = el.querySelector('input');
+    var val = cb.value;
+    if (cb.checked) {
+      el.classList.add('selected');
+      if (state.dataTypes.indexOf(val) === -1) state.dataTypes.push(val);
+    } else {
+      el.classList.remove('selected');
+      state.dataTypes = state.dataTypes.filter(function(t){ return t !== val; });
+    }
+  }, 10);
+};
+
+/* ══════════════════════════════════════════════
+   SYNC UI FROM STATE
+   ══════════════════════════════════════════════ */
+function syncUIFromState() {
+  // Resolution
+  var rg = document.getElementById('resolutionGroup');
+  rg.querySelectorAll('.radio-option').forEach(function(o){
+    o.classList.toggle('selected', o.getAttribute('data-value') === state.resolution);
+  });
+  // Frequency
+  var fg = document.getElementById('frequencyGroup');
+  fg.querySelectorAll('.radio-option').forEach(function(o){
+    o.classList.toggle('selected', o.getAttribute('data-value') === state.frequency);
+  });
+  // History
+  var hg = document.getElementById('historyGroup');
+  hg.querySelectorAll('.radio-option').forEach(function(o){
+    o.classList.toggle('selected', o.getAttribute('data-value') === state.history);
+  });
+  // Data types
+  document.querySelectorAll('#dataTypesGrid .checkbox-option').forEach(function(el){
+    var cb = el.querySelector('input');
+    var checked = state.dataTypes.indexOf(cb.value) !== -1;
+    cb.checked = checked;
+    el.classList.toggle('selected', checked);
+  });
+  // Area
+  document.getElementById('areaSlider').value = Math.min(state.area, 200000);
+  document.getElementById('areaInput').value = state.area;
+  document.getElementById('areaDisplay').textContent = formatNum(state.area) + ' km\u00B2';
+  // Region
+  if (state.region) document.getElementById('regionSelect').value = state.region;
+}
+
+/* ══════════════════════════════════════════════
+   SCENARIOS
+   ══════════════════════════════════════════════ */
+window.loadScenario = function(id) {
+  var scenarios = {
+    farm: {domain:'agriculture', area:100, region:'europe', resolution:'medium', frequency:'monthly', history:'5', dataTypes:['optical','climate','soil','dem','landcover']},
+    urban: {domain:'urban', area:500, region:'europe', resolution:'high', frequency:'monthly', history:'10', dataTypes:['optical','population','dem','landcover','boundaries']},
+    flood: {domain:'flood', area:5000, region:'europe', resolution:'medium', frequency:'daily', history:'30', dataTypes:['dem','sar','climate','hydrology','landcover','soil']},
+    national: {domain:'general', area:93000, region:'hungary', resolution:'medium', frequency:'annual', history:'30', dataTypes:['optical','dem','landcover','boundaries']}
+  };
+  var s = scenarios[id];
+  if (!s) return;
+  Object.keys(s).forEach(function(k){ state[k] = Array.isArray(s[k]) ? s[k].slice() : s[k]; });
+
+  // Sync domain cards
+  document.querySelectorAll('.domain-card').forEach(function(c){
+    c.classList.toggle('selected', c.getAttribute('data-domain') === state.domain);
+  });
+  document.getElementById('btnNext1').disabled = false;
+  document.getElementById('regionSelect').value = state.region;
+  syncUIFromState();
+  generateResults();
+};
+
+/* ══════════════════════════════════════════════
+   START OVER
+   ══════════════════════════════════════════════ */
+window.startOver = function() {
+  state = {domain:'',area:100,region:'europe',resolution:'medium',frequency:'monthly',history:'current',dataTypes:[]};
+  document.querySelectorAll('.domain-card').forEach(function(c){ c.classList.remove('selected'); });
+  document.getElementById('btnNext1').disabled = true;
+  syncUIFromState();
+  goToStep(1);
+};
+
+/* ══════════════════════════════════════════════
+   GENERATE RESULTS
+   ══════════════════════════════════════════════ */
+window.generateResults = function() {
+  state.region = document.getElementById('regionSelect').value;
+  renderSummary();
+  renderFreeSources();
+  renderCommercial();
+  renderCostBreakdown();
+  renderStack();
+  goToStep(4);
+};
+
+/* ── Results Summary ──────────────────────── */
+function renderSummary() {
+  var domainLabels = {agriculture:'Agriculture',urban:'Urban Planning',flood:'Flood / Water Risk',ecology:'Ecology / Conservation',geology:'Geology / Mining',climate:'Climate Analysis',general:'General Mapping',custom:'Custom'};
+  var resLabels = {low:'Low (>100 m)',medium:'Medium (10-100 m)',high:'High (1-10 m)','very-high':'Very High (<1 m)'};
+  var freqLabels = {'one-time':'One-time',annual:'Annual',monthly:'Monthly',weekly:'Weekly',daily:'Daily'};
+  var histLabels = {current:'Current only','5':'5 years','10':'10 years','30':'30+ years'};
+  var regionLabels = {global:'Global',europe:'Europe',hungary:'Hungary',germany:'Germany',france:'France',spain:'Spain',italy:'Italy',uk:'United Kingdom',usa:'United States',africa:'Africa',asia:'Asia','south-america':'South America'};
+
+  document.getElementById('resultsSummary').innerHTML =
+    '<div class="summary-item"><span class="s-label">Domain</span><span class="s-value">' + (domainLabels[state.domain]||state.domain) + '</span></div>' +
+    '<div class="summary-item"><span class="s-label">Area</span><span class="s-value">' + formatNum(state.area) + ' km\u00B2</span></div>' +
+    '<div class="summary-item"><span class="s-label">Region</span><span class="s-value">' + (regionLabels[state.region]||state.region) + '</span></div>' +
+    '<div class="summary-item"><span class="s-label">Resolution</span><span class="s-value">' + (resLabels[state.resolution]||state.resolution) + '</span></div>' +
+    '<div class="summary-item"><span class="s-label">Frequency</span><span class="s-value">' + (freqLabels[state.frequency]||state.frequency) + '</span></div>' +
+    '<div class="summary-item"><span class="s-label">History</span><span class="s-value">' + (histLabels[state.history]||state.history) + '</span></div>';
+}
+
+/* ── Tab 1: Free Sources ──────────────────── */
+function renderFreeSources() {
+  var domainRecs = domainRecommendations[state.domain] || [];
+  // Also add data-type-matched sources
+  var allKeys = {};
+  domainRecs.forEach(function(k){ allKeys[k] = true; });
+
+  // Add sources that match selected data types
+  Object.keys(freeDB).forEach(function(k){
+    var ds = freeDB[k];
+    ds.types.forEach(function(t){
+      if (state.dataTypes.indexOf(t) !== -1) allKeys[k] = true;
+    });
+  });
+
+  var keys = Object.keys(allKeys);
+  if (keys.length === 0) {
+    document.getElementById('tabFree').innerHTML = '<div class="info-box"><h4>No specific free sources matched</h4><p>Try selecting data types in Step 3, or choose a specific domain in Step 1.</p></div>';
+    return;
+  }
+
+  var html = '<div class="rec-grid">';
+  keys.forEach(function(k){
+    var ds = freeDB[k];
+    if (!ds) return;
+    html += '<div class="rec-card">' +
+      '<div class="rec-card-title"><span class="rec-badge rec-badge-free">Free</span> <a href="' + esc(ds.link) + '" target="_blank" rel="noopener">' + esc(ds.name) + '</a></div>' +
+      '<div class="rec-card-meta">Resolution: ' + esc(ds.resolution) + '</div>' +
+      '<div class="rec-card-desc">' + esc(ds.provides) + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  document.getElementById('tabFree').innerHTML = html;
+}
+
+/* ── Tab 2: Commercial Alternatives ───────── */
+function renderCommercial() {
+  var items = [];
+  var area = state.area;
+  var acqs = getAcquisitionsPerYear();
+  var years = getYears();
+
+  // Show VHR if resolution is very-high
+  if (state.resolution === 'very-high') {
+    items.push(commercialDB['maxar']);
+    items.push(commercialDB['pleiades-neo']);
+    items.push(commercialDB['skysat']);
+  }
+  // Show HR if resolution is high
+  if (state.resolution === 'high') {
+    items.push(commercialDB['planetscope']);
+    items.push(commercialDB['spot']);
+  }
+  // Show SAR if SAR is needed
+  if (state.dataTypes.indexOf('sar') !== -1) {
+    items.push(commercialDB['iceye']);
+    items.push(commercialDB['capella']);
+  }
+  // If nothing matched, show a note
+  if (items.length === 0 && (state.resolution === 'very-high' || state.resolution === 'high')) {
+    items.push(commercialDB['planetscope']);
+  }
+
+  if (items.length === 0) {
+    document.getElementById('tabCommercial').innerHTML = '<div class="info-box"><h4>No commercial data likely needed</h4><p>Your selected resolution and data types can likely be fulfilled entirely with free data sources. Commercial options become relevant when you need sub-10m optical or high-resolution SAR.</p></div>';
+    return;
+  }
+
+  var html = '<div class="rec-grid">';
+  items.forEach(function(item){
+    if (!item) return;
+    var costStr = '';
+    if (item.unit === 'km2') {
+      var costLow = item.priceMin * area;
+      var costHigh = item.priceMax * area;
+      var totalLow = costLow * acqs * years;
+      var totalHigh = costHigh * acqs * years;
+      costStr = '<div class="rec-card-meta">Per km&sup2;: $' + item.priceMin + ' &ndash; $' + item.priceMax + '</div>' +
+        '<div class="rec-card-meta">Single acquisition (' + formatNum(area) + ' km&sup2;): <strong>$' + formatNum(Math.round(costLow)) + ' &ndash; $' + formatNum(Math.round(costHigh)) + '</strong></div>' +
+        '<div class="rec-card-meta">Total estimate (' + acqs + ' acq/yr &times; ' + years + ' yr): <strong>$' + formatNum(Math.round(totalLow)) + ' &ndash; $' + formatNum(Math.round(totalHigh)) + '</strong></div>';
+    } else {
+      var totalLow2 = item.priceMin * years;
+      costStr = '<div class="rec-card-meta">Subscription: ~$' + formatNum(item.priceMin) + '+/year</div>' +
+        '<div class="rec-card-meta">Total estimate (' + years + ' yr): <strong>~$' + formatNum(Math.round(totalLow2)) + '+</strong></div>';
+    }
+    html += '<div class="rec-card">' +
+      '<div class="rec-card-title"><span class="rec-badge rec-badge-commercial">Commercial</span> <a href="' + esc(item.link) + '" target="_blank" rel="noopener">' + esc(item.name) + '</a></div>' +
+      '<div class="rec-card-meta">Resolution: ' + esc(item.resolution) + '</div>' +
+      costStr +
+    '</div>';
+  });
+  html += '</div>';
+  document.getElementById('tabCommercial').innerHTML = html;
+}
+
+/* ── Tab 3: Cost Breakdown ────────────────── */
+function renderCostBreakdown() {
+  var area = state.area;
+  var years = getYears();
+  var acqs = getAcquisitionsPerYear();
+
+  // Resolution factor (MB per km2)
+  var resFactor = {low:0.01, medium:1, high:10, 'very-high':100};
+  var rf = resFactor[state.resolution] || 1;
+  var bands = state.dataTypes.length || 1;
+
+  // Storage
+  var storageRaw = area * rf * bands * acqs * years; // MB
+  var storageProcessed = storageRaw * 2;
+  var storageGB = storageProcessed / 1024;
+
+  // Cost estimates
+  var freeCost = 0;
+  var storageCost = storageGB > 100 ? Math.round(storageGB * 0.023 * 12) : 0; // ~$0.023/GB/month cloud storage
+
+  // Commercial costs
+  var commLow = 0, commHigh = 0;
+  if (state.resolution === 'very-high') {
+    commLow = 7 * area * acqs * years;
+    commHigh = 65 * area * acqs * years;
+  } else if (state.resolution === 'high') {
+    commLow = 2700 * years;
+    commHigh = 6 * area * acqs * years;
+  }
+
+  var html = '<h3 style="margin-bottom:16px">Estimated Project Costs</h3>';
+
+  html += '<table class="cost-table"><thead><tr><th>Component</th><th>LOW Estimate</th><th>MEDIUM Estimate</th><th>HIGH Estimate</th></tr></thead><tbody>';
+
+  // Data acquisition
+  html += '<tr><td><strong>Data Acquisition</strong><br><span style="font-size:.78rem;color:var(--text-light)">Free sources (Sentinel, Landsat, ERA5, etc.)</span></td>' +
+    '<td class="cost-low">$0 (free)</td><td class="cost-low">$0 (free)</td><td class="cost-low">$0 (free)</td></tr>';
+
+  if (commHigh > 0) {
+    html += '<tr><td><strong>Commercial Imagery</strong><br><span style="font-size:.78rem;color:var(--text-light)">' + acqs + ' acquisitions/yr &times; ' + years + ' years &times; ' + formatNum(area) + ' km&sup2;</span></td>' +
+      '<td class="cost-low">$0 (skip)</td>' +
+      '<td class="cost-med">$' + formatNum(Math.round(commLow)) + '</td>' +
+      '<td class="cost-high">$' + formatNum(Math.round(commHigh)) + '</td></tr>';
+  }
+
+  // Storage
+  html += '<tr><td><strong>Data Storage</strong><br><span style="font-size:.78rem;color:var(--text-light)">' + formatNum(Math.round(storageGB)) + ' GB estimated (' + formatNum(Math.round(storageGB/1024*100)/100) + ' TB)</span></td>' +
+    '<td class="cost-low">$0 (local disk)</td>' +
+    '<td class="cost-med">$' + formatNum(Math.max(storageCost, 50)) + '/yr (cloud)</td>' +
+    '<td class="cost-high">$' + formatNum(Math.round(Math.max(storageCost * 2, 200))) + '/yr (redundant)</td></tr>';
+
+  // Processing
+  html += '<tr><td><strong>Processing</strong><br><span style="font-size:.78rem;color:var(--text-light)">QGIS (free) / GEE / Cloud compute</span></td>' +
+    '<td class="cost-low">$0 (QGIS + GEE free)</td>' +
+    '<td class="cost-med">$500/yr (GEE commercial)</td>' +
+    '<td class="cost-high">$2,000/yr (cloud VMs)</td></tr>';
+
+  // Totals
+  var totalLow = 0;
+  var totalMed = (commLow > 0 ? commLow : 0) + Math.max(storageCost, 50) * years + 500 * years;
+  var totalHigh = commHigh + Math.round(Math.max(storageCost * 2, 200)) * years + 2000 * years;
+
+  html += '<tr class="total-row"><td><strong>TOTAL (' + years + '-year project)</strong></td>' +
+    '<td class="cost-low">$' + formatNum(totalLow) + '</td>' +
+    '<td class="cost-med">$' + formatNum(Math.round(totalMed)) + '</td>' +
+    '<td class="cost-high">$' + formatNum(Math.round(totalHigh)) + '</td></tr>';
+
+  html += '</tbody></table>';
+
+  // Storage detail box
+  html += '<div class="info-box"><h4>Storage Estimate Details</h4><ul>' +
+    '<li>Area: ' + formatNum(area) + ' km&sup2;</li>' +
+    '<li>Resolution factor: ' + rf + ' MB/km&sup2;</li>' +
+    '<li>Data layers: ' + bands + '</li>' +
+    '<li>Acquisitions per year: ' + acqs + '</li>' +
+    '<li>Project duration: ' + years + ' year(s)</li>' +
+    '<li>Raw storage: ' + formatNum(Math.round(storageRaw / 1024)) + ' GB</li>' +
+    '<li>With processed derivatives (&times;2): <strong>' + formatNum(Math.round(storageGB)) + ' GB</strong></li>' +
+  '</ul></div>';
+
+  document.getElementById('tabCost').innerHTML = html;
+}
+
+/* ── Tab 4: Recommended Stack ─────────────── */
+function renderStack() {
+  var region = state.region;
+
+  // Coordinate system
+  var crs = 'WGS 84 (EPSG:4326)';
+  var crsNote = 'Universal standard for global data exchange';
+  if (region === 'europe') { crs = 'ETRS89 / LAEA Europe (EPSG:3035)'; crsNote = 'Equal-area projection for pan-European analysis'; }
+  else if (region === 'hungary') { crs = 'EOV HD72 (EPSG:23700)'; crsNote = 'Hungarian national projection; matches national datasets'; }
+  else if (region === 'germany') { crs = 'ETRS89 / UTM zone 32N (EPSG:25832)'; crsNote = 'Standard German mapping projection'; }
+  else if (region === 'france') { crs = 'RGF93 / Lambert-93 (EPSG:2154)'; crsNote = 'French national projection'; }
+  else if (region === 'uk') { crs = 'OSGB 1936 (EPSG:27700)'; crsNote = 'British National Grid'; }
+  else if (region === 'usa') { crs = 'NAD83 / Conus Albers (EPSG:5070)'; crsNote = 'Equal-area for contiguous US'; }
+
+  var html = '<div class="stack-grid">';
+
+  // Coordinate system card
+  html += '<div class="stack-card"><h4>Coordinate System</h4>' +
+    '<div class="stack-item"><span class="stack-label">Primary CRS</span><span class="stack-value">' + esc(crs) + '</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Rationale</span><span class="stack-value">' + esc(crsNote) + '</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Exchange CRS</span><span class="stack-value">WGS 84 (EPSG:4326)</span></div>' +
+  '</div>';
+
+  // Formats card
+  html += '<div class="stack-card"><h4>Recommended Formats</h4>' +
+    '<div class="stack-item"><span class="stack-label">Raster</span><span class="stack-value">Cloud-Optimized GeoTIFF (COG)</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Vector</span><span class="stack-value">GeoPackage (.gpkg)</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Time Series</span><span class="stack-value">NetCDF / Zarr</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Metadata</span><span class="stack-value">STAC / ISO 19115</span></div>' +
+  '</div>';
+
+  // Processing tools card
+  html += '<div class="stack-card"><h4>Processing Tools</h4>' +
+    '<div class="stack-item"><span class="stack-label">Desktop GIS</span><span class="stack-value">QGIS 3.x (free)</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Cloud Platform</span><span class="stack-value">Google Earth Engine</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Automation</span><span class="stack-value">Python + GDAL/Rasterio</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Data Catalog</span><span class="stack-value">STAC Browser / PySTAC</span></div>' +
+  '</div>';
+
+  // Folder structure card
+  html += '<div class="stack-card"><h4>Suggested Folder Structure</h4>' +
+    '<div class="stack-item"><span class="stack-label">/raw/{source}/</span><span class="stack-value">Original downloads</span></div>' +
+    '<div class="stack-item"><span class="stack-label">/processed/</span><span class="stack-value">Reprojected, clipped, mosaicked</span></div>' +
+    '<div class="stack-item"><span class="stack-label">/derived/</span><span class="stack-value">NDVI, classifications, models</span></div>' +
+    '<div class="stack-item"><span class="stack-label">/metadata/</span><span class="stack-value">STAC catalog, README</span></div>' +
+    '<div class="stack-item"><span class="stack-label">/scripts/</span><span class="stack-value">Processing & analysis code</span></div>' +
+  '</div>';
+
+  // Naming convention card
+  html += '<div class="stack-card"><h4>File Naming Convention</h4>' +
+    '<div class="stack-item"><span class="stack-label">Pattern</span><span class="stack-value">{source}_{YYYYMMDD}_{band}_{res}.tif</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Example</span><span class="stack-value">S2_20260315_B04_10m.tif</span></div>' +
+    '<div class="stack-item"><span class="stack-label">Benefit</span><span class="stack-value">Enables automated batch processing</span></div>' +
+  '</div>';
+
+  html += '</div>';
+  document.getElementById('tabStack').innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════
+   TABS
+   ══════════════════════════════════════════════ */
+window.switchTab = function(el) {
+  document.querySelectorAll('.results-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.tab-content').forEach(function(t){ t.classList.remove('visible'); });
+  el.classList.add('active');
+  var tabId = 'tab' + el.getAttribute('data-tab').charAt(0).toUpperCase() + el.getAttribute('data-tab').slice(1);
+  // map tab names
+  var tabMap = {free:'tabFree',commercial:'tabCommercial',cost:'tabCost',stack:'tabStack'};
+  var target = tabMap[el.getAttribute('data-tab')];
+  if (target) document.getElementById(target).classList.add('visible');
+};
+
+/* ══════════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════════ */
+function getAcquisitionsPerYear() {
+  var map = {'one-time':1, annual:1, monthly:12, weekly:52, daily:365};
+  return map[state.frequency] || 1;
+}
+
+function getYears() {
+  var map = {current:1, '5':5, '10':10, '30':30};
+  return map[state.history] || 1;
+}
+
+function formatNum(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function esc(s) {
+  var d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+})();
+</script>
+</body>
+</html>

@@ -31,20 +31,101 @@
   --shadow:0 1px 3px rgba(0,0,0,.1);
   --shadow-hover:0 4px 12px rgba(0,0,0,.12);
   --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --nav-h:44px;
+  --header-h:56px;
 }
+/* ── Dark Mode ────────────────────────────────────────── */
+[data-theme="dark"]{
+  --hdr:#0d1520;
+  --hdr-accent:#1a2a3e;
+  --body-bg:#181e26;
+  --card-bg:#1e2733;
+  --text:#d0d8e0;
+  --text-light:#8899aa;
+  --border:#2a3545;
+  --accent:#4ba3d9;
+  --accent-hover:#3a8ec4;
+  --green:#2ecc71;
+  --green-bg:#1a3328;
+  --yellow:#f39c12;
+  --yellow-bg:#332a14;
+  --red:#e74c3c;
+  --red-bg:#331a1a;
+  --blue:#4ba3d9;
+  --blue-bg:#1a2a3e;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
+}
+[data-theme="dark"] .badge-category{background:#2a3a52;color:#8ab4e0}
+[data-theme="dark"] .badge-scope{background:#1a3530;color:#5cc5a8}
+[data-theme="dark"] .badge-cat-satellite-eo{background:#1e2e4a;color:#6a9ad4}
+[data-theme="dark"] .badge-cat-climate-weather{background:#3a2a10;color:#d4a050}
+[data-theme="dark"] .badge-cat-soil{background:#2e2518;color:#b89a6a}
+[data-theme="dark"] .badge-cat-hydrology{background:#142e3a;color:#5ab0d4}
+[data-theme="dark"] .badge-cat-biosphere-ecology{background:#1a3020;color:#5cb870}
+[data-theme="dark"] .badge-cat-dem-elevation{background:#2a2418;color:#b8a07a}
+[data-theme="dark"] .badge-cat-geology-geophysics{background:#28203a;color:#9a80b8}
+[data-theme="dark"] .badge-cat-land-use-land-cover{background:#1a2e18;color:#6aaa58}
+[data-theme="dark"] .badge-cat-admin-boundaries{background:#3a1a1a;color:#cc6666}
+[data-theme="dark"] .badge-cat-population-urban{background:#3a2218;color:#cc8050}
+[data-theme="dark"] .badge-cat-air-quality{background:#22223a;color:#8888b8}
+[data-theme="dark"] .badge-cat-ocean-marine{background:#142838;color:#5a98b8}
+[data-theme="dark"] .badge-cat-geodesy-insar{background:#1e2830;color:#7a94a8}
+[data-theme="dark"] .badge-cat-data-platform{background:#1a3030;color:#5aacac}
+[data-theme="dark"] .stats-bar{background:var(--card-bg);border-color:var(--border)}
+[data-theme="dark"] .sidebar{background:var(--card-bg);border-color:var(--border)}
+[data-theme="dark"] .filter-group input[type="text"],
+[data-theme="dark"] .filter-group select{background:#151c24;color:var(--text);border-color:var(--border)}
+[data-theme="dark"] .toggle-group button{background:#151c24;color:var(--text);border-color:var(--border)}
+[data-theme="dark"] .btn-clear{background:#151c24;color:var(--text-light);border-color:var(--border)}
+[data-theme="dark"] .tag{background:#252e38;color:var(--text-light)}
+[data-theme="dark"] .sort-controls select{background:var(--card-bg);color:var(--text);border-color:var(--border)}
+[data-theme="dark"] .cat-chart-bar{background:#253040}
+[data-theme="dark"] .cat-chart-fill{background:var(--accent)}
+[data-theme="dark"] .comparison-tray{background:#0d1520;border-color:var(--border)}
+[data-theme="dark"] .comparison-tray table{color:var(--text)}
+[data-theme="dark"] .comparison-tray th{background:#151c24}
+[data-theme="dark"] .comparison-tray td{border-color:var(--border)}
+
 html{font-size:15px}
 body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
 
+/* ── Navigation Bar ──────────────────────────────────── */
+.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
+.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
+.navbar-links{display:flex;gap:4px}
+.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
+.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
+
 /* ── Header ───────────────────────────────────────────── */
-.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
 .header h1 span{color:#5dade2;margin-right:6px}
-.header-right{margin-left:auto;font-size:.82rem;color:#a0b4c8}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.header-right .subtitle{font-size:.82rem;color:#a0b4c8}
+.btn-dark-toggle{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:5px}
+.btn-dark-toggle:hover{border-color:#5a7a9a;color:#fff}
+.btn-export{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s}
+.btn-export:hover{border-color:#5a7a9a;color:#fff}
 
 /* ── Stats Bar ────────────────────────────────────────── */
 .stats-bar{background:#fff;border-bottom:1px solid var(--border);padding:10px 24px;display:flex;gap:28px;flex-wrap:wrap;font-size:.85rem;color:var(--text-light)}
 .stat{display:flex;align-items:center;gap:6px}
 .stat strong{color:var(--text);font-size:1.05rem}
+
+/* ── Category Chart ──────────────────────────────────── */
+.cat-chart-section{background:var(--card-bg);border-bottom:1px solid var(--border);padding:14px 24px;overflow-x:auto}
+.cat-chart-title{font-size:.8rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light);margin-bottom:10px;font-weight:600}
+.cat-chart{display:flex;gap:6px;align-items:flex-end;height:80px;min-width:max-content}
+.cat-chart-col{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;min-width:48px;transition:opacity .15s}
+.cat-chart-col:hover{opacity:.8}
+.cat-chart-col.active-cat{opacity:1}
+.cat-chart-col.dimmed{opacity:.4}
+.cat-chart-bar{width:36px;border-radius:3px 3px 0 0;background:#e0e6ee;position:relative;transition:all .2s;min-height:2px}
+.cat-chart-fill{position:absolute;bottom:0;left:0;right:0;border-radius:3px 3px 0 0;background:var(--accent);transition:height .3s}
+.cat-chart-label{font-size:.58rem;color:var(--text-light);text-align:center;max-width:56px;line-height:1.15;word-break:break-word}
+.cat-chart-count{font-size:.65rem;font-weight:700;color:var(--accent)}
 
 /* ── Layout ───────────────────────────────────────────── */
 .main{display:flex;flex:1;overflow:hidden}
@@ -73,6 +154,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 }
 .btn-clear:hover{background:#eef1f5;color:var(--text)}
 .match-count{font-size:.82rem;color:var(--text-light);margin-top:4px}
+.search-hint{font-size:.68rem;color:var(--text-light);opacity:.6;margin-top:-4px}
 
 /* ── Sort Bar ─────────────────────────────────────────── */
 .results-header{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px;flex-wrap:wrap;gap:8px}
@@ -86,12 +168,21 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px}
 .card{
   background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;
-  transition:box-shadow .2s,transform .15s;display:flex;flex-direction:column;gap:10px
+  transition:box-shadow .2s,transform .15s;display:flex;flex-direction:column;gap:10px;position:relative
 }
 .card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
-.card-title{font-size:1.05rem;font-weight:600}
+.card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.card-title{font-size:1.05rem;font-weight:600;flex:1}
 .card-title a{color:var(--accent);text-decoration:none}
 .card-title a:hover{text-decoration:underline}
+.card-actions{display:flex;gap:4px;flex-shrink:0}
+.card-action-btn{
+  background:none;border:1px solid var(--border);color:var(--text-light);padding:3px 8px;border-radius:var(--radius);
+  cursor:pointer;font-size:.7rem;font-family:var(--font);transition:all .15s;white-space:nowrap
+}
+.card-action-btn:hover{border-color:var(--accent);color:var(--accent)}
+.card-action-btn.in-compare{background:var(--accent);color:#fff;border-color:var(--accent)}
+.card-operator{font-size:.82rem;font-weight:600;color:var(--text)}
 .badges{display:flex;flex-wrap:wrap;gap:5px}
 .badge{
   display:inline-block;padding:2px 8px;border-radius:10px;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.4px
@@ -105,12 +196,36 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 .card-desc{font-size:.88rem;color:var(--text-light);line-height:1.45}
 .card-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:var(--text-light)}
 .card-meta span::before{margin-right:4px}
-.card-meta .m-spatial::before{content:"📐 "}
-.card-meta .m-temporal::before{content:"🕐 "}
-.card-meta .m-operator::before{content:"🏢 "}
-.card-meta .m-formats::before{content:"📁 "}
+.card-meta .m-spatial::before{content:"Resolution: "}
+.card-meta .m-temporal::before{content:"Frequency: "}
+.card-meta .m-formats::before{content:"Formats: "}
+.card-extra{display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:var(--text-light)}
+.card-extra span::before{margin-right:4px}
+.card-extra .m-coverage::before{content:"Coverage: "}
+.card-extra .m-license::before{content:"License: "}
 .tags{display:flex;flex-wrap:wrap;gap:4px}
 .tag{padding:1px 7px;background:#f0f2f5;color:var(--text-light);border-radius:8px;font-size:.7rem}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 18px;border-radius:var(--radius);font-size:.82rem;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ── Comparison Tray ─────────────────────────────────── */
+.comparison-tray{
+  position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:2px solid var(--accent);
+  box-shadow:0 -4px 20px rgba(0,0,0,.15);z-index:300;padding:14px 24px;
+  transform:translateY(100%);transition:transform .25s ease;max-height:50vh;overflow-y:auto
+}
+.comparison-tray.visible{transform:translateY(0)}
+.comparison-tray-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.comparison-tray-header h3{font-size:.95rem;color:var(--text)}
+.comparison-tray-header .tray-actions{display:flex;gap:8px}
+.btn-tray{padding:5px 12px;font-size:.78rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--card-bg);cursor:pointer;font-family:var(--font);color:var(--text-light);transition:all .15s}
+.btn-tray:hover{background:#eef1f5;color:var(--text)}
+.btn-tray.btn-tray-danger{color:var(--red);border-color:var(--red)}
+.btn-tray.btn-tray-danger:hover{background:var(--red-bg)}
+.comparison-tray table{width:100%;border-collapse:collapse;font-size:.82rem}
+.comparison-tray th{text-align:left;padding:6px 10px;background:#f7f9fb;font-weight:600;color:var(--text-light);font-size:.75rem;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.comparison-tray td{padding:6px 10px;border-top:1px solid var(--border);vertical-align:top;min-width:120px}
+.comparison-tray td:first-child{font-weight:600;color:var(--text-light);white-space:nowrap;width:100px}
 
 /* ── States ───────────────────────────────────────────── */
 .loading,.empty-state{text-align:center;padding:60px 20px;color:var(--text-light)}
@@ -139,32 +254,56 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
 /* ── Responsive ───────────────────────────────────────── */
 @media(max-width:860px){
-  .sidebar{position:fixed;left:-320px;top:56px;bottom:0;z-index:150;transition:left .25s ease;box-shadow:4px 0 16px rgba(0,0,0,.15)}
+  .sidebar{position:fixed;left:-320px;top:calc(var(--nav-h) + var(--header-h));bottom:0;z-index:150;transition:left .25s ease;box-shadow:4px 0 16px rgba(0,0,0,.15)}
   .sidebar.open{left:0}
   .filter-toggle{display:block}
   .cards{grid-template-columns:1fr}
   .content{padding:0 14px 80px}
   .stats-bar{padding:8px 14px;gap:16px}
+  .cat-chart-section{padding:10px 14px}
 }
 @media(max-width:480px){
   .header h1{font-size:1rem}
   .cards{grid-template-columns:1fr}
+  .navbar-brand{font-size:.82rem}
 }
 </style>
 </head>
 <body>
 
+<!-- Navigation Bar -->
+<nav class="navbar">
+  <a href="index.html" class="navbar-brand">Dataset Cadaster</a>
+  <div class="navbar-links">
+    <a href="index.html" class="active">Catalog</a>
+    <a href="estimator.html">GeoEstimator</a>
+  </div>
+</nav>
+
 <!-- Header -->
 <header class="header">
   <h1><span>&#9672;</span>Dataset Cadaster</h1>
-  <div class="header-right">Geospatial &amp; Environmental Data Catalog</div>
+  <div class="header-right">
+    <span class="subtitle">Geospatial &amp; Environmental Data Catalog</span>
+    <button class="btn-export" id="btnExport" title="Export filtered results as CSV">Export CSV</button>
+    <button class="btn-dark-toggle" id="btnDarkToggle" title="Toggle dark/light mode">
+      <span id="darkToggleIcon">&#9789;</span> <span id="darkToggleLabel">Dark</span>
+    </button>
+  </div>
 </header>
 
 <!-- Stats Bar -->
 <div class="stats-bar" id="statsBar">
-  <div class="stat">Platforms: <strong id="statTotal">—</strong></div>
-  <div class="stat">Free: <strong id="statFree">—</strong></div>
-  <div class="stat">With API: <strong id="statApi">—</strong></div>
+  <div class="stat">Platforms: <strong id="statTotal">&#8212;</strong></div>
+  <div class="stat">Free: <strong id="statFree">&#8212;</strong></div>
+  <div class="stat">With API: <strong id="statApi">&#8212;</strong></div>
+  <div class="stat">Categories: <strong id="statCats">&#8212;</strong></div>
+</div>
+
+<!-- Category Bar Chart -->
+<div class="cat-chart-section" id="catChartSection" style="display:none">
+  <div class="cat-chart-title">Datasets by Category <span id="catChartFilter" style="font-size:.72rem;color:var(--accent);cursor:pointer;display:none">&mdash; click bar to filter, click again to clear</span></div>
+  <div class="cat-chart" id="catChart"></div>
 </div>
 
 <!-- Main Layout -->
@@ -176,7 +315,8 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
     <div class="filter-group">
       <label for="searchBox">Search</label>
-      <input type="text" id="searchBox" placeholder="Name, description, tags, operator…">
+      <input type="text" id="searchBox" placeholder="Name, description, tags, operator...">
+      <div class="search-hint">Press <kbd>/</kbd> to focus</div>
     </div>
 
     <div class="filter-group">
@@ -250,7 +390,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     <div id="resultsArea">
       <div class="loading" id="loadingState">
         <div class="spinner"></div>
-        <div>Loading datasets…</div>
+        <div>Loading datasets...</div>
       </div>
     </div>
   </section>
@@ -258,6 +398,21 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
 <!-- Mobile filter toggle -->
 <button class="filter-toggle" id="filterToggle" aria-label="Toggle filters">&#9776;</button>
+
+<!-- Comparison Tray -->
+<div class="comparison-tray" id="comparisonTray">
+  <div class="comparison-tray-header">
+    <h3>Compare Datasets (<span id="compareCount">0</span>/4)</h3>
+    <div class="tray-actions">
+      <button class="btn-tray btn-tray-danger" id="btnClearCompare">Clear comparison</button>
+      <button class="btn-tray" id="btnCloseCompare">Close</button>
+    </div>
+  </div>
+  <div id="comparisonTable"></div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
 
 <script>
 (function(){
@@ -267,6 +422,8 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   let allData = [];
   let filtered = [];
   let searchTimer = null;
+  let compareList = []; // max 4
+  let activeCatFilter = ""; // from chart click
 
   /* ── DOM refs ────────────────────────────────────── */
   const $ = id => document.getElementById(id);
@@ -282,8 +439,76 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   const btnClear       = $("btnClear");
   const sidebar        = $("sidebar");
   const filterToggle   = $("filterToggle");
+  const comparisonTray = $("comparisonTray");
+  const comparisonTable= $("comparisonTable");
+  const compareCount   = $("compareCount");
+  const btnClearCompare= $("btnClearCompare");
+  const btnCloseCompare= $("btnCloseCompare");
+  const btnExport      = $("btnExport");
+  const btnDarkToggle  = $("btnDarkToggle");
+  const catChart       = $("catChart");
+  const catChartSection= $("catChartSection");
+  const catChartFilter = $("catChartFilter");
+  const toastEl        = $("toast");
 
   let apiValue = "";
+
+  /* ── Dark Mode ──────────────────────────────────── */
+  function initDarkMode(){
+    const saved = localStorage.getItem("dc-theme");
+    if(saved === "dark") setDarkMode(true);
+  }
+  function setDarkMode(on){
+    document.documentElement.setAttribute("data-theme", on ? "dark" : "");
+    localStorage.setItem("dc-theme", on ? "dark" : "light");
+    $("darkToggleIcon").textContent = on ? "\u2600" : "\u263D";
+    $("darkToggleLabel").textContent = on ? "Light" : "Dark";
+  }
+  function toggleDarkMode(){
+    const current = document.documentElement.getAttribute("data-theme") === "dark";
+    setDarkMode(!current);
+  }
+  initDarkMode();
+  btnDarkToggle.addEventListener("click", toggleDarkMode);
+
+  /* ── Toast ──────────────────────────────────────── */
+  let toastTimer = null;
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2000);
+  }
+
+  /* ── URL Hash Sync ──────────────────────────────── */
+  function readHashFilters(){
+    const hash = location.hash.replace(/^#/,"");
+    if(!hash) return;
+    const params = new URLSearchParams(hash);
+    if(params.has("q"))        searchBox.value = params.get("q");
+    if(params.has("category")) filterCategory.value = params.get("category");
+    if(params.has("scope"))    filterScope.value = params.get("scope");
+    if(params.has("cost"))     filterCost.value = params.get("cost");
+    if(params.has("api")){
+      apiValue = params.get("api");
+      apiToggle.querySelectorAll("button").forEach(b => {
+        b.classList.toggle("active", b.dataset.value === apiValue);
+      });
+    }
+    if(params.has("sort"))     sortSelect.value = params.get("sort");
+  }
+
+  function writeHashFilters(){
+    const params = new URLSearchParams();
+    if(searchBox.value.trim())   params.set("q", searchBox.value.trim());
+    if(filterCategory.value)     params.set("category", filterCategory.value);
+    if(filterScope.value)        params.set("scope", filterScope.value);
+    if(filterCost.value)         params.set("cost", filterCost.value);
+    if(apiValue)                 params.set("api", apiValue);
+    if(sortSelect.value !== "alpha") params.set("sort", sortSelect.value);
+    const str = params.toString();
+    history.replaceState(null, "", str ? "#" + str : location.pathname + location.search);
+  }
 
   /* ── Fetch Data ──────────────────────────────────── */
   fetch("../datasets.json")
@@ -291,6 +516,8 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     .then(data => {
       allData = Array.isArray(data) ? data : (data.datasets || []);
       updateStats();
+      buildCategoryChart();
+      readHashFilters();
       applyFilters();
     })
     .catch(err => {
@@ -303,6 +530,58 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     $("statTotal").textContent = allData.length;
     $("statFree").textContent  = allData.filter(d => d.cost === "free").length;
     $("statApi").textContent   = allData.filter(d => d.apiSupport).length;
+    const cats = new Set(allData.map(d => d.category).filter(Boolean));
+    $("statCats").textContent  = cats.size;
+  }
+
+  /* ── Category Bar Chart ─────────────────────────── */
+  function buildCategoryChart(){
+    const counts = {};
+    allData.forEach(d => {
+      const c = d.category || "uncategorized";
+      counts[c] = (counts[c]||0) + 1;
+    });
+    const entries = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+    if(!entries.length) return;
+    const max = entries[0][1];
+    catChartSection.style.display = "";
+    catChartFilter.style.display = "inline";
+
+    catChart.innerHTML = entries.map(([cat, count]) => {
+      const pct = Math.max(8, (count / max) * 100);
+      const label = formatCategory(cat);
+      return '<div class="cat-chart-col" data-cat="' + esc(cat) + '" title="' + esc(label) + ': ' + count + '">' +
+        '<div class="cat-chart-count">' + count + '</div>' +
+        '<div class="cat-chart-bar" style="height:60px"><div class="cat-chart-fill" style="height:' + pct + '%"></div></div>' +
+        '<div class="cat-chart-label">' + esc(label) + '</div>' +
+      '</div>';
+    }).join("");
+  }
+
+  catChart.addEventListener("click", e => {
+    const col = e.target.closest(".cat-chart-col");
+    if(!col) return;
+    const cat = col.dataset.cat;
+    if(activeCatFilter === cat){
+      // clear chart filter
+      activeCatFilter = "";
+      filterCategory.value = "";
+    } else {
+      activeCatFilter = cat;
+      filterCategory.value = cat;
+    }
+    updateChartHighlight();
+    applyFilters();
+  });
+
+  function updateChartHighlight(){
+    catChart.querySelectorAll(".cat-chart-col").forEach(col => {
+      col.classList.remove("active-cat","dimmed");
+      if(activeCatFilter){
+        if(col.dataset.cat === activeCatFilter) col.classList.add("active-cat");
+        else col.classList.add("dimmed");
+      }
+    });
   }
 
   /* ── Filtering ───────────────────────────────────── */
@@ -332,6 +611,11 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
     sortResults();
     render();
+    writeHashFilters();
+
+    // sync chart highlight with category dropdown
+    activeCatFilter = cat;
+    updateChartHighlight();
   }
 
   /* ── Sorting ─────────────────────────────────────── */
@@ -367,6 +651,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     const costClass = d.cost === "free" ? "badge-free" : d.cost === "freemium" ? "badge-freemium" : "badge-commercial";
     const catClass  = "badge-cat-" + (d.category || "");
     const catLabel  = formatCategory(d.category);
+    const inCompare = compareList.some(c => c.name === d.name);
 
     let badges = '<span class="badge ' + catClass + '">' + esc(catLabel) + '</span>';
     if(d.scope) badges += '<span class="badge badge-scope">' + esc(d.scope) + '</span>';
@@ -376,8 +661,11 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     let meta = "";
     if(d.spatialResolution)  meta += '<span class="m-spatial">' + esc(d.spatialResolution) + '</span>';
     if(d.temporalResolution) meta += '<span class="m-temporal">' + esc(d.temporalResolution) + '</span>';
-    if(d.operator)           meta += '<span class="m-operator">' + esc(d.operator) + '</span>';
     if(d.formats)            meta += '<span class="m-formats">' + esc(d.formats) + '</span>';
+
+    let extra = "";
+    if(d.temporalCoverage) extra += '<span class="m-coverage">' + esc(d.temporalCoverage) + '</span>';
+    if(d.license)          extra += '<span class="m-license">' + esc(d.license) + '</span>';
 
     let tags = "";
     if(d.tags && d.tags.length){
@@ -385,10 +673,18 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     }
 
     return '<div class="card">' +
-      '<div class="card-title"><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.name) + '</a></div>' +
+      '<div class="card-header">' +
+        '<div class="card-title"><a href="' + esc(d.url) + '" target="_blank" rel="noopener">' + esc(d.name) + '</a></div>' +
+        '<div class="card-actions">' +
+          '<button class="card-action-btn" onclick="window._copyLink(\'' + esc(d.url||"").replace(/'/g,"\\'") + '\')" title="Copy dataset URL">Copy link</button>' +
+          '<button class="card-action-btn' + (inCompare ? ' in-compare' : '') + '" onclick="window._toggleCompare(\'' + esc(d.name||"").replace(/'/g,"\\'") + '\')" title="' + (inCompare ? 'Remove from comparison' : 'Add to comparison') + '">' + (inCompare ? 'Comparing' : 'Compare') + '</button>' +
+        '</div>' +
+      '</div>' +
+      (d.operator ? '<div class="card-operator">' + esc(d.operator) + '</div>' : '') +
       '<div class="badges">' + badges + '</div>' +
       (d.description ? '<div class="card-desc">' + esc(d.description) + '</div>' : '') +
       (meta ? '<div class="card-meta">' + meta + '</div>' : '') +
+      (extra ? '<div class="card-extra">' + extra + '</div>' : '') +
       tags +
     '</div>';
   }
@@ -399,6 +695,125 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
             .replace(/\bEo\b/,"EO").replace(/\bDem\b/,"DEM").replace(/\bInsar\b/,"InSAR");
   }
 
+  /* ── Copy Link ──────────────────────────────────── */
+  window._copyLink = function(url){
+    if(!url){ showToast("No URL available"); return; }
+    navigator.clipboard.writeText(url).then(() => {
+      showToast("Link copied to clipboard");
+    }).catch(() => {
+      showToast("Could not copy link");
+    });
+  };
+
+  /* ── Comparison ─────────────────────────────────── */
+  window._toggleCompare = function(name){
+    const idx = compareList.findIndex(c => c.name === name);
+    if(idx >= 0){
+      compareList.splice(idx, 1);
+    } else {
+      if(compareList.length >= 4){
+        showToast("Maximum 4 datasets for comparison");
+        return;
+      }
+      const d = allData.find(d => d.name === name);
+      if(d) compareList.push(d);
+    }
+    render();
+    renderComparisonTray();
+  };
+
+  function renderComparisonTray(){
+    compareCount.textContent = compareList.length;
+    if(!compareList.length){
+      comparisonTray.classList.remove("visible");
+      return;
+    }
+    comparisonTray.classList.add("visible");
+
+    const fields = [
+      {key:"name", label:"Name"},
+      {key:"spatialResolution", label:"Resolution"},
+      {key:"cost", label:"Cost"},
+      {key:"apiSupport", label:"API", fmt: v => v ? "Yes" : "No"},
+      {key:"formats", label:"Formats"},
+      {key:"temporalCoverage", label:"Temporal Coverage"},
+      {key:"temporalResolution", label:"Frequency"},
+      {key:"operator", label:"Operator"},
+      {key:"license", label:"License"},
+    ];
+
+    let html = '<table><thead><tr><th></th>';
+    compareList.forEach(d => { html += '<th>' + esc(d.name) + '</th>'; });
+    html += '</tr></thead><tbody>';
+    fields.forEach(f => {
+      html += '<tr><td>' + f.label + '</td>';
+      compareList.forEach(d => {
+        let val = d[f.key] || "—";
+        if(f.fmt) val = f.fmt(d[f.key]);
+        html += '<td>' + esc(String(val)) + '</td>';
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table>';
+    comparisonTable.innerHTML = html;
+  }
+
+  btnClearCompare.addEventListener("click", () => {
+    compareList = [];
+    render();
+    renderComparisonTray();
+  });
+  btnCloseCompare.addEventListener("click", () => {
+    comparisonTray.classList.remove("visible");
+  });
+
+  /* ── CSV Export ──────────────────────────────────── */
+  btnExport.addEventListener("click", () => {
+    if(!filtered.length){ showToast("No data to export"); return; }
+    const cols = ["name","category","scope","cost","apiSupport","spatialResolution","temporalResolution","temporalCoverage","operator","formats","license","description","url","tags"];
+    const csvRows = [cols.join(",")];
+    filtered.forEach(d => {
+      const row = cols.map(c => {
+        let v = d[c];
+        if(c === "apiSupport") v = v ? "yes" : "no";
+        if(c === "tags" && Array.isArray(v)) v = v.join("; ");
+        v = String(v || "");
+        // escape for CSV
+        if(v.includes(",") || v.includes('"') || v.includes("\n")){
+          v = '"' + v.replace(/"/g,'""') + '"';
+        }
+        return v;
+      });
+      csvRows.push(row.join(","));
+    });
+    const blob = new Blob([csvRows.join("\n")], {type:"text/csv;charset=utf-8;"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "dataset_cadaster_export.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast("Exported " + filtered.length + " datasets");
+  });
+
+  /* ── Keyboard Shortcuts ─────────────────────────── */
+  document.addEventListener("keydown", e => {
+    // "/" to focus search (unless already in an input)
+    if(e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey){
+      const tag = (e.target.tagName||"").toLowerCase();
+      if(tag === "input" || tag === "textarea" || tag === "select") return;
+      e.preventDefault();
+      searchBox.focus();
+      searchBox.select();
+    }
+    // Escape to blur search
+    if(e.key === "Escape"){
+      if(document.activeElement === searchBox){
+        searchBox.blur();
+      }
+    }
+  });
+
   /* ── Event Wiring ────────────────────────────────── */
   searchBox.addEventListener("input", () => {
     clearTimeout(searchTimer);
@@ -407,6 +822,12 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
   [filterCategory, filterScope, filterCost, sortSelect].forEach(el => {
     el.addEventListener("change", applyFilters);
+  });
+
+  // sync chart when category dropdown changes directly
+  filterCategory.addEventListener("change", () => {
+    activeCatFilter = filterCategory.value;
+    updateChartHighlight();
   });
 
   apiToggle.addEventListener("click", e => {
@@ -424,9 +845,11 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     filterScope.value = "";
     filterCost.value = "";
     apiValue = "";
+    activeCatFilter = "";
     apiToggle.querySelectorAll("button").forEach(b => b.classList.remove("active"));
     apiToggle.querySelector('[data-value=""]').classList.add("active");
     sortSelect.value = "alpha";
+    updateChartHighlight();
     applyFilters();
   });
 
@@ -436,6 +859,12 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
        && !sidebar.contains(e.target) && e.target !== filterToggle){
       sidebar.classList.remove("open");
     }
+  });
+
+  /* ── Hash Change ─────────────────────────────────── */
+  window.addEventListener("hashchange", () => {
+    readHashFilters();
+    applyFilters();
   });
 
 })();

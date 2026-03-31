@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dataset Cadaster — Geospatial &amp; Environmental Data Discovery</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr:#1a2634;
+  --hdr-accent:#2e4057;
+  --body-bg:#f0f2f5;
+  --card-bg:#fff;
+  --text:#2c3e50;
+  --text-light:#5a6a7a;
+  --border:#dce1e8;
+  --accent:#2980b9;
+  --accent-hover:#1f6da0;
+  --green:#27ae60;
+  --green-bg:#e8f8f0;
+  --yellow:#e67e22;
+  --yellow-bg:#fdf3e6;
+  --red:#c0392b;
+  --red-bg:#fbeaea;
+  --blue:#2980b9;
+  --blue-bg:#e4f0fa;
+  --teal:#16a085;
+  --hero-dark:#1a1a2e;
+  --hero-mid:#16213e;
+  --radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* ── Animations ───────────────────────────────────────── */
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.fade-in.visible{opacity:1;transform:translateY(0)}
+
+/* ── Navigation ───────────────────────────────────────── */
+.nav{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.nav-brand{font-size:1.25rem;font-weight:600;letter-spacing:.3px;color:#fff;text-decoration:none}
+.nav-brand span{color:#5dade2;margin-right:6px}
+.nav-links{margin-left:auto;display:flex;gap:24px;font-size:.9rem}
+.nav-links a{color:#a0b4c8;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:#fff;text-decoration:none}
+
+/* ── Hero ─────────────────────────────────────────────── */
+.hero{
+  background:var(--hero-dark);
+  color:#fff;
+  padding:100px 24px 80px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+/* Topographic contour lines — CSS only */
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.07;
+  background:
+    repeating-radial-gradient(ellipse 600px 300px at 20% 50%, transparent 0, transparent 58px, rgba(255,255,255,.5) 60px, transparent 62px),
+    repeating-radial-gradient(ellipse 500px 350px at 70% 40%, transparent 0, transparent 44px, rgba(255,255,255,.4) 46px, transparent 48px),
+    repeating-radial-gradient(ellipse 700px 250px at 50% 70%, transparent 0, transparent 36px, rgba(255,255,255,.3) 38px, transparent 40px),
+    repeating-radial-gradient(ellipse 400px 400px at 80% 20%, transparent 0, transparent 52px, rgba(255,255,255,.35) 54px, transparent 56px),
+    repeating-radial-gradient(ellipse 550px 280px at 30% 80%, transparent 0, transparent 42px, rgba(255,255,255,.3) 44px, transparent 46px);
+  pointer-events:none;
+}
+.hero-content{position:relative;z-index:1;max-width:780px;margin:0 auto}
+.hero h1{font-size:3rem;font-weight:700;margin-bottom:16px;letter-spacing:-.5px}
+.hero h1 span{color:#5dade2}
+.hero p{font-size:1.2rem;color:#a0b4c8;line-height:1.6;margin-bottom:36px;max-width:640px;margin-left:auto;margin-right:auto}
+.hero-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:14px 32px;border-radius:var(--radius);font-size:1rem;font-weight:600;
+  font-family:var(--font);border:none;cursor:pointer;transition:all .2s;text-decoration:none
+}
+.btn:hover{text-decoration:none}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 14px rgba(41,128,185,.35)}
+.btn-secondary{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.3)}
+.btn-secondary:hover{border-color:#fff;transform:translateY(-1px)}
+
+/* ── Section Shared ───────────────────────────────────── */
+.section{padding:64px 24px;max-width:1200px;margin:0 auto;width:100%}
+.section-title{font-size:1.6rem;font-weight:700;text-align:center;margin-bottom:8px;color:var(--text)}
+.section-sub{text-align:center;color:var(--text-light);margin-bottom:40px;font-size:.95rem;max-width:600px;margin-left:auto;margin-right:auto}
+
+/* ── Stats ────────────────────────────────────────────── */
+.stats-section{background:#fff;border-bottom:1px solid var(--border);border-top:1px solid var(--border);padding:48px 24px}
+.stats-grid{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;max-width:900px;margin:0 auto}
+.stat-box{text-align:center;min-width:140px}
+.stat-number{font-size:2.6rem;font-weight:700;color:var(--accent);line-height:1}
+.stat-label{font-size:.88rem;color:var(--text-light);margin-top:6px}
+
+/* ── Domains Grid ─────────────────────────────────────── */
+.domains-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+.domain-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 16px;text-align:center;cursor:pointer;
+  transition:box-shadow .2s,transform .15s,border-color .2s;text-decoration:none;color:var(--text);display:block
+}
+.domain-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px);border-color:var(--accent);text-decoration:none}
+.domain-icon{font-size:1.8rem;margin-bottom:8px;display:block}
+.domain-name{font-size:.9rem;font-weight:600;margin-bottom:4px}
+.domain-count{font-size:.78rem;color:var(--text-light)}
+
+/* ── Domain card colors (left border accent) ──────────── */
+.domain-card[data-cat="satellite-eo"]{border-left:3px solid #2a5298}
+.domain-card[data-cat="climate-weather"]{border-left:3px solid #b45309}
+.domain-card[data-cat="soil"]{border-left:3px solid #7a5c2e}
+.domain-card[data-cat="hydrology"]{border-left:3px solid #1a6fa0}
+.domain-card[data-cat="biosphere-ecology"]{border-left:3px solid #2d7a3e}
+.domain-card[data-cat="dem-elevation"]{border-left:3px solid #5c4a2f}
+.domain-card[data-cat="geology-geophysics"]{border-left:3px solid #5a3d7a}
+.domain-card[data-cat="land-use-land-cover"]{border-left:3px solid #3a6b30}
+.domain-card[data-cat="admin-boundaries"]{border-left:3px solid #993333}
+.domain-card[data-cat="population-urban"]{border-left:3px solid #a04a20}
+.domain-card[data-cat="air-quality"]{border-left:3px solid #4a4a72}
+.domain-card[data-cat="ocean-marine"]{border-left:3px solid #1a5276}
+.domain-card[data-cat="geodesy-insar"]{border-left:3px solid #3a4f63}
+.domain-card[data-cat="data-platform"]{border-left:3px solid #2a6e6e}
+
+/* ── Tools Section ────────────────────────────────────── */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px}
+.tool-card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);
+  padding:32px 28px;display:flex;flex-direction:column;gap:14px;
+  transition:box-shadow .2s,transform .15s
+}
+.tool-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.tool-card h3{font-size:1.2rem;font-weight:700;color:var(--text)}
+.tool-card p{font-size:.92rem;color:var(--text-light);line-height:1.55;flex:1}
+.tool-card .btn{align-self:flex-start;padding:10px 24px;font-size:.9rem}
+
+/* ── About ────────────────────────────────────────────── */
+.about{background:#fff;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.about-inner{max-width:680px;margin:0 auto;text-align:center}
+.about-inner p{font-size:.95rem;color:var(--text-light);line-height:1.65;margin-bottom:14px}
+.about-inner .cite{background:var(--body-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 20px;font-size:.85rem;color:var(--text);font-style:italic;margin-top:16px;display:inline-block}
+
+/* ── Footer ───────────────────────────────────────────── */
+.footer{background:var(--hdr);color:#a0b4c8;padding:32px 24px;text-align:center;font-size:.82rem;margin-top:auto}
+.footer-inner{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.footer-links{display:flex;gap:20px;justify-content:center}
+.footer-links a{color:#5dade2;text-decoration:none}
+.footer-links a:hover{color:#fff}
+.footer-note{color:#5a6a7a;font-size:.76rem}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media(max-width:768px){
+  .hero{padding:64px 16px 56px}
+  .hero h1{font-size:2rem}
+  .hero p{font-size:1rem}
+  .stats-grid{gap:24px}
+  .stat-number{font-size:2rem}
+  .domains-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .domain-card{padding:14px 10px}
+  .tools-grid{grid-template-columns:1fr}
+  .section{padding:48px 16px}
+  .nav-links{gap:14px;font-size:.82rem}
+}
+@media(max-width:480px){
+  .hero h1{font-size:1.6rem}
+  .hero p{font-size:.92rem}
+  .btn{padding:12px 22px;font-size:.9rem}
+  .stats-grid{gap:16px}
+  .stat-box{min-width:100px}
+  .stat-number{font-size:1.6rem}
+  .domains-grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="landing.html" class="nav-brand"><span>&#9672;</span>Dataset Cadaster</a>
+  <div class="nav-links">
+    <a href="index.html">Catalog</a>
+    <a href="estimator.html">GeoEstimator</a>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-content">
+    <h1><span>&#9672;</span> Dataset Cadaster</h1>
+    <p>A curated catalog of 500+ geospatial and environmental data sources &mdash; with a cost estimation tool for your next project</p>
+    <div class="hero-btns">
+      <a href="index.html" class="btn btn-primary">Browse Catalog &rarr;</a>
+      <a href="estimator.html" class="btn btn-secondary">Estimate Data Costs &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="stats-grid fade-in">
+    <div class="stat-box">
+      <div class="stat-number" id="statSources">500+</div>
+      <div class="stat-label">Data Sources</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number" id="statDomains">14</div>
+      <div class="stat-label">Domains Covered</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number" id="statFree">350+</div>
+      <div class="stat-label">Free &amp; Open Access</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number" id="statCountries">9</div>
+      <div class="stat-label">Countries Mapped</div>
+    </div>
+  </div>
+</section>
+
+<!-- Domains Grid -->
+<section class="section" id="domains">
+  <h2 class="section-title">Browse by Domain</h2>
+  <p class="section-sub">Explore data sources organized across 14 thematic categories</p>
+  <div class="domains-grid" id="domainsGrid">
+    <!-- Populated by JS, with static fallback -->
+  </div>
+</section>
+
+<!-- Tools Section -->
+<section class="section" id="tools">
+  <h2 class="section-title">Tools</h2>
+  <p class="section-sub">Two ways to find the data you need</p>
+  <div class="tools-grid">
+    <div class="tool-card fade-in">
+      <h3>Dataset Catalog</h3>
+      <p>Search, filter, and compare 500+ data sources. Filter by domain, cost, API support, and geographic scope.</p>
+      <a href="index.html" class="btn btn-primary">Browse &rarr;</a>
+    </div>
+    <div class="tool-card fade-in">
+      <h3>GeoEstimator</h3>
+      <p>Plan your data needs. Get cost estimates, find the right free sources, and build your data budget for grant proposals.</p>
+      <a href="estimator.html" class="btn btn-primary">Try it &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section class="about">
+  <div class="section about-inner" style="padding-top:48px;padding-bottom:48px">
+    <h2 class="section-title">About</h2>
+    <p>Built to help researchers, students, and professionals find the right geospatial data for their work. All information is curated and verified against primary sources.</p>
+    <p>This tool is free to use. If you find it useful, please cite:</p>
+    <div class="cite">[Citation placeholder &mdash; update with DOI or reference when available]</div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>Dataset Cadaster &copy; 2026 | Data sources verified as of March 2026</div>
+    <div class="footer-links">
+      <a href="#">GitHub</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-note">Built with vanilla HTML/CSS/JS &mdash; no frameworks, no tracking, no cookies</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ── Domain definitions ────────────────────────────── */
+  var domains = [
+    {key:"satellite-eo",     icon:"\uD83D\uDEF0\uFE0F", name:"Satellite EO"},
+    {key:"climate-weather",  icon:"\uD83C\uDF26\uFE0F", name:"Climate & Weather"},
+    {key:"soil",             icon:"\uD83E\uDEA8",       name:"Soil"},
+    {key:"hydrology",        icon:"\uD83D\uDCA7",       name:"Hydrology"},
+    {key:"biosphere-ecology",icon:"\uD83C\uDF3F",       name:"Biosphere & Ecology"},
+    {key:"dem-elevation",    icon:"\u26F0\uFE0F",       name:"DEM & Elevation"},
+    {key:"geology-geophysics",icon:"\uD83D\uDC8E",      name:"Geology & Geophysics"},
+    {key:"land-use-land-cover",icon:"\uD83D\uDDFA\uFE0F",name:"Land Use / Land Cover"},
+    {key:"admin-boundaries", icon:"\uD83C\uDFDB\uFE0F", name:"Admin Boundaries"},
+    {key:"population-urban", icon:"\uD83C\uDFD9\uFE0F", name:"Population & Urban"},
+    {key:"air-quality",      icon:"\uD83C\uDF2B\uFE0F", name:"Air Quality"},
+    {key:"ocean-marine",     icon:"\uD83C\uDF0A",       name:"Ocean & Marine"},
+    {key:"geodesy-insar",    icon:"\uD83D\uDCE1",       name:"Geodesy & InSAR"},
+    {key:"data-platform",    icon:"\u2601\uFE0F",       name:"Data Platforms"}
+  ];
+
+  var domainsGrid = document.getElementById("domainsGrid");
+  var counts = {};
+
+  /* ── Render domain cards (static first, counts updated after fetch) */
+  function renderDomains(){
+    domainsGrid.innerHTML = domains.map(function(d){
+      var c = counts[d.key];
+      var countText = c !== undefined ? c + " sources" : "";
+      return '<a class="domain-card fade-in" data-cat="' + d.key + '" href="index.html#category=' + d.key + '">' +
+        '<span class="domain-icon">' + d.icon + '</span>' +
+        '<div class="domain-name">' + d.name + '</div>' +
+        '<div class="domain-count">' + countText + '</div>' +
+      '</a>';
+    }).join("");
+    // Re-observe new elements
+    observeAll();
+  }
+
+  renderDomains();
+
+  /* ── Fetch datasets.json for live counts ────────────── */
+  fetch("../datasets.json")
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(data){
+      var all = Array.isArray(data) ? data : (data.datasets || []);
+
+      // Update stat numbers
+      var srcEl = document.getElementById("statSources");
+      var freeEl = document.getElementById("statFree");
+      var domEl = document.getElementById("statDomains");
+      var cntEl = document.getElementById("statCountries");
+
+      if(srcEl) srcEl.textContent = all.length > 0 ? all.length : "500+";
+      if(freeEl){
+        var freeCount = all.filter(function(d){ return d.cost === "free"; }).length;
+        freeEl.textContent = freeCount > 0 ? freeCount : "350+";
+      }
+
+      // Count categories
+      var catSet = {};
+      var countrySet = {};
+      all.forEach(function(d){
+        if(d.category){
+          catSet[d.category] = true;
+          counts[d.category] = (counts[d.category] || 0) + 1;
+        }
+        if(d.countries){
+          (Array.isArray(d.countries) ? d.countries : [d.countries]).forEach(function(c){ countrySet[c] = true; });
+        }
+      });
+      var domCount = Object.keys(catSet).length;
+      if(domEl && domCount > 0) domEl.textContent = domCount;
+      var cCount = Object.keys(countrySet).length;
+      if(cntEl && cCount > 0) cntEl.textContent = cCount;
+
+      renderDomains();
+    })
+    .catch(function(){
+      // Keep static placeholder values
+    });
+
+  /* ── Scroll animations (IntersectionObserver) ──────── */
+  var observer;
+  if("IntersectionObserver" in window){
+    observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },{threshold:0.1, rootMargin:"0px 0px -40px 0px"});
+  }
+
+  function observeAll(){
+    if(!observer) {
+      // Fallback: just show everything
+      document.querySelectorAll(".fade-in").forEach(function(el){ el.classList.add("visible"); });
+      return;
+    }
+    document.querySelectorAll(".fade-in:not(.visible)").forEach(function(el){
+      observer.observe(el);
+    });
+  }
+  observeAll();
+
+})();
+</script>
+</body>
+</html>
