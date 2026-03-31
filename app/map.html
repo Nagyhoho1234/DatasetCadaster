@@ -137,6 +137,32 @@ a:hover{text-decoration:underline}
 /* ── Region rectangles ────────────────────────────────── */
 .europe-rect{stroke:var(--accent);stroke-width:2;fill:rgba(41,128,185,.08);cursor:pointer}
 
+/* ── Auto-detect banner ──────────────────────────────── */
+.auto-detect-banner{
+  padding:8px 16px;border-bottom:1px solid var(--border);flex-shrink:0;
+  background:var(--blue-bg);font-size:.82rem;color:var(--text);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.auto-detect-banner .detect-label{font-weight:600;color:var(--accent)}
+.auto-detect-banner .detect-counts{color:var(--text-light);font-size:.76rem;margin-top:2px}
+.auto-detect-banner .show-all-toggle{
+  padding:4px 10px;border-radius:var(--radius);border:1px solid var(--accent);
+  cursor:pointer;font:inherit;font-size:.75rem;background:var(--card-bg);color:var(--accent);
+  transition:all .2s;white-space:nowrap;
+}
+.auto-detect-banner .show-all-toggle:hover,
+.auto-detect-banner .show-all-toggle.active{background:var(--accent);color:#fff}
+
+/* ── Pulse animation for auto-detected marker ────────── */
+@keyframes marker-pulse{
+  0%{box-shadow:0 0 0 0 rgba(41,128,185,.6)}
+  70%{box-shadow:0 0 0 18px rgba(41,128,185,0)}
+  100%{box-shadow:0 0 0 0 rgba(41,128,185,0)}
+}
+.leaflet-marker-pulse{
+  animation:marker-pulse 1s ease-out 2;
+}
+
 /* ── Responsive ───────────────────────────────────────── */
 @media(max-width:900px){
   .sidebar{width:320px}
@@ -187,6 +213,13 @@ a:hover{text-decoration:underline}
       <h2 id="sidebarTitle">Datasets</h2>
       <input type="text" class="sidebar-search" id="searchBox" placeholder="Search datasets or countries..." />
     </div>
+    <div class="auto-detect-banner" id="autoDetectBanner" style="display:none">
+      <div>
+        <div class="detect-label" id="detectLabel">Showing datasets for: —</div>
+        <div class="detect-counts" id="detectCounts"></div>
+      </div>
+      <button class="show-all-toggle" id="btnShowAll">Show All</button>
+    </div>
     <div class="sidebar-controls">
       <button class="toggle-btn" id="btnGlobal">Show Global Datasets</button>
       <button class="toggle-btn" id="btnEurope">Europe</button>
@@ -206,31 +239,64 @@ a:hover{text-decoration:underline}
 (function(){
 "use strict";
 
-/* ── Country centroids & metadata ─────────────────────── */
+/* ── Country centroids, bounding boxes & metadata ────── */
 var COUNTRIES = {
-  HU: {name:"Hungary",       lat:47.16, lng:19.50, region:"europe"},
-  AT: {name:"Austria",        lat:47.52, lng:14.55, region:"europe"},
-  SK: {name:"Slovakia",       lat:48.67, lng:19.70, region:"europe"},
-  CZ: {name:"Czechia",        lat:49.82, lng:15.47, region:"europe"},
-  PL: {name:"Poland",         lat:51.92, lng:19.15, region:"europe"},
-  RO: {name:"Romania",        lat:45.94, lng:24.97, region:"europe"},
-  HR: {name:"Croatia",        lat:45.10, lng:15.20, region:"europe"},
-  SI: {name:"Slovenia",       lat:46.15, lng:14.99, region:"europe"},
-  RS: {name:"Serbia",         lat:44.02, lng:21.01, region:"europe"},
-  DE: {name:"Germany",        lat:51.17, lng:10.45, region:"europe"},
-  FR: {name:"France",         lat:46.23, lng:2.21,  region:"europe"},
-  NL: {name:"Netherlands",    lat:52.13, lng:5.29,  region:"europe"},
-  GB: {name:"United Kingdom", lat:55.38, lng:-3.44, region:"europe"},
-  NO: {name:"Norway",         lat:60.47, lng:8.47,  region:"europe"},
-  SE: {name:"Sweden",         lat:60.13, lng:18.64, region:"europe"},
-  FI: {name:"Finland",        lat:61.92, lng:25.75, region:"europe"},
-  CH: {name:"Switzerland",    lat:46.82, lng:8.23,  region:"europe"},
-  ES: {name:"Spain",          lat:40.46, lng:-3.75, region:"europe"},
-  IT: {name:"Italy",          lat:41.87, lng:12.57, region:"europe"},
-  US: {name:"United States",  lat:37.09, lng:-95.71, region:"americas"}
+  /* Europe */
+  HU: {name:"Hungary",       lat:47.16, lng:19.50, region:"europe", bounds:{latMin:45.7,latMax:48.6,lonMin:16.1,lonMax:22.9}},
+  AT: {name:"Austria",        lat:47.52, lng:14.55, region:"europe", bounds:{latMin:46.4,latMax:49.0,lonMin:9.5,lonMax:17.2}},
+  SK: {name:"Slovakia",       lat:48.67, lng:19.70, region:"europe", bounds:{latMin:47.7,latMax:49.6,lonMin:16.8,lonMax:22.6}},
+  CZ: {name:"Czechia",        lat:49.82, lng:15.47, region:"europe", bounds:{latMin:48.6,latMax:51.1,lonMin:12.1,lonMax:18.9}},
+  PL: {name:"Poland",         lat:51.92, lng:19.15, region:"europe", bounds:{latMin:49.0,latMax:54.8,lonMin:14.1,lonMax:24.2}},
+  RO: {name:"Romania",        lat:45.94, lng:24.97, region:"europe", bounds:{latMin:43.6,latMax:48.3,lonMin:20.3,lonMax:29.7}},
+  HR: {name:"Croatia",        lat:45.10, lng:15.20, region:"europe", bounds:{latMin:42.4,latMax:46.6,lonMin:13.5,lonMax:19.4}},
+  SI: {name:"Slovenia",       lat:46.15, lng:14.99, region:"europe", bounds:{latMin:45.4,latMax:46.9,lonMin:13.4,lonMax:16.6}},
+  RS: {name:"Serbia",         lat:44.02, lng:21.01, region:"europe", bounds:{latMin:42.2,latMax:46.2,lonMin:18.8,lonMax:23.0}},
+  DE: {name:"Germany",        lat:51.17, lng:10.45, region:"europe", bounds:{latMin:47.3,latMax:55.1,lonMin:5.9,lonMax:15.0}},
+  FR: {name:"France",         lat:46.23, lng:2.21,  region:"europe", bounds:{latMin:41.3,latMax:51.1,lonMin:-5.1,lonMax:9.6}},
+  NL: {name:"Netherlands",    lat:52.13, lng:5.29,  region:"europe", bounds:{latMin:50.8,latMax:53.5,lonMin:3.4,lonMax:7.2}},
+  GB: {name:"United Kingdom", lat:55.38, lng:-3.44, region:"europe", bounds:{latMin:49.9,latMax:60.9,lonMin:-8.2,lonMax:1.8}},
+  NO: {name:"Norway",         lat:60.47, lng:8.47,  region:"europe", bounds:{latMin:58.0,latMax:71.2,lonMin:4.5,lonMax:31.2}},
+  SE: {name:"Sweden",         lat:60.13, lng:18.64, region:"europe", bounds:{latMin:55.3,latMax:69.1,lonMin:11.1,lonMax:24.2}},
+  FI: {name:"Finland",        lat:61.92, lng:25.75, region:"europe", bounds:{latMin:59.8,latMax:70.1,lonMin:20.6,lonMax:31.6}},
+  CH: {name:"Switzerland",    lat:46.82, lng:8.23,  region:"europe", bounds:{latMin:45.8,latMax:47.8,lonMin:5.9,lonMax:10.5}},
+  ES: {name:"Spain",          lat:40.46, lng:-3.75, region:"europe", bounds:{latMin:36.0,latMax:43.8,lonMin:-9.3,lonMax:4.3}},
+  IT: {name:"Italy",          lat:41.87, lng:12.57, region:"europe", bounds:{latMin:36.6,latMax:47.1,lonMin:6.6,lonMax:18.5}},
+  /* Americas */
+  US: {name:"United States",  lat:37.09, lng:-95.71, region:"americas", bounds:{latMin:24.5,latMax:49.4,lonMin:-124.8,lonMax:-66.9}},
+  CA: {name:"Canada",         lat:56.13, lng:-106.35,region:"americas", bounds:{latMin:41.7,latMax:83.1,lonMin:-141.0,lonMax:-52.6}},
+  BR: {name:"Brazil",         lat:-14.24,lng:-51.93, region:"americas", bounds:{latMin:-33.8,latMax:5.3,lonMin:-73.9,lonMax:-34.8}},
+  MX: {name:"Mexico",         lat:23.63, lng:-102.55,region:"americas", bounds:{latMin:14.5,latMax:32.7,lonMin:-118.4,lonMax:-86.7}},
+  AR: {name:"Argentina",      lat:-38.42,lng:-63.62, region:"americas", bounds:{latMin:-55.1,latMax:-21.8,lonMin:-73.6,lonMax:-53.6}},
+  CL: {name:"Chile",          lat:-35.68,lng:-71.54, region:"americas", bounds:{latMin:-56.0,latMax:-17.5,lonMin:-75.6,lonMax:-66.4}},
+  CO: {name:"Colombia",       lat:4.57,  lng:-74.30, region:"americas", bounds:{latMin:-4.2,latMax:13.4,lonMin:-79.0,lonMax:-66.9}},
+  /* Asia */
+  JP: {name:"Japan",          lat:36.20, lng:138.25, region:"asia", bounds:{latMin:24.0,latMax:45.5,lonMin:122.9,lonMax:153.9}},
+  CN: {name:"China",          lat:35.86, lng:104.20, region:"asia", bounds:{latMin:18.2,latMax:53.6,lonMin:73.5,lonMax:134.8}},
+  IN: {name:"India",          lat:20.59, lng:78.96,  region:"asia", bounds:{latMin:6.7,latMax:35.5,lonMin:68.2,lonMax:97.4}},
+  KR: {name:"South Korea",    lat:35.91, lng:127.77, region:"asia", bounds:{latMin:33.1,latMax:38.6,lonMin:124.6,lonMax:131.9}},
+  ID: {name:"Indonesia",      lat:-0.79, lng:113.92, region:"asia", bounds:{latMin:-11.0,latMax:6.1,lonMin:95.0,lonMax:141.0}},
+  TR: {name:"Turkey",         lat:38.96, lng:35.24,  region:"asia", bounds:{latMin:36.0,latMax:42.1,lonMin:26.0,lonMax:44.8}},
+  IL: {name:"Israel",         lat:31.05, lng:34.85,  region:"asia", bounds:{latMin:29.5,latMax:33.3,lonMin:34.3,lonMax:35.9}},
+  /* Africa */
+  ZA: {name:"South Africa",   lat:-30.56,lng:22.94,  region:"africa", bounds:{latMin:-34.8,latMax:-22.1,lonMin:16.5,lonMax:32.9}},
+  KE: {name:"Kenya",          lat:-0.02, lng:37.91,  region:"africa", bounds:{latMin:-4.7,latMax:5.0,lonMin:33.9,lonMax:41.9}},
+  NG: {name:"Nigeria",        lat:9.08,  lng:8.68,   region:"africa", bounds:{latMin:4.3,latMax:13.9,lonMin:2.7,lonMax:14.7}},
+  EG: {name:"Egypt",          lat:26.82, lng:30.80,  region:"africa", bounds:{latMin:22.0,latMax:31.7,lonMin:24.7,lonMax:36.9}},
+  /* Oceania */
+  AU: {name:"Australia",      lat:-25.27,lng:133.78, region:"oceania", bounds:{latMin:-43.6,latMax:-10.7,lonMin:113.2,lonMax:153.6}},
+  NZ: {name:"New Zealand",    lat:-40.90,lng:174.89, region:"oceania", bounds:{latMin:-47.3,latMax:-34.4,lonMin:166.5,lonMax:178.6}}
 };
 
 var EUROPE_BOUNDS = [[35, -12], [72, 45]];
+
+/* ── Continent bounds for auto-detect ────────────────── */
+var CONTINENT_BOUNDS = {
+  europe:   {latMin:35, latMax:72, lonMin:-12, lonMax:45},
+  americas: {latMin:-56, latMax:84, lonMin:-142, lonMax:-34},
+  asia:     {latMin:6, latMax:54, lonMin:26, lonMax:154},
+  africa:   {latMin:-35, latMax:38, lonMin:-18, lonMax:52},
+  oceania:  {latMin:-48, latMax:-10, lonMin:110, lonMax:180}
+};
 
 /* ── State ────────────────────────────────────────────── */
 var allDatasets = [];
@@ -238,6 +304,10 @@ var filteredDatasets = [];
 var currentFilter = {type: null, country: null, includeGlobal: false};
 var markers = {};
 var map, europeRect;
+var manualOverride = false;   /* true when user clicked a marker/button */
+var showAllOverride = false;  /* true when "Show All" toggle is active */
+var moveendTimer = null;      /* for debounce */
+var lastAutoCountry = null;   /* to avoid redundant re-renders */
 
 /* ── Initialize Map ───────────────────────────────────── */
 map = L.map("map",{zoomControl:true,worldCopyJump:true}).setView([48, 15], 4);
@@ -303,6 +373,9 @@ function createMarkers(countryCounts){
     );
 
     marker.on("click", function(){
+      manualOverride = true;
+      showAllOverride = false;
+      document.getElementById("btnShowAll").classList.remove("active");
       filterByCountry(code);
     });
 
@@ -341,13 +414,14 @@ fetch("../datasets.json")
   });
 
 /* ── Filter functions ─────────────────────────────────── */
-function filterByCountry(code){
+function filterByCountry(code, opts){
+  opts = opts || {};
   var c = COUNTRIES[code];
   if(!c) return;
 
   currentFilter = {type:"country", country:code, includeGlobal:false};
 
-  /* Datasets for this country: national + europe (if european) + global (if toggled) */
+  /* Datasets for this country: national + regional/continental + global */
   filteredDatasets = allDatasets.filter(function(d){
     if(d.scope === "national" && d.country === code) return true;
     if(d.scope === "europe" && c.region === "europe") return true;
@@ -357,18 +431,22 @@ function filterByCountry(code){
 
   document.getElementById("sidebarTitle").textContent = c.name + " Datasets";
   highlightMarker(code);
+  updateAutoDetectBanner(code);
   applySearch();
   updateStats(c.name);
 
-  /* Pan to country */
-  map.setView([c.lat, c.lng], 6, {animate:true});
+  if(!opts.noPan){
+    /* Pan to country */
+    map.setView([c.lat, c.lng], 6, {animate:true});
+  }
 
   /* Open sidebar on mobile */
   sidebar.classList.remove("collapsed");
   sidebarToggle.innerHTML = "&#9664;";
 }
 
-function filterByRegion(region){
+function filterByRegion(region, opts){
+  opts = opts || {};
   currentFilter = {type:"region", country:null, includeGlobal:false};
 
   filteredDatasets = allDatasets.filter(function(d){
@@ -380,10 +458,13 @@ function filterByRegion(region){
 
   document.getElementById("sidebarTitle").textContent = "European Datasets";
   clearHighlight();
+  updateAutoDetectBanner(null, "Europe");
   applySearch();
   updateStats("Europe");
 
-  map.fitBounds(EUROPE_BOUNDS, {padding:[30,30], animate:true});
+  if(!opts.noPan){
+    map.fitBounds(EUROPE_BOUNDS, {padding:[30,30], animate:true});
+  }
   sidebar.classList.remove("collapsed");
   sidebarToggle.innerHTML = "&#9664;";
 }
@@ -397,6 +478,7 @@ function showGlobalDatasets(){
 
   document.getElementById("sidebarTitle").textContent = "Global Datasets";
   clearHighlight();
+  updateAutoDetectBanner(null, "Global");
   applySearch();
   updateStats("Global");
 
