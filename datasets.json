@@ -964,6 +964,32 @@
     ]
   },
   {
+    "id": "ciesin-pm25-grids-sedac",
+    "name": "CIESIN PM2.5 Grids (SEDAC)",
+    "url": "https://sedac.ciesin.columbia.edu",
+    "category": "air-quality",
+    "subcategory": "satellite-derived",
+    "scope": "global",
+    "country": null,
+    "operator": "NASA SEDAC",
+    "dataType": "Global gridded PM2.5 and NO2",
+    "spatialResolution": "0.01 deg",
+    "temporalResolution": "annual",
+    "temporalCoverage": "1998-present",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "GeoTIFF, NetCDF",
+    "license": null,
+    "description": "Global annual PM2.5 and NO2 grids widely used in health studies",
+    "tags": [
+      "PM2.5",
+      "NO2",
+      "health",
+      "gridded"
+    ]
+  },
+  {
     "id": "clcplus-backbone",
     "name": "CLCplus Backbone",
     "url": "https://land.copernicus.eu/en/products/clc-backbone",
@@ -3690,6 +3716,32 @@
     "id": "france-cadastre"
   },
   {
+    "id": "france-datagouvfr",
+    "name": "France data.gouv.fr",
+    "url": "https://www.data.gouv.fr",
+    "category": "admin-boundaries",
+    "subcategory": "national-sdi",
+    "scope": "national",
+    "country": "FR",
+    "operator": "IGN / Etalab",
+    "dataType": "French admin boundaries, cadastral, topo",
+    "spatialResolution": "all levels",
+    "temporalResolution": "continuous",
+    "temporalCoverage": "latest",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "REST, WMS, WFS",
+    "formats": "GeoJSON, SHP, GeoPackage",
+    "license": "Open License",
+    "description": "French open data portal with communes, departments, regions, cadastral, BD TOPO",
+    "tags": [
+      "France",
+      "cadastral",
+      "admin",
+      "open-data"
+    ]
+  },
+  {
     "id": "france-rge-alti",
     "name": "France RGE ALTI",
     "url": "https://geoservices.ign.fr/",
@@ -5134,6 +5186,31 @@
     "id": "helcom-baltic-marine"
   },
   {
+    "id": "helcom-map-service",
+    "name": "HELCOM Map Service",
+    "url": "https://maps.helcom.fi",
+    "category": "ocean-marine",
+    "subcategory": "regional",
+    "scope": "regional",
+    "country": null,
+    "operator": "HELCOM",
+    "dataType": "Baltic Sea environmental monitoring",
+    "spatialResolution": "station/grid",
+    "temporalResolution": "varies",
+    "temporalCoverage": "varies",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "WMS/WFS",
+    "formats": "GIS formats",
+    "license": null,
+    "description": "Baltic Sea eutrophication, hazardous substances, biodiversity indicators",
+    "tags": [
+      "Baltic",
+      "environmental",
+      "monitoring"
+    ]
+  },
+  {
     "id": "hgi-cgs-croatia",
     "name": "HGI-CGS (Croatia)",
     "url": "https://www.hgi-cgs.hr/",
@@ -6176,6 +6253,32 @@
     "id": "landscan-global"
   },
   {
+    "id": "lechner-tudaskozpont",
+    "name": "Lechner Tudaskozpont",
+    "url": "https://lfrankl.lechnerkozpont.hu",
+    "category": "admin-boundaries",
+    "subcategory": "national-sdi",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Lechner Tudaskozpont",
+    "dataType": "Hungarian cadastral, topo, ortho",
+    "spatialResolution": "parcel-level",
+    "temporalResolution": "continuous",
+    "temporalCoverage": "latest",
+    "cost": "freemium",
+    "apiSupport": true,
+    "apiProtocol": "WMS, WFS",
+    "formats": "SHP, GeoJSON",
+    "license": null,
+    "description": "Hungarian national mapping agency: cadastral parcels, topo maps, orthophotos, DTM",
+    "tags": [
+      "Hungary",
+      "cadastral",
+      "topo",
+      "ortho"
+    ]
+  },
+  {
     "id": "lechner-geoshop",
     "name": "Lechner Tudaskozpont (Geoshop)",
     "url": "https://geoshop.hu/",
@@ -6445,6 +6548,31 @@
       "elevation",
       "hydrology",
       "error-corrected"
+    ]
+  },
+  {
+    "id": "meta-high-resolution-population",
+    "name": "Meta High Resolution Population",
+    "url": "https://dataforgood.facebook.com/",
+    "category": "population-urban",
+    "subcategory": "population-grid",
+    "scope": "global",
+    "country": null,
+    "operator": "Meta",
+    "dataType": "AI-derived population at 30m",
+    "spatialResolution": "30m",
+    "temporalResolution": "single epoch",
+    "temporalCoverage": "2019-2022",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "GeoTIFF, CSV",
+    "license": null,
+    "description": "Very high resolution population from AI building detection + census",
+    "tags": [
+      "population",
+      "AI",
+      "high-resolution"
     ]
   },
   {
@@ -7151,6 +7279,31 @@
     "id": "noaa-digital-coast"
   },
   {
+    "id": "noaa-etopo",
+    "name": "NOAA ETOPO",
+    "url": "https://www.ncei.noaa.gov/products/etopo-global-relief-model",
+    "category": "ocean-marine",
+    "subcategory": "bathymetry",
+    "scope": "global",
+    "country": null,
+    "operator": "NOAA NCEI",
+    "dataType": "Combined bathymetry + topography",
+    "spatialResolution": "15 arc-sec",
+    "temporalResolution": "periodic",
+    "temporalCoverage": "2022",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "THREDDS/OPeNDAP",
+    "formats": "NetCDF, GeoTIFF",
+    "license": "Public domain",
+    "description": "Global relief model combining ocean bathymetry and land topography",
+    "tags": [
+      "bathymetry",
+      "topography",
+      "relief"
+    ]
+  },
+  {
     "id": "noaa-ncei",
     "name": "NOAA NCEI",
     "url": "https://www.ncei.noaa.gov",
@@ -7745,6 +7898,31 @@
     "id": "osm-overpass-api"
   },
   {
+    "id": "ospar-data-information",
+    "name": "OSPAR Data Information",
+    "url": "https://odims.ospar.org",
+    "category": "ocean-marine",
+    "subcategory": "regional",
+    "scope": "regional",
+    "country": null,
+    "operator": "OSPAR Commission",
+    "dataType": "NE Atlantic environmental monitoring",
+    "spatialResolution": "station",
+    "temporalResolution": "varies",
+    "temporalCoverage": "varies",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "WMS/WFS",
+    "formats": "GIS formats",
+    "license": null,
+    "description": "NE Atlantic contaminants, eutrophication, biodiversity assessments",
+    "tags": [
+      "Atlantic",
+      "environmental",
+      "monitoring"
+    ]
+  },
+  {
     "name": "OSPAR NE Atlantic",
     "url": "https://www.ospar.org/",
     "category": "ocean-marine",
@@ -7795,6 +7973,32 @@
       "environment",
       "statistics",
       "education"
+    ]
+  },
+  {
+    "id": "overture-maps",
+    "name": "Overture Maps",
+    "url": "https://overturemaps.org",
+    "category": "admin-boundaries",
+    "subcategory": "multi-domain",
+    "scope": "global",
+    "country": null,
+    "operator": "Linux Foundation",
+    "dataType": "Buildings, places, transport, admin boundaries",
+    "spatialResolution": "individual features",
+    "temporalResolution": "quarterly",
+    "temporalCoverage": "2023-present",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "S3, Azure, DuckDB",
+    "formats": "GeoParquet",
+    "license": "CDLA Permissive 2.0",
+    "description": "Merged vector data (buildings, roads, places, admin) in cloud-native format",
+    "tags": [
+      "buildings",
+      "roads",
+      "admin",
+      "cloud-native"
     ]
   },
   {
@@ -7931,6 +8135,32 @@
       "vhr",
       "commercial",
       "airbus"
+    ]
+  },
+  {
+    "id": "poland-gugik-geoportal",
+    "name": "Poland GUGiK Geoportal",
+    "url": "https://mapy.geoportal.gov.pl",
+    "category": "admin-boundaries",
+    "subcategory": "national-sdi",
+    "scope": "national",
+    "country": "PL",
+    "operator": "GUGiK",
+    "dataType": "Polish cadastral, topo, ortho, DEM",
+    "spatialResolution": "parcel-level",
+    "temporalResolution": "continuous",
+    "temporalCoverage": "latest",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "WMS, WFS, WMTS",
+    "formats": "GML, SHP",
+    "license": null,
+    "description": "Comprehensive Polish geoportal with cadastral, topo, ortho, NMT open data",
+    "tags": [
+      "Poland",
+      "cadastral",
+      "topo",
+      "ortho"
     ]
   },
   {
@@ -8468,6 +8698,34 @@
       "methane",
       "tropomi",
       "copernicus"
+    ]
+  },
+  {
+    "id": "sentinel-5p-tropomi",
+    "name": "Sentinel-5P TROPOMI",
+    "url": "https://s5phub.copernicus.eu",
+    "category": "air-quality",
+    "subcategory": "satellite",
+    "scope": "global",
+    "country": null,
+    "operator": "ESA / Copernicus",
+    "dataType": "Atmospheric trace gas columns from satellite",
+    "spatialResolution": "3.5x5.5 km",
+    "temporalResolution": "daily",
+    "temporalCoverage": "2017-present",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "OData",
+    "formats": "NetCDF",
+    "license": "Copernicus License",
+    "description": "NO2, O3, SO2, CO, CH4, HCHO, aerosol index from TROPOMI",
+    "tags": [
+      "NO2",
+      "O3",
+      "SO2",
+      "CH4",
+      "TROPOMI",
+      "satellite"
     ]
   },
   {
@@ -9542,6 +9800,31 @@
     ]
   },
   {
+    "id": "urban-atlas-copernicus",
+    "name": "Urban Atlas (Copernicus)",
+    "url": "https://land.copernicus.eu/local/urban-atlas",
+    "category": "population-urban",
+    "subcategory": "urban-lulc",
+    "scope": "europe",
+    "country": null,
+    "operator": "Copernicus / EEA",
+    "dataType": "Urban land use/land cover for ~800 FUAs",
+    "spatialResolution": "10m",
+    "temporalResolution": "multi-epoch",
+    "temporalCoverage": "2006-2018",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "GPKG, SHP",
+    "license": null,
+    "description": "Detailed LULC for ~800 European functional urban areas",
+    "tags": [
+      "urban",
+      "land-use",
+      "cities"
+    ]
+  },
+  {
     "name": "US EPA AirNow",
     "url": "https://www.airnow.gov/",
     "category": "air-quality",
@@ -9783,6 +10066,31 @@
       "cities"
     ],
     "id": "who-air-quality-database"
+  },
+  {
+    "id": "whos-on-first",
+    "name": "Who's on First",
+    "url": "https://www.whosonfirst.org",
+    "category": "admin-boundaries",
+    "subcategory": "gazetteer",
+    "scope": "global",
+    "country": null,
+    "operator": "Mapzen / Linux Foundation",
+    "dataType": "Hierarchical place gazetteer",
+    "spatialResolution": "neighbourhood to country",
+    "temporalResolution": "continuous",
+    "temporalCoverage": "latest",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "REST, SQLite",
+    "formats": "GeoJSON",
+    "license": "CC-BY 4.0",
+    "description": "Hierarchical place gazetteer with stable IDs, neighbourhood-level detail",
+    "tags": [
+      "gazetteer",
+      "places",
+      "hierarchy"
+    ]
   },
   {
     "name": "Who's on First Gazetteer",
@@ -10054,6 +10362,31 @@
       "sentinel"
     ],
     "id": "wsf-world-settlement-footprint"
+  },
+  {
+    "id": "wsf-world-settlement-footprint-dlr",
+    "name": "WSF World Settlement Footprint (DLR)",
+    "url": "https://geoservice.dlr.de/web/maps/eoc:wsf",
+    "category": "population-urban",
+    "subcategory": "built-up",
+    "scope": "global",
+    "country": null,
+    "operator": "DLR",
+    "dataType": "Settlement extent + evolution + 3D",
+    "spatialResolution": "10m",
+    "temporalResolution": "multi-epoch",
+    "temporalCoverage": "1985-2019",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "WMS/WFS",
+    "formats": "GeoTIFF",
+    "license": null,
+    "description": "Global settlement extent from SAR/optical with building height/volume",
+    "tags": [
+      "settlement",
+      "evolution",
+      "3D"
+    ]
   },
   {
     "id": "zbgis-slovakia",
