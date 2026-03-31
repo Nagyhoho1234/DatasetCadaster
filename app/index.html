@@ -34,6 +34,27 @@
   --nav-h:44px;
   --header-h:56px;
 }
+/* ── Price Update Modal ───────────────────────────────── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:none;align-items:center;justify-content:center}
+.modal-overlay.visible{display:flex}
+.modal{background:var(--card-bg);border-radius:10px;padding:28px 32px;max-width:520px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.25);position:relative}
+.modal h3{margin-bottom:16px;color:var(--text);font-size:1.15rem}
+.modal-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:1.4rem;color:var(--text-light);cursor:pointer}
+.modal-close:hover{color:var(--text)}
+.modal label{display:block;margin-bottom:4px;font-size:.85rem;color:var(--text-light);font-weight:600}
+.modal input,.modal select,.modal textarea{width:100%;padding:8px 10px;margin-bottom:14px;border:1px solid var(--border);border-radius:var(--radius);font:inherit;font-size:.9rem;background:var(--body-bg);color:var(--text)}
+.modal textarea{resize:vertical;min-height:60px}
+.modal-row{display:flex;gap:12px}
+.modal-row>div{flex:1}
+.modal-actions{display:flex;gap:10px;margin-top:8px;justify-content:flex-end}
+.modal-actions button{padding:8px 18px;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;font:inherit;font-size:.88rem}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)!important}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-secondary{background:var(--card-bg);color:var(--text)}
+.btn-secondary:hover{background:var(--body-bg)}
+.price-update-btn{background:none;border:1px dashed var(--yellow);color:var(--yellow);padding:2px 8px;border-radius:var(--radius);cursor:pointer;font-size:.75rem;white-space:nowrap}
+.price-update-btn:hover{background:var(--yellow-bg);border-style:solid}
+.pending-badge{display:inline-block;background:var(--yellow-bg);color:var(--yellow);font-size:.7rem;padding:1px 6px;border-radius:3px;margin-left:6px}
 /* ── Dark Mode ────────────────────────────────────────── */
 [data-theme="dark"]{
   --hdr:#0d1520;
@@ -411,6 +432,42 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <div id="comparisonTable"></div>
 </div>
 
+<!-- Price Update Modal -->
+<div class="modal-overlay" id="priceModal">
+  <div class="modal">
+    <button class="modal-close" id="priceModalClose">&times;</button>
+    <h3>&#128176; Update Price Info</h3>
+    <p style="font-size:.85rem;color:var(--text-light);margin-bottom:16px">Help keep pricing data accurate. Your update will be reviewed by the maintainer.</p>
+    <input type="hidden" id="pmDatasetId">
+    <label>Dataset</label>
+    <input type="text" id="pmDatasetName" readonly style="background:var(--body-bg);opacity:.7">
+    <div class="modal-row">
+      <div>
+        <label>Cost Model</label>
+        <select id="pmCostModel">
+          <option value="free">Free</option>
+          <option value="freemium">Freemium</option>
+          <option value="commercial">Commercial</option>
+          <option value="regulated">Regulated</option>
+        </select>
+      </div>
+      <div>
+        <label>Price (e.g. $15-30/km&sup2;)</label>
+        <input type="text" id="pmPrice" placeholder="e.g. $15-30/km&sup2; or Free">
+      </div>
+    </div>
+    <label>Source URL (where you found this price)</label>
+    <input type="text" id="pmSourceUrl" placeholder="https://...">
+    <label>Notes (optional)</label>
+    <textarea id="pmNotes" placeholder="Any extra context, e.g. pricing tier, date checked..."></textarea>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="pmCancel">Cancel</button>
+      <button class="btn-secondary" id="pmSaveLocal">Save Locally</button>
+      <button class="btn-primary" id="pmSubmitGH">Submit via GitHub</button>
+    </div>
+  </div>
+</div>
+
 <!-- Toast notification -->
 <div class="toast" id="toast"></div>
 
@@ -656,6 +713,8 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     let badges = '<span class="badge ' + catClass + '">' + esc(catLabel) + '</span>';
     if(d.scope) badges += '<span class="badge badge-scope">' + esc(d.scope) + '</span>';
     badges += '<span class="badge ' + costClass + '">' + esc(d.cost || "?") + '</span>';
+    const pending = getPendingUpdate(d.id);
+    if(pending) badges += '<span class="pending-badge" title="User-submitted update pending review">updated: ' + esc(pending.price || pending.costModel) + '</span>';
     if(d.apiSupport) badges += '<span class="badge badge-api">API</span>';
 
     let meta = "";
@@ -678,6 +737,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
         '<div class="card-actions">' +
           '<button class="card-action-btn" onclick="window._copyLink(\'' + esc(d.url||"").replace(/'/g,"\\'") + '\')" title="Copy dataset URL">Copy link</button>' +
           '<button class="card-action-btn' + (inCompare ? ' in-compare' : '') + '" onclick="window._toggleCompare(\'' + esc(d.name||"").replace(/'/g,"\\'") + '\')" title="' + (inCompare ? 'Remove from comparison' : 'Add to comparison') + '">' + (inCompare ? 'Comparing' : 'Compare') + '</button>' +
+          '<button class="price-update-btn" onclick="window._openPriceModal(\'' + esc(d.id||"").replace(/'/g,"\\'") + '\')" title="Report a price update">Update Price</button>' +
         '</div>' +
       '</div>' +
       (d.operator ? '<div class="card-operator">' + esc(d.operator) + '</div>' : '') +
@@ -812,6 +872,99 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
         searchBox.blur();
       }
     }
+  });
+
+  /* ── Price Update System ─────────────────────────── */
+  const PRICE_STORAGE_KEY = "dc-price-updates";
+  const GITHUB_REPO = "YOUR_USERNAME/DatasetCadaster";
+
+  function getPendingUpdates(){
+    try { return JSON.parse(localStorage.getItem(PRICE_STORAGE_KEY)) || {}; }
+    catch(e){ return {}; }
+  }
+  function getPendingUpdate(id){
+    return getPendingUpdates()[id] || null;
+  }
+  function savePendingUpdate(id, data){
+    const all = getPendingUpdates();
+    all[id] = { ...data, date: new Date().toISOString().slice(0,10) };
+    localStorage.setItem(PRICE_STORAGE_KEY, JSON.stringify(all));
+  }
+
+  const priceModal = $("priceModal");
+  const pmClose = $("priceModalClose");
+  const pmCancel = $("pmCancel");
+  const pmSaveLocal = $("pmSaveLocal");
+  const pmSubmitGH = $("pmSubmitGH");
+
+  window._openPriceModal = function(datasetId){
+    const d = allData.find(x => x.id === datasetId);
+    if(!d) return;
+    $("pmDatasetId").value = d.id;
+    $("pmDatasetName").value = d.name;
+    $("pmCostModel").value = d.cost || "free";
+    const pending = getPendingUpdate(d.id);
+    if(pending){
+      $("pmCostModel").value = pending.costModel || d.cost;
+      $("pmPrice").value = pending.price || "";
+      $("pmSourceUrl").value = pending.sourceUrl || "";
+      $("pmNotes").value = pending.notes || "";
+    } else {
+      $("pmPrice").value = "";
+      $("pmSourceUrl").value = d.url || "";
+      $("pmNotes").value = "";
+    }
+    priceModal.classList.add("visible");
+  };
+
+  function closePriceModal(){
+    priceModal.classList.remove("visible");
+  }
+  pmClose.addEventListener("click", closePriceModal);
+  pmCancel.addEventListener("click", closePriceModal);
+  priceModal.addEventListener("click", e => { if(e.target === priceModal) closePriceModal(); });
+
+  pmSaveLocal.addEventListener("click", () => {
+    const id = $("pmDatasetId").value;
+    savePendingUpdate(id, {
+      costModel: $("pmCostModel").value,
+      price: $("pmPrice").value,
+      sourceUrl: $("pmSourceUrl").value,
+      notes: $("pmNotes").value
+    });
+    closePriceModal();
+    render();
+    showToast("Price update saved locally");
+  });
+
+  pmSubmitGH.addEventListener("click", () => {
+    const id = $("pmDatasetId").value;
+    const name = $("pmDatasetName").value;
+    const costModel = $("pmCostModel").value;
+    const price = $("pmPrice").value;
+    const sourceUrl = $("pmSourceUrl").value;
+    const notes = $("pmNotes").value;
+    savePendingUpdate(id, { costModel, price, sourceUrl, notes });
+    const title = encodeURIComponent("Price Update: " + name);
+    const body = encodeURIComponent(
+      "## Price Update Report\n\n" +
+      "**Dataset:** " + name + "\n" +
+      "**Dataset ID:** `" + id + "`\n" +
+      "**Current cost model:** " + (allData.find(x=>x.id===id)||{}).cost + "\n\n" +
+      "### Proposed Update\n" +
+      "**New cost model:** " + costModel + "\n" +
+      "**Price:** " + (price || "N/A") + "\n" +
+      "**Source URL:** " + (sourceUrl || "N/A") + "\n" +
+      "**Notes:** " + (notes || "N/A") + "\n" +
+      "**Date reported:** " + new Date().toISOString().slice(0,10) + "\n\n" +
+      "---\n_Submitted via Dataset Cadaster price update tool_"
+    );
+    const labels = encodeURIComponent("price-update");
+    const ghUrl = "https://github.com/" + GITHUB_REPO + "/issues/new?title=" + title + "&body=" + body + "&labels=" + labels;
+    window.open(ghUrl, "_blank");
+    closePriceModal();
+    render();
+    showToast("Opening GitHub to submit price update...");
   });
 
   /* ── Event Wiring ────────────────────────────────── */
