@@ -422,13 +422,15 @@ function filterByCountry(code, opts){
   var c = COUNTRIES[code];
   if(!c) return;
 
-  currentFilter = {type:"country", country:code, includeGlobal:false};
+  currentFilter = {type:"country", country:code, includeGlobal:true};
 
   /* Datasets for this country: national + regional/continental + global */
   filteredDatasets = allDatasets.filter(function(d){
     if(d.scope === "national" && d.country === code) return true;
     if(d.scope === "europe" && c.region === "europe") return true;
-    if(d.scope === "regional" && c.region === "europe") return true;
+    if(d.scope === "regional") return true;
+    if(d.scope === "continental") return true;
+    if(d.scope === "global") return true;
     return false;
   });
 
@@ -450,11 +452,13 @@ function filterByCountry(code, opts){
 
 function filterByRegion(region, opts){
   opts = opts || {};
-  currentFilter = {type:"region", country:null, includeGlobal:false};
+  currentFilter = {type:"region", country:null, includeGlobal:true};
 
   filteredDatasets = allDatasets.filter(function(d){
+    if(d.scope === "global") return true;
     if(d.scope === "europe") return true;
     if(d.scope === "regional") return true;
+    if(d.scope === "continental") return true;
     if(d.scope === "national" && d.country && COUNTRIES[d.country] && COUNTRIES[d.country].region === "europe") return true;
     return false;
   });
@@ -537,7 +541,14 @@ function updateStats(areaName){
       "<strong>" + totalGlobal + "</strong> global | " +
       "<strong>" + totalNational + "</strong> national";
   } else {
-    el.innerHTML = "<strong>" + filteredDatasets.length + "</strong> datasets available for <strong>" + areaName + "</strong>";
+    var natCount = filteredDatasets.filter(function(d){return d.scope==="national";}).length;
+    var euCount = filteredDatasets.filter(function(d){return d.scope==="europe"||d.scope==="regional"||d.scope==="continental";}).length;
+    var globCount = filteredDatasets.filter(function(d){return d.scope==="global";}).length;
+    var parts = [];
+    if(natCount) parts.push(natCount + " national");
+    if(euCount) parts.push(euCount + " regional");
+    if(globCount) parts.push(globCount + " global");
+    el.innerHTML = "<strong>" + filteredDatasets.length + "</strong> datasets for <strong>" + areaName + "</strong>" + (parts.length ? " (" + parts.join(" + ") + ")" : "");
   }
 }
 
