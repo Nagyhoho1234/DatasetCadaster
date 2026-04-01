@@ -1,3 +1,112 @@
+You are a senior frontend debugger. I have a single-page Leaflet map app (map.html) with THREE bugs. I will paste the COMPLETE source code below. Your job is to trace the exact code paths and identify root causes.
+
+=== BUG 1: National dataset cards do NOT get a light blue background ===
+The CSS rule exists on line 81:
+  .ds-card.ds-national{background:#e8f4fc !important;border-left:4px solid #2980b9 !important}
+
+The card rendering (line 738) adds the class:
+  html += '<div class="ds-card' + (isNational ? ' ds-national' : '') + '">';
+
+But the blue background does NOT appear in the browser. The cards all look the same.
+
+Possible causes to investigate:
+1. Is the class actually being added to the DOM? (check the string concatenation)
+2. Is there a CSS specificity conflict that overrides even !important?
+3. Could shared.css be loading after and overriding?
+4. Is the scope field in the data actually "national" (check exact string match)?
+5. Could Leaflet CSS interfere?
+6. Is the innerHTML being replaced after rendering, stripping the class?
+
+=== BUG 2: Dataset list does NOT auto-update when zooming/panning ===
+The code flow should be:
+1. User zooms/pans the map
+2. dragstart/zoomstart fires → sets manualOverride = false (lines 921-926)
+3. moveend fires → starts 300ms debounce timer (lines 915-918)
+4. onMapMoveEnd() runs (line 864):
+   - Checks manualOverride and showAllOverride (lines 865-866) — returns if true
+   - Gets zoom level and center (lines 868-870)
+   - If zoom >= 5, calls detectCountryAt() (line 875)
+   - If country found and different from lastAutoCountry, calls filterByCountry(code, {noPan:true}) (line 879)
+5. filterByCountry filters datasets and calls applySearch() → renderResults()
+
+But the sidebar does NOT update when zooming into a country.
+
+Possible causes to investigate:
+1. Is manualOverride stuck at true? When does it get set to true and when reset?
+2. The marker click handler (line 399) sets manualOverride = true. Does dragstart/zoomstart ALWAYS fire before moveend?
+3. What if the user clicked a marker (manualOverride = true), then pans? Does zoomstart fire for a pan? NO — only dragstart fires for panning. Check if dragstart is working.
+4. Does detectCountryAt() actually return a match at zoom 5+?
+5. Does the lastAutoCountry check (line 877) prevent re-triggering?
+6. Is the moveend event even firing? Could map.on("moveend") have an issue?
+7. CRITICAL: When filterByCountry is called from the marker click, it calls map.setView() (line 543). This causes ANOTHER moveend event! Does this create a race condition or does manualOverride block it? Let's trace:
+   - User clicks marker → manualOverride = true → filterByCountry() → map.setView()
+   - map.setView() triggers zoomstart → manualOverride = false (!!!)
+   - Then moveend fires → onMapMoveEnd() runs because manualOverride is now false
+   - But lastAutoCountry was set on line 878, so line 877 should prevent duplicate
+   - WAIT: lastAutoCountry is only set inside onMapMoveEnd, not in filterByCountry from marker click!
+   - So after marker click → setView → zoomstart resets manualOverride → moveend fires → onMapMoveEnd runs → detects same country → filterByCountry again → works OK but double render
+
+THE REAL QUESTION: After the initial page load, if the user MANUALLY pans (not clicking a marker), does it work?
+- Initial state: manualOverride = false, showAllOverride = false, lastAutoCountry = null
+- User pans → dragstart fires → manualOverride = false (already false, no change)
+- moveend fires → onMapMoveEnd() → checks manualOverride (false) → checks showAllOverride (false)
+- Proceeds to detect country... this SHOULD work.
+
+CHECK: Is allDatasets populated by the time moveend fires? The fetch is async. If the user pans before fetch completes, allDatasets is empty and filterByCountry will show 0 results.
+
+=== BUG 3: Regional datasets from other countries appear in wrong country view ===
+The filter at line 525 says:
+  if((d.scope === "regional" || d.scope === "subnational") && d.country === code) return true;
+
+This looks correct — it only includes regional/subnational if d.country matches. But there are regional datasets with NO country field (country: null/undefined). These should NOT appear in country view.
+
+Check: d.country === code when d.country is undefined → undefined === "HU" → false. OK this is fine.
+
+But what about datasets with scope "regional" that have country set but to a different value? The filter correctly excludes them. So this bug might already be fixed in the current code.
+
+=== COMPLETE SOURCE CODE OF map.html ===
+
+```html
+FULL_SOURCE_BELOW
+```
+
+=== YOUR TASK ===
+1. For Bug 1 (blue background): Trace the EXACT code path. Is the class name correctly concatenated? Could there be a whitespace or quote issue? Check if shared.css has any rule that could override .ds-card background with higher specificity. The shared.css only has .card-base, not .ds-card, so that's not it. Could the issue be that the cards are inside a container that has a background set? Or that the browser ignores the background because of some other property?
+
+IMPORTANT INSIGHT FOR BUG 1: Look at the innerHTML assignment. The html string is built up and then set via container.innerHTML = html. The class should be in the HTML string. Let me check the exact string:
+'<div class="ds-card ds-national">'
+This looks correct. The CSS selector .ds-card.ds-national should match. The !important should override.
+
+WAIT — could the issue be the STYLE TAG ORDER? The page loads:
+1. shared.css (external)
+2. Inline <style> block
+3. Leaflet CSS (external, from CDN)
+
+Leaflet CSS loads AFTER the inline style. Could Leaflet have a rule that matches .ds-card? Extremely unlikely — Leaflet doesn't know about ds-card class.
+
+Could it be a CSS variable issue? .ds-card uses background:var(--card-bg). If --card-bg resolves to white, and the .ds-national rule also sets background, the !important on .ds-national should win. Unless --card-bg is also !important somewhere.
+
+Actually I just realized: the .ds-card rule (line 77) sets background:var(--card-bg) WITHOUT !important. The .ds-card.ds-national rule (line 81) sets background:#e8f4fc WITH !important. The specificity of .ds-card.ds-national is higher than .ds-card anyway, AND it has !important. This should definitely work.
+
+UNLESS: there's a dark mode override or something in shared.css that sets --card-bg with !important at the element level. Or inline styles.
+
+MY BEST GUESS FOR BUG 1: The code DOES work correctly in the HTML/CSS. The bug might be that the scope field in the JSON data doesn't exactly match "national" for some entries, OR the isNational check is somehow failing. But looking at the datasets.json, the first entry has "scope": "national" — so the value is correct.
+
+Could this be a rendering/paint issue? Like the background is set but not visible because something covers it? The border-left:4px should be clearly visible if the class is applied.
+
+I NEED YOU TO: Look at this with completely fresh eyes and tell me what's wrong. Consider every possibility including:
+- CSS cascade/specificity
+- JavaScript string concatenation bugs
+- Data format mismatches
+- DOM manipulation timing
+- Container overflow/clipping
+- Theme/dark mode interference
+
+2. For Bug 2 (auto-update): Tell me the EXACT sequence of events and where it breaks. Provide specific line numbers.
+
+3. For Bug 3: Confirm whether it's fixed or still broken, and if broken, provide the fix.
+
+4. For each bug, provide SPECIFIC before/after code fixes with line numbers. Show the exact old code and the exact new code.
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,8 +187,8 @@ body{height:100vh;overflow:hidden}
   padding:14px 16px;margin-bottom:10px;transition:box-shadow .2s,border-color .2s;
 }
 .ds-card:hover{box-shadow:var(--shadow-hover);border-color:var(--accent)}
-.ds-card.ds-national{background:#daedf9 !important;border-left:4px solid #2980b9 !important}
-[data-theme="dark"] .ds-card.ds-national{background:#22384b !important;border:1px solid #3f8fc0 !important;border-left:4px solid #4ba3d9 !important}
+.ds-card.ds-national{background:#e8f4fc !important;border-left:4px solid #2980b9 !important}
+[data-theme="dark"] .ds-card.ds-national{background:rgba(41,128,185,.18) !important;border-left:4px solid #4ba3d9 !important}
 .ds-card h3{font-size:.92rem;font-weight:700;margin-bottom:6px;color:var(--text);line-height:1.3}
 .ds-card h3 a{color:inherit;text-decoration:none}
 .ds-card h3 a:hover{color:var(--accent);text-decoration:underline}
@@ -437,11 +546,6 @@ fetch("../datasets.json")
   });
 
 /* ── Filter functions ─────────────────────────────────── */
-/* Normalize scope strings (handles "sub-national" → "subnational" etc.) */
-function normalizeScope(scope){
-  return String(scope || "").toLowerCase().replace(/[^a-z]/g, "");
-}
-
 /* ── Geographic relevance filtering ──────────────────── */
 /* Datasets tagged "global" aren't always relevant everywhere.
    Arctic DEM shouldn't show for Italy, Baltic data not for Spain, etc. */
@@ -524,17 +628,16 @@ function filterByCountry(code, opts){
 
   /* Datasets for this country: national + same-country regional/subnational + continental + relevant global */
   filteredDatasets = allDatasets.filter(function(d){
-    var scope = normalizeScope(d.scope);
     /* National: only this country */
-    if(scope === "national" && d.country === code) return true;
+    if(d.scope === "national" && d.country === code) return true;
     /* Regional/subnational: only if same country */
-    if((scope === "regional" || scope === "subnational") && d.country === code) return true;
+    if((d.scope === "regional" || d.scope === "subnational") && d.country === code) return true;
     /* Europe-wide: only for European countries */
-    if(scope === "europe" && c.region === "europe") return true;
+    if(d.scope === "europe" && c.region === "europe") return true;
     /* Continental: show if same continent */
-    if(scope === "continental") return true;
+    if(d.scope === "continental") return true;
     /* Global: filter by geographic relevance */
-    if(scope === "global") return isGloballyRelevant(d, code, c);
+    if(d.scope === "global") return isGloballyRelevant(d, code, c);
     return false;
   });
 
@@ -717,8 +820,8 @@ function applySearch(){
 
   /* Sort: national first, then europe/regional, then global */
   toShow.sort(function(a,b){
-    var order = {national:0, europe:1, regional:1, subnational:1, continental:2, global:3};
-    return (order[normalizeScope(a.scope)] !== undefined ? order[normalizeScope(a.scope)] : 3) - (order[normalizeScope(b.scope)] !== undefined ? order[normalizeScope(b.scope)] : 3);
+    var order = {national:0, europe:1, regional:1, continental:2, global:3};
+    return (order[a.scope]||3) - (order[b.scope]||3);
   });
 
   renderResults(toShow);
@@ -740,7 +843,7 @@ function renderResults(datasets){
     var costClass = d.cost === "free" ? "badge-cost-free" : (d.cost === "freemium" ? "badge-cost-freemium" : "badge-cost-paid");
     var catLabel = (d.category || "").replace(/-/g," ");
 
-    var isNational = normalizeScope(d.scope) === "national";
+    var isNational = d.scope === "national";
     html += '<div class="ds-card' + (isNational ? ' ds-national' : '') + '">' +
       '<h3><a href="' + (d.url || "#") + '" target="_blank" rel="noopener">' + escHtml(d.name) + '</a></h3>' +
       '<p>' + escHtml(d.description || "") + '</p>' +
@@ -923,12 +1026,12 @@ map.on("moveend", function(){
   moveendTimer = setTimeout(onMapMoveEnd, 300);
 });
 
-/* Reset manual override on real user interaction (not programmatic setView) */
-var mapContainer = map.getContainer();
-["mousedown", "touchstart", "wheel", "keydown"].forEach(function(type){
-  mapContainer.addEventListener(type, function(){
-    manualOverride = false;
-  }, {passive:true});
+/* Reset manual override when user pans or zooms */
+map.on("dragstart", function(){
+  manualOverride = false;
+});
+map.on("zoomstart", function(){
+  manualOverride = false;
 });
 
 /* ── "Show All" toggle ───────────────────────────────── */
