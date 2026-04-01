@@ -1,0 +1,57 @@
+name: Report a Broken Link
+description: Report a dataset URL that is no longer working
+title: "[Broken Link] "
+labels: ["broken-link"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a broken link. This helps keep the catalog accurate.
+
+  - type: input
+    id: dataset_name
+    attributes:
+      label: Dataset Name or ID
+      description: The name of the dataset as it appears in the catalog, or its JSON id
+      placeholder: e.g., hu-foldtani-intezet or Hungarian Geological Survey
+    validations:
+      required: true
+
+  - type: input
+    id: broken_url
+    attributes:
+      label: Broken URL
+      description: The URL that is no longer working
+      placeholder: https://example.com/old-page
+    validations:
+      required: true
+
+  - type: dropdown
+    id: error_type
+    attributes:
+      label: Error Type
+      description: What happens when you visit the URL?
+      options:
+        - 404 Not Found
+        - 403 Forbidden
+        - 500 Server Error
+        - Connection timeout
+        - Domain expired / DNS failure
+        - Redirects to unrelated page
+        - Page loads but content is gone
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: new_url
+    attributes:
+      label: New URL (if known)
+      description: If you found the dataset at a new location, please share the updated URL
+      placeholder: https://example.com/new-page
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other details (when it last worked, alternative sources, etc.)

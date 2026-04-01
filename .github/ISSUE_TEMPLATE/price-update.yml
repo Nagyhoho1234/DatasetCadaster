@@ -1,0 +1,54 @@
+name: Report a Price Change
+description: Report updated pricing for a dataset
+title: "[Price Update] "
+labels: ["price-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a pricing change. The automated price monitor detects page changes weekly, but human-verified updates are the most reliable source.
+
+  - type: input
+    id: dataset_name
+    attributes:
+      label: Dataset Name or ID
+      description: The name of the dataset as it appears in the catalog, or its JSON id
+      placeholder: e.g., copernicus-dem or Copernicus DEM
+    validations:
+      required: true
+
+  - type: input
+    id: old_price
+    attributes:
+      label: Previous Price / Cost Model
+      description: What the catalog currently lists (if known)
+      placeholder: e.g., free, 500 EUR/year, freemium
+
+  - type: input
+    id: new_price
+    attributes:
+      label: New Price / Cost Model
+      description: The current pricing as listed by the provider
+      placeholder: e.g., paid (200 EUR/year), now free, freemium with 10 GB free tier
+    validations:
+      required: true
+
+  - type: input
+    id: pricing_url
+    attributes:
+      label: Pricing Page URL
+      description: Link to the official pricing page where the new price is listed
+      placeholder: https://example.com/pricing
+
+  - type: input
+    id: effective_date
+    attributes:
+      label: Effective Date
+      description: When did the price change take effect (if known)?
+      placeholder: e.g., 2026-01-15 or January 2026
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Details
+      description: Any other relevant information (free tier limits, academic discounts, license changes, etc.)

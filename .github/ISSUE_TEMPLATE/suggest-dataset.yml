@@ -1,0 +1,122 @@
+name: Suggest a New Dataset
+description: Propose a geospatial or environmental dataset to add to the catalog
+title: "[Dataset] "
+labels: ["new-dataset"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new dataset! Please fill in as many fields as possible.
+
+  - type: input
+    id: name
+    attributes:
+      label: Dataset Name
+      description: The official name of the dataset or data portal
+      placeholder: e.g., Hungarian National Flood Risk Map
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: URL
+      description: Link to the dataset homepage or download page
+      placeholder: https://example.com/data
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      description: Select the most appropriate category
+      options:
+        - admin-boundaries
+        - agriculture
+        - air-quality
+        - biosphere-ecology
+        - cadastre
+        - climate-weather
+        - data-platform
+        - dem-elevation
+        - environment
+        - forestry
+        - geodesy-insar
+        - geology
+        - geology-geophysics
+        - geoportal
+        - hydrology
+        - land-use-land-cover
+        - meteorology
+        - ocean-marine
+        - open-data
+        - population-urban
+        - satellite-eo
+        - socioeconomic
+        - soil
+        - topography
+        - other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Scope
+      description: Geographic coverage level
+      options:
+        - global
+        - regional
+        - national
+        - subnational
+    validations:
+      required: true
+
+  - type: input
+    id: country
+    attributes:
+      label: Country
+      description: ISO 3166-1 alpha-2 country code (e.g., HU, DE, US). Leave empty for global datasets.
+      placeholder: HU
+
+  - type: dropdown
+    id: cost
+    attributes:
+      label: Cost
+      options:
+        - free
+        - freemium
+        - paid
+        - free (registration required)
+        - partially free
+        - unknown
+    validations:
+      required: true
+
+  - type: dropdown
+    id: api_support
+    attributes:
+      label: API / Web Service Support
+      description: Does this dataset offer WMS, WFS, REST API, or similar programmatic access?
+      options:
+        - "Yes"
+        - "No"
+        - "Unknown"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A brief description (1-3 sentences) of what this dataset provides
+      placeholder: Describe the data content, coverage, resolution, and any notable features.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Information
+      description: Any other relevant details (license, update frequency, data formats, related datasets, etc.)
