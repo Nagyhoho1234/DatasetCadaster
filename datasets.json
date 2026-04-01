@@ -1797,6 +1797,33 @@
     ]
   },
   {
+    "id": "hu-aszalymonitoring",
+    "name": "Aszalymonitoring - Drought Monitoring System",
+    "url": "https://aszalymonitoring.vizugy.hu/index.php?lang=eng",
+    "category": "climate-weather",
+    "subcategory": "drought-monitoring",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Orszagos Vizugyi Foigazgatosag (OVF)",
+    "dataType": "Soil moisture, Hungarian Drought Index (HDI), hydrometeorological station data",
+    "spatialResolution": "station-level (114+ stations)",
+    "temporalResolution": "daily",
+    "temporalCoverage": "2014-present",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web map, CSV",
+    "license": null,
+    "description": "Operational drought and water scarcity monitoring system with 114+ stations measuring soil moisture at multiple depths and computing the Hungarian Drought Index (HDI).",
+    "tags": [
+      "drought",
+      "soil-moisture",
+      "water-scarcity",
+      "agriculture",
+      "hungary"
+    ]
+  },
+  {
     "id": "nl-atlas-leefomgeving",
     "name": "Atlas Leefomgeving (Living Environment Atlas)",
     "url": "https://www.atlasleefomgeving.nl/en",
@@ -2177,6 +2204,34 @@
       "infrastructure",
       "basemap",
       "mapping"
+    ]
+  },
+  {
+    "id": "hu-balaton-lter",
+    "name": "Balaton LTSER - Long-Term Ecological Research",
+    "url": "https://deims.org/30e906bb-7ed6-4fee-8ae9-539db55dfd35",
+    "category": "hydrology",
+    "subcategory": "lake-monitoring",
+    "scope": "regional",
+    "country": "HU",
+    "operator": "HUN-REN Balaton Limnological Research Institute",
+    "dataType": "Water quality, chlorophyll-a, phytoplankton, sediment, temperature, ecological data",
+    "spatialResolution": "sampling stations across Lake Balaton",
+    "temporalResolution": "bi-weekly to monthly",
+    "temporalCoverage": "1980s-present",
+    "cost": "restricted",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "database, scientific publications",
+    "license": null,
+    "description": "Long-term socio-ecological research platform for Lake Balaton covering water quality, biodiversity, food web interactions, and sediment monitoring of Europe's largest shallow lake.",
+    "tags": [
+      "balaton",
+      "limnology",
+      "water-quality",
+      "lake-monitoring",
+      "ecology",
+      "hungary"
     ]
   },
   {
@@ -6999,6 +7054,33 @@
     ]
   },
   {
+    "id": "hu-dosoremi",
+    "name": "DOSoReMI - Digital Soil Maps of Hungary",
+    "url": "https://dosoremi.hu/en/",
+    "category": "soil",
+    "subcategory": "digital-soil-mapping",
+    "scope": "national",
+    "country": "HU",
+    "operator": "HUN-REN ATK TAKI",
+    "dataType": "Soil property maps, soil type maps, functional soil maps (texture, pH, organic carbon, etc.)",
+    "spatialResolution": "100 m",
+    "temporalResolution": "static (periodically updated)",
+    "temporalCoverage": "compiled from multi-decadal data",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "WMS",
+    "formats": "web map, WMS, atlas layouts",
+    "license": null,
+    "description": "National digital soil mapping infrastructure providing soil property, soil type, and functional maps at 100 m resolution as Hungary's implementation of GlobalSoilMap.",
+    "tags": [
+      "soil",
+      "digital-soil-mapping",
+      "soil-properties",
+      "globalsoilmap",
+      "hungary"
+    ]
+  },
+  {
     "id": "dsi-water-turkey",
     "name": "DSI - State Hydraulic Works Water Data",
     "url": "https://www.dsi.gov.tr/",
@@ -10287,6 +10369,34 @@
       "natural-hazards",
       "noise",
       "forest"
+    ]
+  },
+  {
+    "id": "hu-foresee-climate",
+    "name": "FORESEE Climate Database",
+    "url": "http://nimbus.elte.hu/FORESEE/",
+    "category": "climate-weather",
+    "subcategory": "climate-projections",
+    "scope": "national",
+    "country": "HU",
+    "operator": "ELTE Department of Meteorology",
+    "dataType": "Daily temperature, precipitation, solar radiation, vapor pressure deficit (observed + projected)",
+    "spatialResolution": "0.1 degree (~10 km)",
+    "temporalResolution": "daily",
+    "temporalCoverage": "1951-2100 (observed + RCP4.5/8.5 projections)",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "NetCDF, downloadable datasets",
+    "license": "open access",
+    "description": "Open-access climatological database providing seamlessly combined historical and projected daily meteorological data for Central Europe, with FORESEE-HUN v1.0 specifically for Hungary.",
+    "tags": [
+      "climate",
+      "projections",
+      "meteorology",
+      "impact-studies",
+      "rcm",
+      "hungary"
     ]
   },
   {
@@ -14505,6 +14615,34 @@
     "id": "human-modification-index-sedac"
   },
   {
+    "id": "hu-hunren-arp",
+    "name": "HUN-REN ARP Research Data Repository",
+    "url": "https://researchdata.hu/en",
+    "category": "multidomain",
+    "subcategory": "research-data-repository",
+    "scope": "national",
+    "country": "HU",
+    "operator": "HUN-REN (Hungarian Research Network)",
+    "dataType": "Multi-domain research datasets including geospatial, environmental, earth science data",
+    "spatialResolution": "varies by dataset",
+    "temporalResolution": "varies by dataset",
+    "temporalCoverage": "varies by dataset",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "Dataverse API",
+    "formats": "various (34000+ files)",
+    "license": "varies (open access preferred)",
+    "description": "National federated research data repository for Hungarian research with 211 dataverses and 34,000+ files, supporting FAIR data principles and integrated with European Open Science Cloud.",
+    "tags": [
+      "research-data",
+      "open-science",
+      "repository",
+      "FAIR",
+      "dataverse",
+      "hungary"
+    ]
+  },
+  {
     "id": "hundem-5",
     "name": "HUNDEM-5 (FOMI)",
     "url": "https://en.foldhivatal.hu/",
@@ -14529,6 +14667,34 @@
       "elevation",
       "hungary",
       "eov"
+    ]
+  },
+  {
+    "id": "hu-nfi-forest-inventory",
+    "name": "Hungarian National Forest Inventory (NFI)",
+    "url": "https://nfi.nfk.gov.hu/",
+    "category": "biosphere-ecology",
+    "subcategory": "forest-inventory",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Nemzeti Foldalap-kezelő Szervezet (NFK)",
+    "dataType": "Forest area, growing stock, tree species composition, forest health statistics",
+    "spatialResolution": "sampling plot network",
+    "temporalResolution": "5-year cycles",
+    "temporalCoverage": "2010-present",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "statistical tables, web viewer",
+    "license": null,
+    "description": "Systematic national forest inventory with two completed 5-year survey cycles since 2010, providing detailed statistics on forest area, growing stock, species composition, and health.",
+    "tags": [
+      "forest",
+      "inventory",
+      "timber",
+      "growing-stock",
+      "forest-health",
+      "hungary"
     ]
   },
   {
@@ -14608,6 +14774,34 @@
       "hungary",
       "station",
       "observations"
+    ]
+  },
+  {
+    "id": "hu-met-agro",
+    "name": "HungaroMet Agrometeorological Service",
+    "url": "https://www.met.hu/idojaras/agrometeorologia/",
+    "category": "agriculture",
+    "subcategory": "agrometeorology",
+    "scope": "national",
+    "country": "HU",
+    "operator": "HungaroMet",
+    "dataType": "Drought indices, soil moisture, vegetation status, frost warnings, agricultural weather",
+    "spatialResolution": "station-based / interpolated grids",
+    "temporalResolution": "daily / weekly",
+    "temporalCoverage": "ongoing",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web maps, reports",
+    "license": "CC-BY-SA",
+    "description": "Agrometeorological information portal providing drought indices (Palmer, SPI), soil moisture maps, vegetation conditions, and frost/heat warnings for Hungarian agriculture.",
+    "tags": [
+      "agrometeorology",
+      "drought",
+      "frost",
+      "soil-moisture",
+      "agriculture",
+      "hungary"
     ]
   },
   {
@@ -18212,6 +18406,33 @@
     ]
   },
   {
+    "id": "hu-seismology",
+    "name": "Kovesligethy Rado Seismological Observatory",
+    "url": "http://www.seismology.hu/index.php/en/",
+    "category": "geology-geophysics",
+    "subcategory": "seismology",
+    "scope": "national",
+    "country": "HU",
+    "operator": "HUN-REN EPSS",
+    "dataType": "Real-time seismograms, earthquake catalog, seismo-acoustic bulletin, waveform data",
+    "spatialResolution": "point (seismic stations)",
+    "temporalResolution": "real-time / continuous",
+    "temporalCoverage": "historical-present",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "FDSN web services",
+    "formats": "miniSEED, QuakeML, web viewer",
+    "license": "open data",
+    "description": "Hungary's national seismological network with real-time earthquake detection, open-access waveform data via FDSN/GEOFON, and a comprehensive historical and contemporary earthquake catalog.",
+    "tags": [
+      "earthquakes",
+      "seismology",
+      "real-time",
+      "waveforms",
+      "hungary"
+    ]
+  },
+  {
     "id": "kozadatportal-hungary",
     "name": "kozadatportal.hu - Hungarian National Open Data Portal",
     "url": "https://kozadatportal.hu/en/",
@@ -18263,6 +18484,33 @@
       "census",
       "hungary",
       "grid"
+    ]
+  },
+  {
+    "id": "hu-ksh-stadat",
+    "name": "KSH STADAT - Statistical Data Tables",
+    "url": "https://www.ksh.hu/stadat_eng",
+    "category": "socioeconomic",
+    "subcategory": "national-statistics",
+    "scope": "national",
+    "country": "HU",
+    "operator": "KSH (Kozponti Statisztikai Hivatal)",
+    "dataType": "Demographic, economic, environmental, agricultural, meteorological statistics by region",
+    "spatialResolution": "settlement to national level",
+    "temporalResolution": "annual / quarterly / monthly",
+    "temporalCoverage": "1869-present (varies by topic)",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "SDMX, REST API",
+    "formats": "CSV, XLSX, SDMX, web tables",
+    "license": "free use with attribution",
+    "description": "Hungary's central statistics office providing comprehensive socioeconomic, environmental, and meteorological statistical data tables at multiple spatial and temporal resolutions.",
+    "tags": [
+      "statistics",
+      "demographics",
+      "economy",
+      "census",
+      "hungary"
     ]
   },
   {
@@ -19406,6 +19654,33 @@
     ]
   },
   {
+    "id": "hu-kozut-road",
+    "name": "Magyar Kozut - National Road Databank",
+    "url": "https://www.kozut.hu/en/who-are-we/",
+    "category": "transport",
+    "subcategory": "road-network",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Magyar Kozut Nonprofit Zrt.",
+    "dataType": "Road network data, traffic counts, road condition, bridge inventory",
+    "spatialResolution": "road segment level",
+    "temporalResolution": "continuously updated",
+    "temporalCoverage": "2005-present",
+    "cost": "restricted",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web maps, internal GIS",
+    "license": null,
+    "description": "State-owned enterprise managing the National Road Databank for Hungary's ~31,000 km public road network including road attributes, traffic data, and bridge inventory.",
+    "tags": [
+      "roads",
+      "transport",
+      "infrastructure",
+      "traffic",
+      "hungary"
+    ]
+  },
+  {
     "id": "mk-makstat-statistics",
     "name": "MakStat - State Statistical Office Database",
     "url": "https://www.stat.mk/en/",
@@ -19701,6 +19976,33 @@
       "global"
     ],
     "id": "mapcruzin"
+  },
+  {
+    "id": "hu-mapire-arcanum",
+    "name": "Mapire / Arcanum Historical Maps",
+    "url": "https://maps.arcanum.com/en/",
+    "category": "topography",
+    "subcategory": "historical-maps",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Arcanum Adatbazis Kft.",
+    "dataType": "Georeferenced historical maps: 1st/2nd/3rd military surveys, cadastral maps, 1941 military map",
+    "spatialResolution": "1:28800 to 1:75000",
+    "temporalResolution": "historical snapshots",
+    "temporalCoverage": "1763-1941",
+    "cost": "free-partial",
+    "apiSupport": true,
+    "apiProtocol": "WMS",
+    "formats": "web viewer, WMS tiles",
+    "license": "proprietary (free viewing)",
+    "description": "Georeferenced historical military survey maps (1st 1782-85, 2nd 1819-69, 3rd 1869-87) and cadastral maps of the Habsburg Empire/Hungary, viewable online with overlay capability.",
+    "tags": [
+      "historical-maps",
+      "military-survey",
+      "cadastral",
+      "habsburg",
+      "hungary"
+    ]
   },
   {
     "id": "ie-marine-institute",
@@ -20111,6 +20413,33 @@
       "buildings"
     ],
     "id": "meta-hrsl"
+  },
+  {
+    "id": "hu-meta-vegetation",
+    "name": "META Programme - Vegetation Heritage Map",
+    "url": "https://novenyzetiterkep.hu/english",
+    "category": "biosphere-ecology",
+    "subcategory": "vegetation-mapping",
+    "scope": "national",
+    "country": "HU",
+    "operator": "HUN-REN Centre for Ecological Research",
+    "dataType": "Habitat types, vegetation cover, naturalness, landscape ecological indices",
+    "spatialResolution": "35 ha hexagonal grid",
+    "temporalResolution": "snapshot (2003-2006)",
+    "temporalCoverage": "2003-2006",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web map, GIS database",
+    "license": null,
+    "description": "Complete field-based vegetation survey of Hungary (93,000 km2) in 35-hectare hexagonal grid cells, mapping natural and semi-natural habitats with ~200 contributing botanists.",
+    "tags": [
+      "vegetation",
+      "habitats",
+      "landscape-ecology",
+      "botanical-survey",
+      "hungary"
+    ]
   },
   {
     "id": "meteo-rwanda",
@@ -20768,6 +21097,34 @@
       "environment",
       "hydrology",
       "spain"
+    ]
+  },
+  {
+    "id": "hu-mme-birdatlas",
+    "name": "MME Bird Atlas & Bird Database",
+    "url": "https://mme.hu/en/madaratlasz",
+    "category": "biosphere-ecology",
+    "subcategory": "ornithology",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Magyar Madartani es Termeszetvedelmi Egyesulet (MME)",
+    "dataType": "Bird species distribution, population dynamics, ringing data, 30M+ occurrence records",
+    "spatialResolution": "10x10 km grid / point observations",
+    "temporalResolution": "continuous",
+    "temporalCoverage": "1974-present",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web viewer, maps, reports",
+    "license": null,
+    "description": "Comprehensive bird atlas of Hungary covering 420 species with 30 million data records, 1700 distribution maps, and continuously updated monitoring and ringing centre databases.",
+    "tags": [
+      "birds",
+      "ornithology",
+      "atlas",
+      "citizen-science",
+      "biodiversity",
+      "hungary"
     ]
   },
   {
@@ -21443,6 +21800,33 @@
       "PM25",
       "ozone",
       "monitoring"
+    ]
+  },
+  {
+    "id": "hu-nak-agrar",
+    "name": "NAK - Hungarian Chamber of Agriculture Data",
+    "url": "https://www.nak.hu/",
+    "category": "agriculture",
+    "subcategory": "agricultural-advisory",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Nemzeti Agrargazdasagi Kamara",
+    "dataType": "Agricultural production statistics, farm advisory data, water management, market prices",
+    "spatialResolution": "county / settlement level",
+    "temporalResolution": "varies",
+    "temporalCoverage": "2013-present",
+    "cost": "free-partial",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web portal, PDF reports",
+    "license": null,
+    "description": "National agricultural chamber portal with production statistics, crop advisory information, water management guidance, market price data, and the agricultural producer registry.",
+    "tags": [
+      "agriculture",
+      "advisory",
+      "farm-data",
+      "market-prices",
+      "hungary"
     ]
   },
   {
@@ -22215,6 +22599,34 @@
     ]
   },
   {
+    "id": "hu-nbmr",
+    "name": "NBmR - National Biodiversity Monitoring System",
+    "url": "https://termeszetvedelem.hu/nemzeti-biodiverzitas-monitorozo-rendszer-nbmr/",
+    "category": "biosphere-ecology",
+    "subcategory": "biodiversity-monitoring",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Nemzeti Park Igazgatosagok",
+    "dataType": "Species populations, community diversity, habitats, landscape biodiversity data",
+    "spatialResolution": "site-based sampling plots",
+    "temporalResolution": "annual survey cycles",
+    "temporalCoverage": "1997-present",
+    "cost": "restricted",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "reports, PDF, databases",
+    "license": null,
+    "description": "Hungary's standardized national biodiversity observation system monitoring species populations, community diversity, habitats, and landscapes, with two decades of data used for Natura 2000 designation.",
+    "tags": [
+      "biodiversity",
+      "monitoring",
+      "natura-2000",
+      "species",
+      "habitats",
+      "hungary"
+    ]
+  },
+  {
     "id": "ncm-uae-meteo",
     "name": "NCM - UAE National Center of Meteorology",
     "url": "https://www.ncm.ae/",
@@ -22266,6 +22678,33 @@
       "weather",
       "hydrology",
       "environment"
+    ]
+  },
+  {
+    "id": "hu-nebih-food-chain",
+    "name": "NEBIH - National Food Chain Safety Office Portal",
+    "url": "https://portal.nebih.gov.hu/",
+    "category": "agriculture",
+    "subcategory": "food-chain-safety",
+    "scope": "national",
+    "country": "HU",
+    "operator": "NEBIH",
+    "dataType": "Plant protection records, food safety registers, feed controls, soil protection data",
+    "spatialResolution": "farm/facility level",
+    "temporalResolution": "annual / continuous",
+    "temporalCoverage": "2012-present",
+    "cost": "free-partial",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web portal, eGN electronic farming log",
+    "license": null,
+    "description": "Integrated food chain safety authority portal with electronic farming log (eGN), plant protection treatment records, food/feed business operator registries, and soil protection data.",
+    "tags": [
+      "food-safety",
+      "plant-protection",
+      "agriculture",
+      "pesticides",
+      "hungary"
     ]
   },
   {
@@ -23713,6 +24152,61 @@
     ]
   },
   {
+    "id": "hu-mbfsz-ogre",
+    "name": "OGRe - Geothermal Information Platform",
+    "url": "https://map.mbfsz.gov.hu/ogre_en/",
+    "category": "geology-geophysics",
+    "subcategory": "geothermal",
+    "scope": "national",
+    "country": "HU",
+    "operator": "MBFSZ / SZTFH",
+    "dataType": "Geothermal maps, thermal well data (1695 wells), hydrocarbon wells (8996), deep boreholes (12539)",
+    "spatialResolution": "point (borehole locations)",
+    "temporalResolution": "static with periodic updates",
+    "temporalCoverage": "historical-present",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "WMS, WFS",
+    "formats": "web map, WMS, WFS",
+    "license": null,
+    "description": "Interactive geothermal information platform with detailed thermal well data, hydrocarbon well locations, deep boreholes, and thematic geological/geophysical maps supporting geothermal project development.",
+    "tags": [
+      "geothermal",
+      "boreholes",
+      "thermal-wells",
+      "geology",
+      "hungary"
+    ]
+  },
+  {
+    "id": "hu-okir",
+    "name": "OKIR - National Environmental Information System",
+    "url": "https://web.okir.hu/en/",
+    "category": "environment",
+    "subcategory": "environmental-registry",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Ministry of Agriculture / Ministry of Energy Affairs",
+    "dataType": "Waste management, air emissions (LAIR), water quality, nature conservation, E-PRTR",
+    "spatialResolution": "facility/site level",
+    "temporalResolution": "quarterly / annual",
+    "temporalCoverage": "2000s-present",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web portal, reports, databases",
+    "license": null,
+    "description": "Centralized environmental data portal covering waste management, air pollutant emissions (LAIR), surface/groundwater quality, nature conservation, and E-PRTR industrial facility data.",
+    "tags": [
+      "environment",
+      "waste",
+      "emissions",
+      "water-quality",
+      "e-prtr",
+      "hungary"
+    ]
+  },
+  {
     "id": "nsgia-oman-geoportal",
     "name": "Oman National Survey and Geospatial Information Authority (NSGIA)",
     "url": "https://www.nsaomangeoportal.gov.om/en/roles-responsibilities",
@@ -24406,6 +24900,33 @@
       "energy",
       "borehole",
       "Iceland"
+    ]
+  },
+  {
+    "id": "hu-osjer-radiation",
+    "name": "OSJER - National Radiation Monitoring System",
+    "url": "https://www.katasztrofavedelem.hu/93/orszagos-hattersugarzasi-adatok",
+    "category": "environment",
+    "subcategory": "radiation-monitoring",
+    "scope": "national",
+    "country": "HU",
+    "operator": "BM OKF (National Disaster Management Authority)",
+    "dataType": "Continuous gamma dose rate measurements from 130+ remote stations",
+    "spatialResolution": "point (130+ stations)",
+    "temporalResolution": "continuous (near real-time)",
+    "temporalCoverage": "continuous",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web viewer, maps",
+    "license": null,
+    "description": "National radiation monitoring network with 130+ stations continuously measuring environmental gamma background dose rates, feeding data to the EU EURDEP platform.",
+    "tags": [
+      "radiation",
+      "nuclear-safety",
+      "gamma-dose",
+      "monitoring",
+      "hungary"
     ]
   },
   {
@@ -30083,6 +30604,88 @@
     ]
   },
   {
+    "id": "hu-sztfh-borehole",
+    "name": "SZTFH Borehole Map (Furaspont Terkep)",
+    "url": "https://map.mbfsz.gov.hu/furas/",
+    "category": "geology-geophysics",
+    "subcategory": "borehole-database",
+    "scope": "national",
+    "country": "HU",
+    "operator": "SZTFH",
+    "dataType": "Borehole locations, engineering soundings, CPT data, 3D seismic surveys",
+    "spatialResolution": "point (300000+ records)",
+    "temporalResolution": "periodically updated",
+    "temporalCoverage": "historical-present",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "WMS, WFS",
+    "formats": "web map, WMS, WFS",
+    "license": null,
+    "description": "Digital map of over 300,000 borehole locations from the Geobank database, including engineering soundings, cone penetration tests, and 3D seismic measurement locations across Hungary.",
+    "tags": [
+      "boreholes",
+      "geology",
+      "geotechnical",
+      "subsurface",
+      "hungary"
+    ]
+  },
+  {
+    "id": "hu-sztfh-mapserver",
+    "name": "SZTFH Geological Map Server",
+    "url": "https://map.hugeo.hu/",
+    "category": "geology-geophysics",
+    "subcategory": "geological-maps",
+    "scope": "national",
+    "country": "HU",
+    "operator": "SZTFH",
+    "dataType": "Surface geology, hydrogeology, geophysics, geochemistry, geothermal thematic maps",
+    "spatialResolution": "1:100000 to 1:500000",
+    "temporalResolution": "static with updates",
+    "temporalCoverage": "historical-present",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "WMS, WFS (OGC)",
+    "formats": "web map, WMS, WFS",
+    "license": null,
+    "description": "Central map server hosting all geological, hydrogeological, geophysical, geochemical, and geothermal thematic maps of Hungary through an interactive web viewer with OGC-compliant services.",
+    "tags": [
+      "geology",
+      "hydrogeology",
+      "geophysics",
+      "thematic-maps",
+      "hungary"
+    ]
+  },
+  {
+    "id": "hu-sztfh-inspire",
+    "name": "SZTFH INSPIRE Geonetwork Catalog",
+    "url": "https://geonetwork.geoservices.hu/geonetwork/srv/search",
+    "category": "geology-geophysics",
+    "subcategory": "inspire-catalog",
+    "scope": "national",
+    "country": "HU",
+    "operator": "SZTFH",
+    "dataType": "INSPIRE-compliant metadata catalog for geological, hydrogeological, geophysical datasets",
+    "spatialResolution": "varies",
+    "temporalResolution": "varies",
+    "temporalCoverage": "varies",
+    "cost": "free",
+    "apiSupport": true,
+    "apiProtocol": "CSW, WMS, WFS",
+    "formats": "metadata catalog, WMS/WFS services",
+    "license": "INSPIRE",
+    "description": "INSPIRE-compliant metadata catalog providing discovery and access to Hungarian geological, hydrogeological, and geophysical spatial datasets via standardized OGC services.",
+    "tags": [
+      "inspire",
+      "metadata",
+      "catalog",
+      "geology",
+      "ogc",
+      "hungary"
+    ]
+  },
+  {
     "id": "tagem-agriculture-turkey",
     "name": "TAGEM - Agricultural Research and Policies",
     "url": "https://www.tarimorman.gov.tr/TAGEM/",
@@ -30385,6 +30988,33 @@
     ]
   },
   {
+    "id": "hu-teir",
+    "name": "TeIR - Territorial Information System",
+    "url": "https://www.teir.hu/",
+    "category": "population-urban",
+    "subcategory": "territorial-planning",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Lechner Tudaskozpont",
+    "dataType": "Socioeconomic, demographic, infrastructure, environment statistics by territory",
+    "spatialResolution": "settlement to county level",
+    "temporalResolution": "annual",
+    "temporalCoverage": "1998-present",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web viewer, tables, maps",
+    "license": null,
+    "description": "National territorial development and spatial planning information system aggregating data from ~20 data providers across 50+ topic areas for all Hungarian settlements.",
+    "tags": [
+      "spatial-planning",
+      "territorial",
+      "demographics",
+      "socioeconomic",
+      "hungary"
+    ]
+  },
+  {
     "name": "TEMIS",
     "url": "https://www.temis.nl/",
     "category": "air-quality",
@@ -30605,6 +31235,33 @@
       "remote-sensing",
       "cnes",
       "copernicus"
+    ]
+  },
+  {
+    "id": "hu-tim-soil-monitoring",
+    "name": "TIM - Soil Protection Information & Monitoring",
+    "url": "https://portal.nebih.gov.hu/tim",
+    "category": "soil",
+    "subcategory": "soil-monitoring",
+    "scope": "national",
+    "country": "HU",
+    "operator": "NEBIH",
+    "dataType": "Soil chemistry, physical properties, contamination at ~1200 points, 3 depth levels",
+    "spatialResolution": "point (~1200 monitoring stations)",
+    "temporalResolution": "annual (September-October)",
+    "temporalCoverage": "1992-present",
+    "cost": "restricted",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "database, reports",
+    "license": null,
+    "description": "National soil monitoring network with ~1200 sampling points measured annually at three depth levels (0-30, 30-60, 60-90 cm), operated since 1992 by NEBIH laboratories.",
+    "tags": [
+      "soil",
+      "monitoring",
+      "contamination",
+      "soil-chemistry",
+      "hungary"
     ]
   },
   {
@@ -31830,6 +32487,33 @@
       "cadastral",
       "aerial-imagery",
       "vworld"
+    ]
+  },
+  {
+    "id": "hu-vadonleso",
+    "name": "Vadonleso - Citizen Science Nature Observation",
+    "url": "https://www.vadonleso.hu/",
+    "category": "biosphere-ecology",
+    "subcategory": "citizen-science",
+    "scope": "national",
+    "country": "HU",
+    "operator": "Nemzeti Park Igazgatosagok",
+    "dataType": "Citizen observations of 18 protected plant and animal species",
+    "spatialResolution": "point (GPS)",
+    "temporalResolution": "continuous",
+    "temporalCoverage": "2009-present",
+    "cost": "free",
+    "apiSupport": false,
+    "apiProtocol": null,
+    "formats": "web map (Google Maps based), mobile app",
+    "license": null,
+    "description": "National citizen science platform where volunteers record sightings of 18 protected species on a map-based interface, contributing to Hungary's biodiversity database.",
+    "tags": [
+      "citizen-science",
+      "nature-observation",
+      "protected-species",
+      "volunteering",
+      "hungary"
     ]
   },
   {
