@@ -1,0 +1,13 @@
+Review this web app called 'Dataset Cadaster' - a catalog of 1230 geospatial datasets across 115 countries. Pure HTML/CSS/JS, no frameworks. 9 HTML pages totaling 8128 lines, 1.2MB JSON database.
+
+Pages: landing, catalog (search/filter/compare/bookmark/cite/notes/health-dots), GeoEstimator (cost wizard + budget PDF export), Leaflet map (auto-detect country on zoom), comparison matrices, decision flowcharts, processing recipes (Python), dataset lineage SVG graph, satellite coverage calendar. Also: QGIS plugin, PWA/offline, HU/EN i18n, embeddable widget, GitHub Actions for price monitoring + health checks.
+
+Provide:
+1. CODE QUALITY - bugs, crashes, security, performance, accessibility
+2. UX/UI IMPROVEMENTS - better user experience ideas
+3. MISSING FEATURES - what would make this stand out more
+4. ARCHITECTURE - maintainability and scalability suggestions
+5. DEPLOYMENT - hosting best practices
+6. NOVEL IDEAS - creative features no similar tool has
+
+Be specific, actionable, and focus on real value. Not style nitpicks.
