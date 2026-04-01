@@ -348,6 +348,39 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 [data-theme="dark"] .notes-btn.has-note{background:rgba(75,163,217,.1)}
 [data-theme="dark"] .notes-user-tag{background:rgba(75,163,217,.15);color:var(--accent)}
 
+/* ── Alternatives Panel ────────────────────────────── */
+.alt-btn{background:none;border:1px solid var(--border);color:var(--text-light);padding:3px 8px;border-radius:var(--radius);cursor:pointer;font-size:.7rem;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.alt-btn:hover{border-color:var(--teal);color:var(--teal)}
+.alt-btn.alt-open{border-color:var(--teal);color:var(--teal);background:rgba(22,160,133,.06)}
+.alt-panel{background:var(--body-bg);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-top:8px;display:none;flex-direction:column;gap:6px}
+.alt-panel.visible{display:flex}
+.alt-panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.alt-panel-header span{font-size:.82rem;font-weight:600;color:var(--text)}
+.alt-panel-close{background:none;border:none;font-size:1rem;color:var(--text-light);cursor:pointer;padding:0 4px}
+.alt-panel-close:hover{color:var(--text)}
+.alt-row{display:flex;align-items:center;gap:10px;padding:6px 8px;background:var(--card-bg);border:1px solid var(--border);border-radius:4px;font-size:.78rem;flex-wrap:wrap}
+.alt-row:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.alt-name{font-weight:600;color:var(--accent);cursor:pointer;text-decoration:none;min-width:140px;flex-shrink:0}
+.alt-name:hover{text-decoration:underline}
+.alt-indicators{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.alt-indicator{display:inline-flex;align-items:center;gap:3px;font-size:.72rem;padding:1px 6px;border-radius:8px;white-space:nowrap}
+.alt-ind-cheaper{background:var(--green-bg);color:var(--green)}
+.alt-ind-same-cost{background:#f0f2f5;color:var(--text-light)}
+.alt-ind-pricier{background:var(--red-bg);color:var(--red)}
+.alt-ind-better-res{background:var(--green-bg);color:var(--green)}
+.alt-ind-same-res{background:#f0f2f5;color:var(--text-light)}
+.alt-ind-worse-res{background:var(--red-bg);color:var(--red)}
+.alt-ind-has-api{background:var(--blue-bg);color:var(--blue)}
+.alt-ind-no-api{background:#f0f2f5;color:var(--text-light)}
+.alt-tradeoff{font-size:.72rem;color:var(--text-light);font-style:italic;margin-left:auto;text-align:right;min-width:100px}
+.alt-match{font-size:.65rem;color:var(--text-light);opacity:.6;white-space:nowrap}
+.alt-view-link{font-size:.72rem;color:var(--accent);cursor:pointer;text-decoration:none;white-space:nowrap}
+.alt-view-link:hover{text-decoration:underline}
+.alt-empty{font-size:.82rem;color:var(--text-light);padding:8px 0}
+[data-theme="dark"] .alt-panel{background:#151c24}
+[data-theme="dark"] .alt-row{background:var(--card-bg);border-color:var(--border)}
+[data-theme="dark"] .alt-ind-same-cost,[data-theme="dark"] .alt-ind-same-res,[data-theme="dark"] .alt-ind-no-api{background:#252e38;color:var(--text-light)}
+
 /* ── Citation Popup ──────────────────────────────────── */
 .cite-btn{background:none;border:1px solid var(--border);color:var(--text-light);padding:3px 8px;border-radius:var(--radius);cursor:pointer;font-size:.7rem;font-family:var(--font);transition:all .15s;white-space:nowrap}
 .cite-btn:hover{border-color:var(--accent);color:var(--accent)}
@@ -1083,6 +1116,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
           '<button class="notes-btn' + (note ? ' has-note' : '') + '" onclick="window._toggleNotes(\'' + safeId + '\')" title="Personal notes">Notes</button>' +
           '<button class="card-action-btn" onclick="window._copyLink(\'' + safeUrl + '\')" title="Copy dataset URL">Copy link</button>' +
           '<button class="card-action-btn' + (inCompare ? ' in-compare' : '') + '" onclick="window._toggleCompare(\'' + safeName + '\')" title="' + (inCompare ? 'Remove from comparison' : 'Add to comparison') + '">' + (inCompare ? 'Comparing' : 'Compare') + '</button>' +
+          '<button class="alt-btn" onclick="window._toggleAlternatives(\'' + safeId + '\')" title="Find alternative datasets">Alternatives</button>' +
           '<button class="price-update-btn" onclick="window._openPriceModal(\'' + safeId + '\')" title="Report a price update">Update Price</button>' +
         '</div>' +
       '</div>' +
