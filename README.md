@@ -19,7 +19,7 @@
 [![Python](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)]()
 [![QGIS Plugin](https://img.shields.io/badge/QGIS-plugin-589632?logo=qgis&logoColor=white)]()
 
-> **Screenshot placeholder** -- insert a browser screenshot of the landing page or catalog view here.
+![Dataset Cadaster - Method-to-Data Lookup](docs/screenshot.jpg)
 
 ***
 
