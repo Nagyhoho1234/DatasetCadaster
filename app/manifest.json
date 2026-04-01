@@ -1,7 +1,7 @@
 {
   "name": "Dataset Cadaster",
   "short_name": "DataCadaster",
-  "description": "Find geospatial & environmental datasets for your research",
+  "description": "Find geospatial & environmental datasets for your research — by Fehér Zsolt Zoltán",
   "start_url": "./landing.html",
   "display": "standalone",
   "background_color": "#1a2634",

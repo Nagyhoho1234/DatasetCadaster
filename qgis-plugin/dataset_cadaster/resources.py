@@ -4,7 +4,7 @@ Resource constants for the Dataset Cadaster plugin.
 
 # Default URL to fetch datasets.json from GitHub
 DEFAULT_DATASETS_URL = (
-    "https://raw.githubusercontent.com/dataset-cadaster/DatasetCadaster/main/datasets.json"
+    "https://raw.githubusercontent.com/nagyhoho1234/DatasetCadaster/main/datasets.json"
 )
 
 # Known WMS endpoints mapped by dataset ID

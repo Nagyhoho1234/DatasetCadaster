@@ -39,7 +39,7 @@ REPORT_FILE = ROOT / "scripts" / "price_check_report.json"
 APPLY = "--apply" in sys.argv
 COMMIT = "--commit" in sys.argv
 
-USER_AGENT = "DatasetCadaster-PriceBot/1.0 (https://github.com/dataset-cadaster/DatasetCadaster)"
+USER_AGENT = "DatasetCadaster-PriceBot/1.0 (https://github.com/nagyhoho1234/DatasetCadaster)"
 TIMEOUT = 15  # seconds
 
 

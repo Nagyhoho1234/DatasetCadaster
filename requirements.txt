@@ -1,0 +1,19 @@
+# Dataset Cadaster -- Python Dependencies
+# ========================================
+#
+# All scripts use only the Python standard library.
+# No external packages are required.
+#
+# Minimum Python version: 3.10
+# Recommended Python version: 3.12
+#
+# Scripts:
+#   scripts/check_prices.py   -- urllib, hashlib, json, re, pathlib
+#   scripts/check_health.py   -- urllib, json, ssl, concurrent.futures, pathlib
+#   scripts/build_summary.py  -- json, os
+#   build_datasets.py         -- json, os
+#   merge_catalogs.py         -- json, os
+#
+# To verify your Python version:
+#   python --version
+#

@@ -1,0 +1,45 @@
+{
+  "_comment_bibtex": "@software{feher2026datasetcadaster, author = {Feh{\\'e}r, Zsolt Zolt{\\'a}n}, title = {{Dataset Cadaster: A Curated Catalog of 1,230+ Geospatial and Environmental Data Sources}}, year = {2026}, url = {https://github.com/nagyhoho1234/DatasetCadaster}, license = {MIT}, note = {Deployed at teszt1.szarazodas.stream}}",
+  "title": "Dataset Cadaster: A Curated Catalog of 1,230+ Geospatial and Environmental Data Sources",
+  "description": "Geospatial and environmental research increasingly depends on remotely sensed, modeled, and in-situ datasets distributed across hundreds of agencies, platforms, and portals. Researchers routinely spend significant time locating, evaluating, and comparing candidate data sources before any analysis can begin. This fragmentation creates barriers to reproducibility, inflates project timelines, and disadvantages teams without institutional access to commercial data brokerage services.\n\nDataset Cadaster addresses this problem by providing a curated, searchable catalog of over 1,230 verified geospatial and environmental data sources spanning 115 countries and 14 thematic domains: satellite earth observation, climate and weather, soil, hydrology, biosphere and biodiversity, digital elevation models, geology and geophysics, land use and land cover, administrative boundaries, population and built environment, air quality and atmospheric composition, ocean and marine bathymetry, geodesy, and cross-domain data platforms.\n\nThe application offers an interactive map explorer for spatial discovery, a GeoEstimator cost wizard with data viability scoring, seven pre-built comparison matrices for systematic dataset evaluation, six decision flowcharts guiding sensor and product selection, ten processing recipes with step-by-step workflows, dataset lineage visualization, a satellite coverage calendar, and a method-to-data reverse lookup enabling researchers to start from an analytical technique and identify compatible datasets.\n\nImplemented as a lightweight, framework-free web application using pure HTML, CSS, and JavaScript, Dataset Cadaster supports progressive web application installation and offline use, provides an embeddable widget for integration into third-party portals, and includes a QGIS plugin for desktop GIS environments. Autonomous price monitoring and dataset health checks are performed via GitHub Actions. The software is free, open-source under the MIT license, and vendor-neutral, designed to serve researchers, practitioners, and decision-makers working with geospatial data worldwide.",
+  "creators": [
+    {
+      "name": "Fehér, Zsolt Zoltán",
+      "affiliation": "",
+      "orcid": ""
+    }
+  ],
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "keywords": [
+    "geospatial data",
+    "earth observation",
+    "remote sensing",
+    "environmental monitoring",
+    "GIS",
+    "open data",
+    "data catalog",
+    "satellite imagery",
+    "climate data",
+    "hydrology",
+    "soil data",
+    "biodiversity",
+    "DEM",
+    "land cover",
+    "geodesy",
+    "QGIS plugin"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/nagyhoho1234/DatasetCadaster",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "communities": [
+    {"identifier": "zenodo"}
+  ],
+  "grants": [],
+  "notes": "This software catalogs 1,230+ geospatial and environmental datasets across 115 countries, providing researchers with a unified discovery tool including cost estimation, dataset comparison, and processing recipes."
+}
