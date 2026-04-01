@@ -1,7 +1,7 @@
 /* Dataset Cadaster — Embeddable Widget
    Usage:
    <div id="dataset-cadaster-widget" data-category="dem-elevation" data-max="5"></div>
-   <script src="https://YOUR_SITE/app/widget.js"></script>
+   <script src="widget.js"></script>
 */
 (function() {
   'use strict';

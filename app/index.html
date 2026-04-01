@@ -1129,6 +1129,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
       tags +
       userTagsDisplay +
       notesPanel +
+      '<div class="alt-panel" id="alt-panel-' + esc(d.id) + '"></div>' +
     '</div>';
   }
 
@@ -1259,7 +1260,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 
   /* ── Price Update System ─────────────────────────── */
   const PRICE_STORAGE_KEY = "dc-price-updates";
-  const GITHUB_REPO = "YOUR_USERNAME/DatasetCadaster";
+  const GITHUB_REPO = "dataset-cadaster/DatasetCadaster";
 
   function getPendingUpdates(){
     try { return JSON.parse(localStorage.getItem(PRICE_STORAGE_KEY)) || {}; }
