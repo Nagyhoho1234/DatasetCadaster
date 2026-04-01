@@ -11,6 +11,7 @@
 
 **The world's most comprehensive catalog of geospatial and environmental datasets -- searchable, comparable, and always up to date.**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19365168.svg)](https://doi.org/10.5281/zenodo.19365168)
 [![Datasets](https://img.shields.io/badge/datasets-1%2C230+-blue)]()
 [![Countries](https://img.shields.io/badge/countries-116-green)]()
 [![Categories](https://img.shields.io/badge/categories-15+-orange)]()
