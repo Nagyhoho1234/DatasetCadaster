@@ -78,6 +78,8 @@ body{height:100vh;overflow:hidden}
   padding:14px 16px;margin-bottom:10px;transition:box-shadow .2s,border-color .2s;
 }
 .ds-card:hover{box-shadow:var(--shadow-hover);border-color:var(--accent)}
+.ds-card.ds-national{background:rgba(93,173,226,.08);border-left:3px solid #5dade2}
+[data-theme="dark"] .ds-card.ds-national{background:rgba(93,173,226,.1);border-left:3px solid #4ba3d9}
 .ds-card h3{font-size:.92rem;font-weight:700;margin-bottom:6px;color:var(--text);line-height:1.3}
 .ds-card h3 a{color:inherit;text-decoration:none}
 .ds-card h3 a:hover{color:var(--accent);text-decoration:underline}
@@ -197,7 +199,7 @@ body{height:100vh;overflow:hidden}
       <button class="show-all-toggle" id="btnShowAll">Show All</button>
     </div>
     <div class="sidebar-controls">
-      <button class="toggle-btn" id="btnGlobal">Show Global Datasets</button>
+      <button class="toggle-btn active" id="btnToggleGlobal" title="Show or hide global datasets in the list">Global: ON</button>
       <button class="toggle-btn" id="btnEurope">Europe</button>
       <button class="toggle-btn" id="btnClear">Clear Filter</button>
     </div>
@@ -330,6 +332,7 @@ var markers = {};
 var map, europeRect;
 var manualOverride = false;   /* true when user clicked a marker/button */
 var showAllOverride = false;  /* true when "Show All" toggle is active */
+var showGlobalInList = true;  /* toggle global datasets visibility in sidebar */
 var moveendTimer = null;      /* for debounce */
 var lastAutoCountry = null;   /* to avoid redundant re-renders */
 
@@ -597,7 +600,7 @@ function clearFilter(){
   document.getElementById("btnShowAll").classList.remove("active");
   clearHighlight();
   updateStats(null);
-  document.getElementById("btnGlobal").classList.remove("active");
+  /* global toggle stays as-is on filter change */
   document.getElementById("btnEurope").classList.remove("active");
 
   document.getElementById("results").innerHTML =
@@ -692,9 +695,20 @@ function applySearch(){
   var q = searchBox.value.trim().toLowerCase();
   var toShow = filteredDatasets;
 
+  /* Hide global datasets if toggle is off */
+  if(!showGlobalInList && currentFilter.type !== "global"){
+    toShow = toShow.filter(function(d){ return d.scope !== "global"; });
+  }
+
   if(q && currentFilter.type !== null){
     toShow = toShow.filter(function(d){ return matchSearch(d, q); });
   }
+
+  /* Sort: national first, then europe/regional, then global */
+  toShow.sort(function(a,b){
+    var order = {national:0, europe:1, regional:1, continental:2, global:3};
+    return (order[a.scope]||3) - (order[b.scope]||3);
+  });
 
   renderResults(toShow);
 }
@@ -715,7 +729,8 @@ function renderResults(datasets){
     var costClass = d.cost === "free" ? "badge-cost-free" : (d.cost === "freemium" ? "badge-cost-freemium" : "badge-cost-paid");
     var catLabel = (d.category || "").replace(/-/g," ");
 
-    html += '<div class="ds-card">' +
+    var isNational = d.scope === "national";
+    html += '<div class="ds-card' + (isNational ? ' ds-national' : '') + '">' +
       '<h3><a href="' + (d.url || "#") + '" target="_blank" rel="noopener">' + escHtml(d.name) + '</a></h3>' +
       '<p>' + escHtml(d.description || "") + '</p>' +
       '<div class="ds-badges">' +
@@ -737,23 +752,11 @@ function escHtml(s){
 }
 
 /* ── Button handlers ──────────────────────────────────── */
-document.getElementById("btnGlobal").addEventListener("click", function(){
-  manualOverride = true;
-  showAllOverride = false;
-  document.getElementById("btnShowAll").classList.remove("active");
-  var isActive = this.classList.contains("active");
-  document.getElementById("btnGlobal").classList.toggle("active");
-  document.getElementById("btnEurope").classList.remove("active");
-
-  if(isActive){
-    if(currentFilter.country){
-      filterByCountry(currentFilter.country);
-    } else {
-      clearFilter();
-    }
-  } else {
-    showGlobalDatasets();
-  }
+document.getElementById("btnToggleGlobal").addEventListener("click", function(){
+  showGlobalInList = !showGlobalInList;
+  this.classList.toggle("active", showGlobalInList);
+  this.textContent = showGlobalInList ? "Global: ON" : "Global: OFF";
+  applySearch();
 });
 
 document.getElementById("btnEurope").addEventListener("click", function(){
@@ -762,7 +765,7 @@ document.getElementById("btnEurope").addEventListener("click", function(){
   document.getElementById("btnShowAll").classList.remove("active");
   var isActive = this.classList.contains("active");
   document.getElementById("btnEurope").classList.toggle("active");
-  document.getElementById("btnGlobal").classList.remove("active");
+  /* global toggle stays as-is on filter change */
 
   if(isActive){
     clearFilter();
