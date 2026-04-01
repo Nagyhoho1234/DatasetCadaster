@@ -355,18 +355,22 @@ sidebarToggle.addEventListener("click", function(){
 /* ── Color scale for markers ──────────────────────────── */
 function getColor(count){
   if(count === 0) return "#bdc3c7";
-  if(count <= 2) return "#85c1e9";
-  if(count <= 5) return "#5dade2";
-  if(count <= 10) return "#2e86c1";
-  return "#1a5276";
+  if(count <= 4) return "#aed6f1";
+  if(count <= 8) return "#85c1e9";
+  if(count <= 12) return "#5dade2";
+  if(count <= 18) return "#2e86c1";
+  if(count <= 30) return "#1a5276";
+  return "#0b3d5e";
 }
 
 function getRadius(count){
-  if(count === 0) return 6;
-  if(count <= 2) return 10;
-  if(count <= 5) return 14;
-  if(count <= 10) return 18;
-  return 22;
+  if(count === 0) return 5;
+  if(count <= 4) return 7;
+  if(count <= 8) return 10;
+  if(count <= 12) return 13;
+  if(count <= 18) return 17;
+  if(count <= 30) return 22;
+  return 28;
 }
 
 /* ── Create country markers ───────────────────────────── */
@@ -932,15 +936,16 @@ var legend = L.control({position:"bottomleft"});
 legend.onAdd = function(){
   var div = L.DomUtil.create("div","info legend");
   div.style.cssText = "background:rgba(255,255,255,.92);padding:10px 14px;border-radius:6px;font-size:.78rem;line-height:1.8;box-shadow:0 1px 4px rgba(0,0,0,.15);border:1px solid #dce1e8";
+  var dot = function(size,color){ return '<span style="display:inline-block;width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+color+';margin-right:6px;vertical-align:middle"></span>'; };
   div.innerHTML =
     '<strong style="font-size:.82rem">National Datasets</strong><br>' +
-    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#bdc3c7;margin-right:6px;vertical-align:middle"></span> None<br>' +
-    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#85c1e9;margin-right:6px;vertical-align:middle"></span> 1-2<br>' +
-    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#5dade2;margin-right:6px;vertical-align:middle"></span> 3-5<br>' +
-    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#2e86c1;margin-right:6px;vertical-align:middle"></span> 6-10<br>' +
-    '<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#1a5276;margin-right:6px;vertical-align:middle"></span> 10+<br>' +
-    '<div style="margin-top:6px;border-top:1px solid #dce1e8;padding-top:6px">' +
-    '<span style="display:inline-block;width:14px;height:10px;border:2px dashed #2980b9;margin-right:6px;vertical-align:middle"></span> Europe Region</div>';
+    dot(7,"#bdc3c7") + ' None<br>' +
+    dot(8,"#aed6f1") + ' 1–4<br>' +
+    dot(10,"#85c1e9") + ' 5–8<br>' +
+    dot(12,"#5dade2") + ' 9–12<br>' +
+    dot(14,"#2e86c1") + ' 13–18<br>' +
+    dot(16,"#1a5276") + ' 19–30<br>' +
+    dot(18,"#0b3d5e") + ' 30+';
   return div;
 };
 legend.addTo(map);
