@@ -4,40 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GeoEstimator — GIS Data Cost & Structure Estimator</title>
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
 <style>
-/* ── Reset & Base ─────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --hdr:#1a2634;
-  --hdr-accent:#2e4057;
-  --body-bg:#f0f2f5;
-  --card-bg:#fff;
-  --text:#2c3e50;
-  --text-light:#5a6a7a;
-  --border:#dce1e8;
-  --accent:#2980b9;
-  --accent-hover:#1f6da0;
-  --green:#27ae60;
-  --green-bg:#e8f8f0;
-  --yellow:#e67e22;
-  --yellow-bg:#fdf3e6;
-  --red:#c0392b;
-  --red-bg:#fbeaea;
-  --blue:#2980b9;
-  --blue-bg:#e4f0fa;
-  --teal:#16a085;
-  --radius:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.1);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-}
-html{font-size:15px;scroll-behavior:smooth}
-body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
-
-/* ── Header ───────────────────────────────────────────── */
-.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
-.header h1 span{color:#5dade2;margin-right:6px}
+/* ── Header Nav (estimator uses header-nav) ──────────── */
 .header-nav{margin-left:auto;display:flex;gap:20px;font-size:.88rem}
 .header-nav a{color:#a0b4c8;text-decoration:none;transition:color .2s}
 .header-nav a:hover,.header-nav a.active{color:#fff}
@@ -246,7 +216,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   .header,.scenarios-bar,.step-nav,.progress,.btn,.results-tabs,.scenario-btns{display:none!important}
   body{background:#fff}
   .container{max-width:100%;padding:0}
-  .results-summary,.rec-card,.cost-table,.stack-card,.info-box{break-inside:avoid}
+  .results-summary,.rec-card,.cost-table,.stack-card,.info-box,.viability-card{break-inside:avoid}
   .tab-content{display:block!important;margin-bottom:30px}
   .tab-content::before{content:attr(data-print-title);display:block;font-size:1.2rem;font-weight:700;margin-bottom:12px;border-bottom:2px solid #333;padding-bottom:6px}
   .step-panel{display:none!important}
@@ -263,6 +233,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     <a href="index.html">&larr; Dataset Catalog</a>
     <a href="estimator.html" class="active">GeoEstimator</a>
     <a href="recipes.html">Processing Recipes</a>
+    <a href="methods.html">Methods</a>
     <a href="guide.html">Guide</a>
     <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
@@ -779,6 +750,7 @@ window.startOver = function() {
 window.generateResults = function() {
   state.region = document.getElementById('regionSelect').value;
   renderSummary();
+  renderViabilityScore();
   renderFreeSources();
   renderCommercial();
   renderCostBreakdown();
@@ -1230,6 +1202,223 @@ function renderStorageDownload() {
 
   html += '</div>';
   document.getElementById('tabStorage').innerHTML = html;
+}
+
+/* ══════════════════════════════════════════════
+   DATA VIABILITY SCORE
+   ══════════════════════════════════════════════ */
+function computeViabilityScore() {
+  /* --- 1. Free Data Availability (30%) --- */
+  var domainRecs = domainRecommendations[state.domain] || [];
+  var allKeys = {};
+  domainRecs.forEach(function(k){ allKeys[k] = true; });
+  Object.keys(freeDB).forEach(function(k){
+    freeDB[k].types.forEach(function(t){
+      if (state.dataTypes.indexOf(t) !== -1) allKeys[k] = true;
+    });
+  });
+  var freeCount = Object.keys(allKeys).length;
+  var freeScore;
+  if (freeCount > 10) freeScore = 100;
+  else if (freeCount >= 6) freeScore = 80;
+  else if (freeCount >= 3) freeScore = 50;
+  else freeScore = 20;
+
+  /* --- 2. Resolution Match (20%) --- */
+  // Check if free sources can meet requested resolution
+  var resTiers = {'low':0, 'medium':1, 'high':2, 'very-high':3};
+  var requestedTier = resTiers[state.resolution] || 1;
+  // Best free resolution available: Sentinel-2 = medium (10m), Urban Atlas = high (2.5m)
+  var bestFreeTier = 0;
+  var freeKeys = Object.keys(allKeys);
+  freeKeys.forEach(function(k){
+    var ds = freeDB[k];
+    if (!ds) return;
+    var r = ds.resolution.toLowerCase();
+    if (r.indexOf('2.5') !== -1 || r.indexOf('5 m') !== -1 || (r.indexOf('m') !== -1 && parseFloat(r) <= 5 && parseFloat(r) > 0)) bestFreeTier = Math.max(bestFreeTier, 2);
+    else if (r.indexOf('10') !== -1 || r.indexOf('20') !== -1 || r.indexOf('30') !== -1) bestFreeTier = Math.max(bestFreeTier, 1);
+    else if (r.indexOf('vector') !== -1 || r.indexOf('point') !== -1) bestFreeTier = Math.max(bestFreeTier, 1);
+    else bestFreeTier = Math.max(bestFreeTier, 0);
+  });
+  var tierDiff = requestedTier - bestFreeTier;
+  var resolutionScore;
+  if (tierDiff <= 0) resolutionScore = 100;
+  else if (tierDiff === 1) resolutionScore = 60;
+  else if (tierDiff === 2) resolutionScore = 30;
+  else resolutionScore = 0;
+
+  /* --- 3. Temporal Coverage (15%) --- */
+  // Sentinel-2 from 2015, Landsat from 1972, ERA5 from 1940
+  var histYears = {current:0, '5':5, '10':10, '30':30};
+  var needed = histYears[state.history] || 0;
+  var temporalScore;
+  if (needed <= 0) temporalScore = 100;
+  else if (needed <= 5) temporalScore = 100; // Sentinel-2 covers 2015+
+  else if (needed <= 10) {
+    // Good coverage with Landsat/ERA5, partial with Sentinel
+    var hasLongTerm = freeKeys.indexOf('landsat') !== -1 || freeKeys.indexOf('era5') !== -1 || freeKeys.indexOf('cru-ts') !== -1;
+    temporalScore = hasLongTerm ? 100 : 70;
+  } else {
+    // 30+ years - need Landsat or ERA5
+    var hasVeryLong = freeKeys.indexOf('landsat') !== -1 || freeKeys.indexOf('era5') !== -1 || freeKeys.indexOf('cru-ts') !== -1 || freeKeys.indexOf('ghcn') !== -1;
+    if (hasVeryLong) temporalScore = 70;
+    else temporalScore = 30;
+  }
+
+  /* --- 4. Cloud-Free Probability (15%) --- */
+  var hasOptical = state.dataTypes.indexOf('optical') !== -1;
+  var hasSAR = state.dataTypes.indexOf('sar') !== -1;
+  var cloudScore;
+  if (!hasOptical) {
+    cloudScore = 100;
+  } else {
+    var tropicalRegions = ['africa','asia','south-america'];
+    var aridRegions = ['spain','italy'];
+    var temperateRegions = ['europe','hungary','germany','france','uk','usa'];
+    if (tropicalRegions.indexOf(state.region) !== -1) cloudScore = 30;
+    else if (aridRegions.indexOf(state.region) !== -1) cloudScore = 90;
+    else if (temperateRegions.indexOf(state.region) !== -1) cloudScore = 60;
+    else cloudScore = 50;
+    // SAR supplement: if SAR is also selected, it mitigates cloud issues
+    if (hasSAR) cloudScore = Math.min(100, cloudScore + 20);
+  }
+
+  /* --- 5. API/Automation Readiness (10%) --- */
+  var apiSources = ['sentinel-2','sentinel-1','landsat','era5','era5-land','copernicus-dem','cams','chirps','soilgrids','osm','gbif','glofas','hungaromet','ghcn','grace-fo','usgs-earthquake','natural-earth','viirs-ntl','worldpop','ghsl'];
+  var totalFree = freeKeys.length;
+  var withAPI = 0;
+  freeKeys.forEach(function(k){ if (apiSources.indexOf(k) !== -1) withAPI++; });
+  var apiRatio = totalFree > 0 ? withAPI / totalFree : 0;
+  var apiScore;
+  if (apiRatio >= 0.95) apiScore = 100;
+  else if (apiRatio > 0.6) apiScore = 70;
+  else if (apiRatio > 0.2) apiScore = 40;
+  else apiScore = 10;
+
+  /* --- 6. Budget Impact (10%) --- */
+  var needsCommercial = state.resolution === 'very-high' || state.resolution === 'high';
+  var budgetScore;
+  if (!needsCommercial) budgetScore = 100;
+  else if (state.resolution === 'high') budgetScore = 80; // mostly free, commercial optional
+  else budgetScore = 50; // very-high needs commercial
+
+  /* --- Composite --- */
+  var composite = Math.round(
+    freeScore * 0.30 +
+    resolutionScore * 0.20 +
+    temporalScore * 0.15 +
+    cloudScore * 0.15 +
+    apiScore * 0.10 +
+    budgetScore * 0.10
+  );
+
+  return {
+    total: composite,
+    components: [
+      {label:'Free Data Availability', score:freeScore, weight:30},
+      {label:'Resolution Match', score:resolutionScore, weight:20},
+      {label:'Temporal Coverage', score:temporalScore, weight:15},
+      {label:'Cloud-Free Probability', score:cloudScore, weight:15},
+      {label:'API/Automation Ready', score:apiScore, weight:10},
+      {label:'Budget Impact', score:budgetScore, weight:10}
+    ],
+    meta: {freeCount:freeCount, needsCommercial:needsCommercial, hasOptical:hasOptical, hasSAR:hasSAR}
+  };
+}
+
+function renderViabilityScore() {
+  var v = computeViabilityScore();
+  var score = v.total;
+
+  // Color & label
+  var color, label, recBg;
+  if (score >= 80)      { color = '#27ae60'; label = 'Excellent'; recBg = '#e8f8f0'; }
+  else if (score >= 60) { color = '#7cb342'; label = 'Good';      recBg = '#f1f8e9'; }
+  else if (score >= 40) { color = '#e6a817'; label = 'Moderate';  recBg = '#fdf3e6'; }
+  else if (score >= 20) { color = '#e67e22'; label = 'Challenging'; recBg = '#fef0e1'; }
+  else                  { color = '#c0392b'; label = 'Difficult'; recBg = '#fbeaea'; }
+
+  // SVG gauge
+  var radius = 60;
+  var circumference = 2 * Math.PI * radius;
+  var offset = circumference - (score / 100) * circumference;
+
+  var html = '<div class="viability-top">';
+  // Gauge
+  html += '<div class="viability-gauge">';
+  html += '<svg width="150" height="150" viewBox="0 0 150 150">';
+  html += '<circle class="viability-gauge-bg" cx="75" cy="75" r="' + radius + '"/>';
+  html += '<circle class="viability-gauge-fill" cx="75" cy="75" r="' + radius + '" stroke="' + color + '" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + offset + '"/>';
+  html += '</svg>';
+  html += '<div class="viability-gauge-text">';
+  html += '<div class="viability-gauge-number" style="color:' + color + '">' + score + '</div>';
+  html += '<div class="viability-gauge-label" style="color:' + color + '">' + label + '</div>';
+  html += '</div></div>';
+
+  // Info
+  html += '<div class="viability-info">';
+  html += '<h3>Data Viability Score</h3>';
+
+  // Summary sentence
+  var summary = '';
+  var currency = document.getElementById('budgetCurrency').value === 'USD' ? '$' : '\u20AC';
+  if (score >= 80) {
+    summary = 'Your project has excellent data availability. All required data can be obtained for free with API access.';
+  } else if (score >= 60) {
+    var gap = '';
+    if (v.components[1].score < 70) gap = 'higher-resolution imagery';
+    else if (v.components[3].score < 70) gap = 'cloud-free optical coverage';
+    else if (v.components[2].score < 80) gap = 'full temporal coverage';
+    else gap = 'some specialized datasets';
+    summary = 'Good data coverage overall. Consider supplementing ' + gap + ' for best results.';
+  } else if (score >= 40) {
+    var est = v.meta.needsCommercial ? ' Budget ' + currency + '2,000\u2013' + currency + '15,000 for commercial data to fill gaps.' : '';
+    summary = 'Mixed data availability. Free sources cover the basics, but gaps exist in resolution or coverage.' + est;
+  } else if (score >= 20) {
+    summary = 'Data availability is challenging. High-resolution or specialized imagery for this area likely requires commercial sources (' + currency + '5,000\u2013' + currency + '50,000+).';
+  } else {
+    summary = 'Specialized data is needed. Free sources are very limited for these requirements. Contact commercial providers for quotes.';
+  }
+  html += '<div class="viability-summary">' + summary + '</div>';
+
+  // Recommendation
+  var rec = '';
+  if (score >= 80) rec = 'Proceed confidently. Free data covers your needs.';
+  else if (score >= 60) {
+    var gapRec = '';
+    if (v.components[1].score < 70) gapRec = 'Consider Planet or SPOT imagery for sub-10m resolution.';
+    else if (v.components[3].score < 70) gapRec = 'Add SAR data (Sentinel-1) as a cloud-free alternative.';
+    else if (v.components[2].score < 80) gapRec = 'Landsat archive extends coverage back to 1972.';
+    else gapRec = 'Minor gaps can be filled with targeted downloads.';
+    rec = 'Good coverage. ' + gapRec;
+  } else if (score >= 40) {
+    rec = 'Mixed availability. Budget ' + currency + '2,000\u2013' + currency + '15,000 for commercial data to fill resolution or coverage gaps.';
+  } else if (score >= 20) {
+    rec = 'Limited free options. Consider lower-resolution alternatives or budget ' + currency + '10,000\u2013' + currency + '50,000+ for commercial sources.';
+  } else {
+    rec = 'Specialized data needed. Contact Maxar, Airbus, or Planet directly for quotes on very high-resolution tasking.';
+  }
+  html += '<div class="viability-recommendation" style="background:' + recBg + ';color:' + color + '">' + rec + '</div>';
+  html += '</div></div>';
+
+  // Component bars
+  html += '<div class="viability-components">';
+  v.components.forEach(function(c){
+    var barColor;
+    if (c.score >= 80) barColor = '#27ae60';
+    else if (c.score >= 60) barColor = '#7cb342';
+    else if (c.score >= 40) barColor = '#e6a817';
+    else if (c.score >= 20) barColor = '#e67e22';
+    else barColor = '#c0392b';
+    html += '<div class="viability-comp">';
+    html += '<span class="viability-comp-label">' + c.label + ' (' + c.weight + '%)</span>';
+    html += '<div class="viability-comp-bar"><div class="viability-comp-bar-fill" style="width:' + c.score + '%;background:' + barColor + '"></div></div>';
+    html += '<span class="viability-comp-val" style="color:' + barColor + '">' + c.score + '</span>';
+    html += '</div>';
+  });
+  html += '</div>';
+
+  document.getElementById('viabilityCard').innerHTML = html;
 }
 
 /* ══════════════════════════════════════════════

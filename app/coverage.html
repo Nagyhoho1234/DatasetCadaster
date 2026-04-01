@@ -4,32 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Satellite Coverage Calendar — Dataset Cadaster</title>
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --hdr:#1a2634;
-  --hdr-accent:#2e4057;
-  --body-bg:#f0f2f5;
-  --card-bg:#fff;
-  --text:#2c3e50;
-  --text-light:#5a6a7a;
-  --border:#dce1e8;
-  --accent:#2980b9;
-  --accent-hover:#1f6da0;
-  --green:#27ae60;
-  --green-bg:#e8f8f0;
-  --yellow:#e67e22;
-  --yellow-bg:#fdf3e6;
-  --red:#c0392b;
-  --red-bg:#fbeaea;
-  --blue:#2980b9;
-  --blue-bg:#e4f0fa;
-  --teal:#16a085;
-  --radius:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.1);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --nav-h:44px;
   --s2-color:#3498db;
   --ls-color:#27ae60;
   --s1-color:#e67e22;
@@ -37,35 +15,8 @@
   --s3-color:#8e44ad;
   --planet-color:#e74c3c;
 }
-[data-theme="dark"]{
-  --hdr:#0d1520;
-  --hdr-accent:#1a2a3e;
-  --body-bg:#181e26;
-  --card-bg:#1e2733;
-  --text:#d0d8e0;
-  --text-light:#8899aa;
-  --border:#2a3545;
-  --accent:#4ba3d9;
-  --accent-hover:#3a8ec4;
-  --green:#2ecc71;
-  --green-bg:#1a3328;
-  --yellow:#f39c12;
-  --yellow-bg:#332a14;
-  --red:#e74c3c;
-  --red-bg:#331a1a;
-  --blue:#4ba3d9;
-  --blue-bg:#1a2a3e;
-  --shadow:0 1px 3px rgba(0,0,0,.3);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
-}
-body{font-family:var(--font);background:var(--body-bg);color:var(--text);line-height:1.5;min-height:100vh}
-/* ── Navbar ────────────────────────────────────────────── */
-.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
-.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
-.navbar-links{display:flex;gap:4px;flex-wrap:wrap}
-.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
-.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
-.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
+body{line-height:1.5}
+.navbar-links{flex-wrap:wrap}
 /* ── Page Layout ───────────────────────────────────────── */
 .page-header{background:var(--hdr);color:#fff;padding:20px 28px;border-bottom:1px solid var(--hdr-accent)}
 .page-header h1{font-size:1.3rem;font-weight:700}
@@ -155,8 +106,6 @@ body{font-family:var(--font);background:var(--body-bg);color:var(--text);line-he
 .cloud-bar-label{font-size:.6rem;color:var(--text-light);margin-top:3px;text-align:center}
 /* ── Responsive ────────────────────────────────────────── */
 @media(max-width:768px){
-  .navbar{padding:0 12px;font-size:.75rem}
-  .navbar-links a{padding:6px 8px}
   .main{padding:12px}
   .aoi-panel{flex-direction:column;align-items:stretch}
   .aoi-panel input,.aoi-panel select{width:100%}
@@ -175,6 +124,7 @@ body{font-family:var(--font);background:var(--body-bg);color:var(--text);line-he
     <a href="index.html">Catalog</a>
     <a href="estimator.html">GeoEstimator</a>
     <a href="recipes.html">Recipes</a>
+    <a href="methods.html">Methods</a>
     <a href="guide.html">Guide</a>
     <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
@@ -191,7 +141,7 @@ body{font-family:var(--font);background:var(--body-bg);color:var(--text);line-he
       <p>Deterministic pass predictions based on orbital parameters &mdash; when does each satellite see your area?</p>
     </div>
     <div class="hdr-right">
-      <button class="theme-btn" onclick="toggleTheme()" title="Toggle dark mode">Dark / Light</button>
+      <button class="theme-btn" onclick="dcToggleDark()" title="Toggle dark mode">Dark / Light</button>
     </div>
   </div>
 </div>
@@ -829,17 +779,7 @@ function applyPreset() {
   }
 }
 
-/* ── Theme Toggle ──────────────────────────────────────── */
-function toggleTheme() {
-  const body = document.documentElement;
-  const current = body.getAttribute('data-theme');
-  body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
-  localStorage.setItem('theme', current === 'dark' ? 'light' : 'dark');
-}
-(function() {
-  const saved = localStorage.getItem('theme');
-  if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-})();
+/* Dark mode handled by shared.js (dcToggleDark) */
 
 /* ── Recalculate All ───────────────────────────────────── */
 function recalculate() {

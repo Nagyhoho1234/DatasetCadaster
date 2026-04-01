@@ -4,45 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dataset Cadaster — Map Explorer</title>
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --hdr:#1a2634;
-  --hdr-accent:#2e4057;
-  --body-bg:#f0f2f5;
-  --card-bg:#fff;
-  --text:#2c3e50;
-  --text-light:#5a6a7a;
-  --border:#dce1e8;
-  --accent:#2980b9;
-  --accent-hover:#1f6da0;
-  --green:#27ae60;
-  --green-bg:#e8f8f0;
-  --yellow:#e67e22;
-  --yellow-bg:#fdf3e6;
-  --red:#c0392b;
-  --red-bg:#fbeaea;
-  --blue:#2980b9;
-  --blue-bg:#e4f0fa;
-  --teal:#16a085;
-  --radius:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.1);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-}
-html{font-size:15px}
-body{font-family:var(--font);color:var(--text);background:var(--body-bg);margin:0;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
+/* ── Map page overrides ──────────────────────────────── */
+body{height:100vh;overflow:hidden}
 
-/* ── Navigation ───────────────────────────────────────── */
-.navbar{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:56px;z-index:1000;box-shadow:0 2px 6px rgba(0,0,0,.25);flex-shrink:0}
-.navbar-brand{font-size:1.25rem;font-weight:600;letter-spacing:.3px;color:#fff;text-decoration:none}
+/* ── Navigation (map uses a bigger navbar) ───────────── */
+.navbar{background:var(--hdr);height:56px;z-index:1000;box-shadow:0 2px 6px rgba(0,0,0,.25);flex-shrink:0;border-bottom:none}
+.navbar-brand{font-size:1.25rem;font-weight:600;letter-spacing:.3px;color:#fff;text-decoration:none;margin-right:0}
 .navbar-brand span{color:#5dade2;margin-right:6px}
 .navbar-links{margin-left:auto;display:flex;gap:24px;font-size:.9rem}
-.navbar-links a{color:#a0b4c8;text-decoration:none;transition:color .2s}
-.navbar-links a:hover,.navbar-links a.active{color:#fff;text-decoration:none}
+.navbar-links a{padding:0}
+.navbar-links a:hover,.navbar-links a.active{color:#fff;text-decoration:none;background:none}
 
 /* ── Main Layout ──────────────────────────────────────── */
 .main-container{display:flex;flex:1;overflow:hidden;position:relative}
@@ -187,6 +162,7 @@ a:hover{text-decoration:underline}
     <a href="index.html">Catalog</a>
     <a href="estimator.html">GeoEstimator</a>
     <a href="recipes.html">Recipes</a>
+    <a href="methods.html">Methods</a>
     <a href="compare.html">Comparisons</a>
     <a href="map.html" class="active">Map</a>
     <a href="lineage.html">Lineage</a>

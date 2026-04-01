@@ -4,63 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dataset Cadaster — Dataset Selection Guide</title>
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
 <style>
-/* ── Reset & Base ─────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --hdr:#1a2634;
-  --hdr-accent:#2e4057;
-  --body-bg:#f0f2f5;
-  --card-bg:#fff;
-  --text:#2c3e50;
-  --text-light:#5a6a7a;
-  --border:#dce1e8;
-  --accent:#2980b9;
-  --accent-hover:#1f6da0;
-  --green:#27ae60;
-  --green-bg:#e8f8f0;
-  --yellow:#e67e22;
-  --yellow-bg:#fdf3e6;
-  --red:#c0392b;
-  --red-bg:#fbeaea;
-  --blue:#2980b9;
-  --blue-bg:#e4f0fa;
-  --teal:#16a085;
-  --radius:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.1);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-}
-[data-theme="dark"]{
-  --hdr:#0d1520;
-  --hdr-accent:#1a2a3e;
-  --body-bg:#181e26;
-  --card-bg:#1e2733;
-  --text:#d0d8e0;
-  --text-light:#8899aa;
-  --border:#2a3545;
-  --accent:#4ba3d9;
-  --accent-hover:#3a8ec4;
-  --green:#2ecc71;
-  --green-bg:#1a3328;
-  --yellow:#f39c12;
-  --yellow-bg:#332a14;
-  --red:#e74c3c;
-  --red-bg:#331a1a;
-  --blue:#4ba3d9;
-  --blue-bg:#1a2a3e;
-  --shadow:0 1px 3px rgba(0,0,0,.3);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
-}
-html{font-size:15px;scroll-behavior:smooth}
-body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
-a{color:var(--accent);text-decoration:none}
-a:hover{text-decoration:underline}
-
-/* ── Header ──────────────────────────────────────────── */
-.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
-.header h1 span{color:#5dade2;margin-right:6px}
+/* ── Header Nav (guide uses header-nav instead of navbar) ── */
 .header-nav{margin-left:auto;display:flex;gap:20px;font-size:.88rem;align-items:center}
 .header-nav a{color:#a0b4c8;text-decoration:none;transition:color .2s}
 .header-nav a:hover,.header-nav a.active{color:#fff;text-decoration:none}
@@ -160,12 +107,13 @@ a:hover{text-decoration:underline}
     <a href="index.html">Catalog</a>
     <a href="estimator.html">GeoEstimator</a>
     <a href="recipes.html">Recipes</a>
+    <a href="methods.html">Methods</a>
     <a href="guide.html" class="active">Guide</a>
     <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
     <a href="lineage.html">Lineage</a>
     <a href="coverage.html">Coverage</a>
-    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode">&#9789;</button>
+    <button class="theme-toggle" onclick="dcToggleDark()" title="Toggle dark mode">&#9789;</button>
   </nav>
 </header>
 
@@ -594,24 +542,7 @@ function restartTree(id) {
   renderTree(id);
 }
 
-/* ═══════════════════════════════════════════════════════
-   Theme Toggle
-   ═══════════════════════════════════════════════════════ */
-function toggleTheme() {
-  const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
-  localStorage.setItem('dc-theme', next);
-}
-
-(function loadTheme() {
-  const saved = localStorage.getItem('dc-theme');
-  if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
-  else if (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
-})();
+/* Dark mode handled by shared.js (dcToggleDark) */
 
 /* ── Init ────────────────────────────────────────────── */
 initTrees();

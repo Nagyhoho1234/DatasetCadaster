@@ -314,7 +314,9 @@ class DatasetCadasterDialog(QDialog):
         self.table.setSortingEnabled(False)
         self.table.setRowCount(len(self.filtered))
         for row, ds in enumerate(self.filtered):
-            self.table.setItem(row, self.COL_NAME, QTableWidgetItem(ds.get("name", "")))
+            name_item = QTableWidgetItem(ds.get("name", ""))
+            name_item.setData(Qt.UserRole, ds.get("id", ds.get("name", "")))
+            self.table.setItem(row, self.COL_NAME, name_item)
             cat_key = ds.get("category", "")
             self.table.setItem(row, self.COL_CATEGORY, QTableWidgetItem(CATEGORY_LABELS.get(cat_key, cat_key)))
             self.table.setItem(row, self.COL_SCOPE, QTableWidgetItem((ds.get("scope") or "").title()))
@@ -334,8 +336,8 @@ class DatasetCadasterDialog(QDialog):
             # We need to map from the visual (sorted) row to the dataset.
             name_item = self.table.item(row, self.COL_NAME)
             if name_item:
-                name = name_item.text()
-                ds = next((d for d in self.filtered if d.get("name") == name), None)
+                ds_id = name_item.data(Qt.UserRole)
+                ds = next((d for d in self.filtered if d.get("id", d.get("name")) == ds_id), None)
                 self._update_detail(ds)
         else:
             self._update_detail(None)

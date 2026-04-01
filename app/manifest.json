@@ -2,7 +2,7 @@
   "name": "Dataset Cadaster",
   "short_name": "DataCadaster",
   "description": "Find geospatial & environmental datasets for your research",
-  "start_url": "/app/landing.html",
+  "start_url": "./landing.html",
   "display": "standalone",
   "background_color": "#1a2634",
   "theme_color": "#1a2634",

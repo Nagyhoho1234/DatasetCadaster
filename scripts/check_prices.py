@@ -7,8 +7,7 @@ What it does:
 2. Hashes the page content to detect changes
 3. If content changed → flags provider for review, extracts prices where possible
 4. Updates pricing.json with new hashes, timestamps, and extracted prices
-5. Updates datasets.json cost fields if price model changed (free↔commercial)
-6. Commits and pushes if anything changed
+5. Commits and pushes if anything changed
 
 Usage:
   python scripts/check_prices.py              # dry-run (print changes)
@@ -40,7 +39,7 @@ REPORT_FILE = ROOT / "scripts" / "price_check_report.json"
 APPLY = "--apply" in sys.argv
 COMMIT = "--commit" in sys.argv
 
-USER_AGENT = "DatasetCadaster-PriceBot/1.0 (https://github.com/YOUR_USERNAME/DatasetCadaster)"
+USER_AGENT = "DatasetCadaster-PriceBot/1.0 (https://github.com/dataset-cadaster/DatasetCadaster)"
 TIMEOUT = 15  # seconds
 
 

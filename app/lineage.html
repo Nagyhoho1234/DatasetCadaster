@@ -4,40 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dataset Cadaster — Lineage Graph</title>
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --hdr:#1a2634;--hdr-accent:#2e4057;--body-bg:#f0f2f5;--card-bg:#fff;
-  --text:#2c3e50;--text-light:#5a6a7a;--border:#dce1e8;
-  --accent:#2980b9;--accent-hover:#1f6da0;
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --nav-h:44px;--header-h:56px;--radius:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.1);
   --cat-satellite:#3498db;--cat-climate:#e67e22;--cat-soil:#8b6914;
   --cat-hydro:#1abc9c;--cat-bio:#27ae60;--cat-dem:#9b59b6;
   --cat-lulc:#2ecc71;--cat-pop:#e74c3c;--cat-ocean:#2471a3;
   --cat-geodesy:#7f8c8d;--cat-platform:#16a085;--cat-admin:#c0392b;
 }
-[data-theme="dark"]{
-  --hdr:#0d1520;--hdr-accent:#1a2a3e;--body-bg:#181e26;--card-bg:#1e2733;
-  --text:#d0d8e0;--text-light:#8899aa;--border:#2a3545;
-  --accent:#4ba3d9;--accent-hover:#3a8ec4;
-  --shadow:0 1px 3px rgba(0,0,0,.3);
-}
-html{font-size:15px}
-body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
-.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
-.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
-.navbar-links{display:flex;gap:4px}
-.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
-.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
-.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
-.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
-.header h1 span{color:#5dade2;margin-right:6px}
-.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
-.btn-dark-toggle{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:5px}
-.btn-dark-toggle:hover{border-color:#5a7a9a;color:#fff}
 
 /* Layout */
 .main-wrap{display:flex;flex:1;overflow:hidden;position:relative}
@@ -97,6 +72,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     <a href="index.html">Catalog</a>
     <a href="estimator.html">GeoEstimator</a>
     <a href="recipes.html">Recipes</a>
+    <a href="methods.html">Methods</a>
     <a href="guide.html">Guide</a>
     <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
@@ -108,7 +84,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <h1><span>&#9670;</span> Dataset Lineage Graph</h1>
   <div class="header-right">
     <span class="subtitle" style="font-size:.82rem;color:#a0b4c8">How datasets derive from each other</span>
-    <button class="btn-dark-toggle" onclick="toggleDark()">&#9789; Dark</button>
+    <button class="btn-dark-toggle" onclick="dcToggleDark()">&#9789; Dark</button>
   </div>
 </div>
 
@@ -136,6 +112,12 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 </div>
 
 <script>
+/* ── XSS helper ─────────────────────────────────────── */
+function esc(s){
+  if(s==null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 /* ── Data ─────────────────────────────────────────────── */
 const CATEGORIES = {
   satellite:  {label:'Satellite / EO',      color:'var(--cat-satellite)', hex:'#3498db'},
@@ -401,7 +383,7 @@ function onNodeHover(n, ev) {
     }
   });
   // Tooltip
-  tooltip.innerHTML = `<div class="tt-name">${n.label}</div><div class="tt-desc">${n.desc}</div>`;
+  tooltip.innerHTML = `<div class="tt-name">${esc(n.label)}</div><div class="tt-desc">${esc(n.desc)}</div>`;
   tooltip.classList.add('visible');
   positionTooltip(ev);
 }
@@ -434,9 +416,9 @@ function onNodeClick(n) {
 
   const ins = getInputs(n.id), outs = getOutputs(n.id);
   const ipIn = document.getElementById('ipInputs');
-  ipIn.innerHTML = ins.length ? ins.map(id => `<li onclick="jumpTo('${id}')">${nodeMap[id].label}</li>`).join('') : '<li style="color:var(--text-light);cursor:default">None (raw source)</li>';
+  ipIn.innerHTML = ins.length ? ins.map(id => `<li onclick="jumpTo('${esc(id)}')">${esc(nodeMap[id].label)}</li>`).join('') : '<li style="color:var(--text-light);cursor:default">None (raw source)</li>';
   const ipOut = document.getElementById('ipOutputs');
-  ipOut.innerHTML = outs.length ? outs.map(id => `<li onclick="jumpTo('${id}')">${nodeMap[id].label}</li>`).join('') : '<li style="color:var(--text-light);cursor:default">None listed</li>';
+  ipOut.innerHTML = outs.length ? outs.map(id => `<li onclick="jumpTo('${esc(id)}')">${esc(nodeMap[id].label)}</li>`).join('') : '<li style="color:var(--text-light);cursor:default">None listed</li>';
 }
 
 function closePanel() { document.getElementById('infoPanel').classList.remove('visible'); }
@@ -543,30 +525,20 @@ function buildMobileList() {
     const h = document.createElement('h3'); h.textContent = title; ml.appendChild(h);
     nodes.filter(n => n.tier == tier).forEach(n => {
       const d = document.createElement('div'); d.className = 'ml-item';
-      const ins = getInputs(n.id).map(id => nodeMap[id].label);
-      const outs = getOutputs(n.id).map(id => nodeMap[id].label);
+      const ins = getInputs(n.id).map(id => esc(nodeMap[id].label));
+      const outs = getOutputs(n.id).map(id => esc(nodeMap[id].label));
       let conn = '';
       if (ins.length) conn += 'From: ' + ins.join(', ');
       if (outs.length) conn += (conn ? ' | ' : '') + 'To: ' + outs.join(', ');
-      d.innerHTML = `<div class="ml-name" style="color:${CATEGORIES[n.cat].hex}">${n.label}</div>` +
-        `<div style="font-size:.82rem;margin-top:2px">${n.desc}</div>` +
+      d.innerHTML = `<div class="ml-name" style="color:${CATEGORIES[n.cat].hex}">${esc(n.label)}</div>` +
+        `<div style="font-size:.82rem;margin-top:2px">${esc(n.desc)}</div>` +
         (conn ? `<div class="ml-conn">${conn}</div>` : '');
       ml.appendChild(d);
     });
   }
 }
 
-/* ── Dark Mode ───────────────────────────────────────── */
-function toggleDark() {
-  const t = document.documentElement.getAttribute('data-theme') === 'dark' ? '' : 'dark';
-  document.documentElement.setAttribute('data-theme', t);
-  localStorage.setItem('theme', t);
-  render();
-}
-(function(){
-  const saved = localStorage.getItem('theme');
-  if (saved) document.documentElement.setAttribute('data-theme', saved);
-})();
+/* Dark mode handled by shared.js (dcToggleDark) */
 
 /* ── Init ────────────────────────────────────────────── */
 buildFilters();

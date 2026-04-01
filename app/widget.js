@@ -58,7 +58,7 @@
   container.innerHTML = '<div class="dcw-hdr"><span>&#9672;</span> Dataset Cadaster</div><div class="dcw-empty">Loading datasets...</div>';
 
   /* Fetch data */
-  var jsonUrl = baseUrl + '/datasets.json';
+  var jsonUrl = baseUrl + '/datasets-summary.json';
   var xhr = new XMLHttpRequest();
   xhr.open('GET', jsonUrl, true);
   xhr.onload = function() {

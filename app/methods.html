@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dataset Cadaster — Method-to-Data Lookup</title>
+<style>
+/* ── Reset & Base ─────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --hdr:#1a2634;
+  --hdr-accent:#2e4057;
+  --body-bg:#f0f2f5;
+  --card-bg:#fff;
+  --text:#2c3e50;
+  --text-light:#5a6a7a;
+  --border:#dce1e8;
+  --accent:#2980b9;
+  --accent-hover:#1f6da0;
+  --green:#27ae60;
+  --green-bg:#e8f8f0;
+  --yellow:#e67e22;
+  --yellow-bg:#fdf3e6;
+  --red:#c0392b;
+  --red-bg:#fbeaea;
+  --blue:#2980b9;
+  --blue-bg:#e4f0fa;
+  --teal:#16a085;
+  --radius:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --nav-h:44px;
+  --header-h:56px;
+}
+/* ── Dark Mode ────────────────────────────────────────── */
+[data-theme="dark"]{
+  --hdr:#0d1520;
+  --hdr-accent:#1a2a3e;
+  --body-bg:#181e26;
+  --card-bg:#1e2733;
+  --text:#d0d8e0;
+  --text-light:#8899aa;
+  --border:#2a3545;
+  --accent:#4ba3d9;
+  --accent-hover:#3a8ec4;
+  --green:#2ecc71;
+  --green-bg:#1a3328;
+  --yellow:#f39c12;
+  --yellow-bg:#332a14;
+  --red:#e74c3c;
+  --red-bg:#331a1a;
+  --blue:#4ba3d9;
+  --blue-bg:#1a2a3e;
+  --shadow:0 1px 3px rgba(0,0,0,.3);
+  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
+}
+body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
+
+/* ── Navbar ───────────────────────────────────────────── */
+.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
+.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
+.navbar-links{display:flex;gap:4px;flex-wrap:wrap}
+.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
+.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
+.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
+
+/* ── Header ───────────────────────────────────────────── */
+.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
+.header h1 span{color:#5dade2;margin-right:6px}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.header-right .subtitle{font-size:.82rem;color:#a0b4c8}
+.btn-dark-toggle{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:5px}
+.btn-dark-toggle:hover{border-color:#5a7a9a;color:#fff}
+
+/* ── Main Content ─────────────────────────────────────── */
+.main{max-width:1280px;margin:0 auto;padding:24px;width:100%}
+
+/* ── Search & Filter Bar ──────────────────────────────── */
+.search-bar{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.search-input{flex:1;min-width:240px;padding:10px 16px;border:1px solid var(--border);border-radius:var(--radius);font:inherit;font-size:.92rem;background:var(--card-bg);color:var(--text);transition:border-color .15s}
+.search-input:focus{outline:none;border-color:var(--accent)}
+.search-input::placeholder{color:var(--text-light);opacity:.7}
+.filter-tags{display:flex;gap:6px;flex-wrap:wrap}
+.filter-tag{padding:5px 14px;border-radius:16px;border:1px solid var(--border);background:var(--card-bg);color:var(--text-light);font-size:.78rem;cursor:pointer;transition:all .15s;font-family:var(--font);user-select:none}
+.filter-tag:hover{border-color:var(--accent);color:var(--accent)}
+.filter-tag.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.results-count{font-size:.82rem;color:var(--text-light);margin-bottom:16px}
+
+/* ── Method Cards Grid ────────────────────────────────── */
+.methods-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+@media(max-width:960px){.methods-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.methods-grid{grid-template-columns:1fr}.search-bar{flex-direction:column}.header{flex-wrap:wrap;height:auto;padding:12px 24px}}
+
+.method-card{background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .15s,transform .15s;cursor:pointer}
+.method-card:hover{box-shadow:var(--shadow-hover);transform:translateY(-1px)}
+.method-card.expanded{grid-column:1/-1;cursor:default}
+
+.card-front{padding:20px}
+.card-icon{font-size:1.8rem;margin-bottom:8px;display:block}
+.card-name{font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.card-tag{padding:1px 8px;border-radius:10px;font-size:.68rem;font-weight:600;letter-spacing:.2px;text-transform:uppercase}
+.tag-hydrology{background:#e4f0fa;color:#2471a3}
+.tag-ecology{background:#e8f8f0;color:#1e8449}
+.tag-urban{background:#fdf3e6;color:#b97015}
+.tag-geology{background:#f0e6fa;color:#6c3483}
+.tag-climate{background:#fdf3e6;color:#b97015}
+.tag-agriculture{background:#e8f8f0;color:#1e8449}
+.tag-remote-sensing{background:#e4f0fa;color:#2471a3}
+.tag-hazard{background:#fbeaea;color:#a93226}
+.tag-marine{background:#e4f0fa;color:#21618c}
+.tag-forestry{background:#e8f8f0;color:#1a6d35}
+.tag-air-quality{background:#f0e6fa;color:#6c3483}
+[data-theme="dark"] .tag-hydrology{background:#1a2a3e;color:#5ab0d4}
+[data-theme="dark"] .tag-ecology{background:#1a3020;color:#5cb870}
+[data-theme="dark"] .tag-urban{background:#332a14;color:#d4a050}
+[data-theme="dark"] .tag-geology{background:#28203a;color:#9a80b8}
+[data-theme="dark"] .tag-climate{background:#332a14;color:#d4a050}
+[data-theme="dark"] .tag-agriculture{background:#1a3020;color:#5cb870}
+[data-theme="dark"] .tag-remote-sensing{background:#1a2a3e;color:#5ab0d4}
+[data-theme="dark"] .tag-hazard{background:#331a1a;color:#cc6666}
+[data-theme="dark"] .tag-marine{background:#142838;color:#5a98b8}
+[data-theme="dark"] .tag-forestry{background:#1a3020;color:#5cb870}
+[data-theme="dark"] .tag-air-quality{background:#28203a;color:#9a80b8}
+
+.card-cost{font-size:.82rem;color:var(--text-light)}
+.card-cost strong{color:var(--green);font-weight:700}
+.card-cost.has-cost strong{color:var(--yellow)}
+
+.card-brief{font-size:.82rem;color:var(--text-light);margin-top:4px;line-height:1.4}
+
+/* ── Expanded Detail Panel ────────────────────────────── */
+.card-detail{display:none;border-top:1px solid var(--border);padding:20px 24px;animation:slideDown .2s ease}
+.method-card.expanded .card-detail{display:block}
+@keyframes slideDown{from{opacity:0;max-height:0}to{opacity:1;max-height:2000px}}
+
+.detail-section{margin-bottom:16px}
+.detail-section h4{font-size:.82rem;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light);margin-bottom:8px;font-weight:700}
+.dataset-list{list-style:none;display:flex;flex-wrap:wrap;gap:8px}
+.dataset-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:var(--radius);font-size:.82rem;font-weight:500;text-decoration:none;transition:all .15s;cursor:pointer;border:1px solid transparent}
+.dataset-chip:hover{transform:translateY(-1px);box-shadow:var(--shadow)}
+.chip-required-free{background:var(--green-bg);color:var(--green);border-color:var(--green)}
+.chip-optional-free{background:var(--blue-bg);color:var(--blue);border-color:var(--blue)}
+.chip-optional-commercial{background:var(--yellow-bg);color:var(--yellow);border-color:var(--yellow)}
+.chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot-green{background:var(--green)}
+.dot-blue{background:var(--blue)}
+.dot-orange{background:var(--yellow)}
+
+.detail-footer{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border)}
+.cost-badge{padding:6px 16px;border-radius:var(--radius);font-size:.88rem;font-weight:700}
+.cost-free{background:var(--green-bg);color:var(--green)}
+.cost-paid{background:var(--yellow-bg);color:var(--yellow)}
+.processing-info{font-size:.82rem;color:var(--text-light)}
+.processing-info strong{color:var(--text);font-weight:600}
+.btn-open-catalog{padding:8px 18px;border-radius:var(--radius);border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer;font:inherit;font-size:.82rem;font-weight:600;transition:all .15s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn-open-catalog:hover{background:var(--accent-hover)}
+.btn-collapse{padding:6px 14px;border-radius:var(--radius);border:1px solid var(--border);background:var(--card-bg);color:var(--text-light);cursor:pointer;font:inherit;font-size:.78rem;transition:all .15s;margin-left:auto}
+.btn-collapse:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── Legend ────────────────────────────────────────────── */
+.legend{display:flex;gap:20px;margin-bottom:20px;padding:12px 18px;background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);font-size:.8rem;color:var(--text-light);flex-wrap:wrap;align-items:center}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+  <a class="navbar-brand" href="index.html">Dataset Cadaster</a>
+  <div class="navbar-links">
+    <a href="index.html">Catalog</a>
+    <a href="estimator.html">GeoEstimator</a>
+    <a href="recipes.html">Recipes</a>
+    <a href="methods.html" class="active">Methods</a>
+    <a href="guide.html">Guide</a>
+    <a href="compare.html">Comparisons</a>
+    <a href="map.html">Map</a>
+    <a href="lineage.html">Lineage</a>
+    <a href="coverage.html">Coverage</a>
+  </div>
+</nav>
+
+<!-- Header -->
+<header class="header">
+  <h1><span>&#9670;</span>Method-to-Data Lookup</h1>
+  <div class="header-right">
+    <span class="subtitle">Start from your research task, find the datasets you need</span>
+    <button class="btn-dark-toggle" onclick="toggleDark()" id="darkBtn">Dark</button>
+  </div>
+</header>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Search + Filter -->
+  <div class="search-bar">
+    <input type="text" class="search-input" id="methodSearch" placeholder="Search methods (e.g. flood, soil, urban, carbon...)">
+    <div class="filter-tags" id="filterTags"></div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <span style="font-weight:600">Dataset chips:</span>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--green)"></span> Required (free)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span> Optional (free)</div>
+    <div class="legend-item"><span class="legend-dot" style="background:var(--yellow)"></span> Optional (commercial)</div>
+  </div>
+
+  <div class="results-count" id="resultsCount"></div>
+
+  <!-- Grid -->
+  <div class="methods-grid" id="methodsGrid"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ──────────────────────────────────────────────────────────
+   METHOD DATA
+   ────────────────────────────────────────────────────────── */
+var METHODS = [
+  {
+    id:"flood",
+    icon:"\uD83C\uDF0A",
+    name:"Flood Risk Assessment",
+    tags:["hydrology","hazard"],
+    brief:"Map flood-prone areas using terrain, river, precipitation, and land cover data.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"QGIS + HEC-RAS or LISFLOOD",
+    required:[
+      {name:"DEM (Copernicus GLO-30 or national LiDAR)",q:"DEM"},
+      {name:"River network (HydroSHEDS)",q:"HydroSHEDS"},
+      {name:"Precipitation (ERA5 / CHIRPS)",q:"ERA5"},
+      {name:"Land cover (CORINE / ESA WorldCover)",q:"CORINE"},
+      {name:"Soil (SoilGrids)",q:"SoilGrids"}
+    ],
+    optional:[
+      {name:"Historical flood maps (GloFAS)",q:"GloFAS",commercial:false},
+      {name:"Satellite SAR flood extent (Sentinel-1)",q:"Sentinel-1",commercial:false},
+      {name:"Building footprints (Microsoft / OSM)",q:"building footprints",commercial:false}
+    ]
+  },
+  {
+    id:"precision-ag",
+    icon:"\uD83C\uDF3E",
+    name:"Precision Agriculture Monitoring",
+    tags:["agriculture","remote-sensing"],
+    brief:"Track crop health, soil conditions, and weather for optimized farm management.",
+    cost:"0\u20132,700",
+    costLabel:"\u20AC0\u2013\u20AC2,700/yr",
+    processing:"QGIS + Google Earth Engine",
+    required:[
+      {name:"Satellite imagery (Sentinel-2 for NDVI)",q:"Sentinel-2"},
+      {name:"Weather (ERA5-Land or local met)",q:"ERA5"},
+      {name:"Soil (SoilGrids)",q:"SoilGrids"},
+      {name:"Agricultural parcels (national LPIS)",q:"LPIS"}
+    ],
+    optional:[
+      {name:"High-res imagery (PlanetScope ~\u20AC2,700/yr)",q:"PlanetScope",commercial:true},
+      {name:"Soil moisture (SMAP)",q:"SMAP",commercial:false},
+      {name:"Crop type maps (CORINE)",q:"CORINE",commercial:false}
+    ]
+  },
+  {
+    id:"urban-heat",
+    icon:"\uD83C\uDFD9\uFE0F",
+    name:"Urban Heat Island Analysis",
+    tags:["urban","climate"],
+    brief:"Identify urban hot spots using thermal imagery, land cover, and population data.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"QGIS + Python (rasterio, xarray)",
+    required:[
+      {name:"Land surface temperature (Landsat TIRS / ECOSTRESS)",q:"Landsat"},
+      {name:"Land cover (Urban Atlas / ESA WorldCover)",q:"Urban Atlas"},
+      {name:"Building density (GHSL)",q:"GHSL"},
+      {name:"Population (WorldPop)",q:"WorldPop"}
+    ],
+    optional:[
+      {name:"High-res thermal (commercial)",q:"thermal imagery",commercial:true},
+      {name:"Nighttime lights (VIIRS)",q:"VIIRS",commercial:false},
+      {name:"Green space (Copernicus HRL)",q:"Copernicus HRL",commercial:false}
+    ]
+  },
+  {
+    id:"biodiversity",
+    icon:"\uD83E\uDD8B",
+    name:"Biodiversity Assessment",
+    tags:["ecology"],
+    brief:"Model species distribution and habitat suitability using occurrence and environmental data.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"R (biomod2, sdm) or MaxEnt + QGIS",
+    required:[
+      {name:"Species occurrences (GBIF)",q:"GBIF"},
+      {name:"Protected areas (WDPA)",q:"WDPA"},
+      {name:"Land cover (CORINE / ESA WorldCover)",q:"CORINE"},
+      {name:"DEM (Copernicus GLO-30)",q:"DEM"}
+    ],
+    optional:[
+      {name:"Habitat maps (Copernicus HRL)",q:"Copernicus HRL",commercial:false},
+      {name:"Forest cover (Global Forest Watch)",q:"Global Forest Watch",commercial:false},
+      {name:"Climate projections (CMIP6)",q:"CMIP6",commercial:false}
+    ]
+  },
+  {
+    id:"groundwater",
+    icon:"\uD83D\uDCA7",
+    name:"Groundwater Resource Mapping",
+    tags:["hydrology","geology"],
+    brief:"Delineate groundwater potential zones using geology, terrain, precipitation, and remote sensing.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"QGIS + AHP / machine learning",
+    required:[
+      {name:"Geology (national survey / OneGeology)",q:"OneGeology"},
+      {name:"DEM (Copernicus GLO-30)",q:"DEM"},
+      {name:"Precipitation (ERA5)",q:"ERA5"},
+      {name:"Soil (SoilGrids)",q:"SoilGrids"},
+      {name:"Lineaments (Sentinel-2 / SAR)",q:"Sentinel-2"}
+    ],
+    optional:[
+      {name:"GRACE gravity (groundwater storage)",q:"GRACE",commercial:false},
+      {name:"Borehole data (national)",q:"borehole",commercial:false},
+      {name:"Geophysics surveys",q:"geophysics",commercial:true}
+    ]
+  },
+  {
+    id:"lulc-change",
+    icon:"\uD83D\uDDFA\uFE0F",
+    name:"Land Use Change Detection",
+    tags:["remote-sensing","ecology"],
+    brief:"Quantify land use and land cover changes over time using multi-temporal satellite imagery.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"Google Earth Engine or QGIS + Orfeo ToolBox",
+    required:[
+      {name:"Multi-temporal imagery (Sentinel-2 / Landsat)",q:"Sentinel-2"},
+      {name:"Historical land cover (CORINE 1990\u20132018 / HILDA+)",q:"CORINE"}
+    ],
+    optional:[
+      {name:"High-res archive (Google/Bing historical)",q:"high resolution imagery",commercial:true},
+      {name:"Building footprints (Microsoft / OSM)",q:"building footprints",commercial:false}
+    ]
+  },
+  {
+    id:"air-quality",
+    icon:"\uD83C\uDF2B\uFE0F",
+    name:"Air Quality Monitoring",
+    tags:["air-quality","urban","climate"],
+    brief:"Map air pollution exposure combining station data, satellite retrievals, and meteorology.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"Python (pandas, scikit-learn) + QGIS",
+    required:[
+      {name:"Station data (EEA / OpenAQ)",q:"OpenAQ"},
+      {name:"Satellite NO2/PM (TROPOMI)",q:"TROPOMI"},
+      {name:"Meteorology (ERA5)",q:"ERA5"},
+      {name:"Population exposure (WorldPop)",q:"WorldPop"}
+    ],
+    optional:[
+      {name:"CAMS forecasts",q:"CAMS",commercial:false},
+      {name:"Citizen sensors (Sensor.Community)",q:"Sensor.Community",commercial:false},
+      {name:"Emission inventories (EDGAR)",q:"EDGAR",commercial:false}
+    ]
+  },
+  {
+    id:"coastal-erosion",
+    icon:"\uD83C\uDFD6\uFE0F",
+    name:"Coastal Erosion Monitoring",
+    tags:["marine","hazard"],
+    brief:"Track shoreline retreat using satellite time series, bathymetry, and wave climate data.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"CoastSat (Python) + QGIS",
+    required:[
+      {name:"Satellite imagery time series (Sentinel-2 / Landsat)",q:"Sentinel-2"},
+      {name:"DEM / DSM",q:"DEM"},
+      {name:"Bathymetry (GEBCO / EMODnet)",q:"GEBCO"},
+      {name:"Wave data (ERA5 / CMEMS)",q:"ERA5"}
+    ],
+    optional:[
+      {name:"LiDAR time series",q:"LiDAR",commercial:true},
+      {name:"Tide gauge data (PSMSL)",q:"PSMSL",commercial:false},
+      {name:"Sea level projections",q:"sea level",commercial:false}
+    ]
+  },
+  {
+    id:"earthquake",
+    icon:"\uD83C\uDF0B",
+    name:"Earthquake Hazard Assessment",
+    tags:["geology","hazard"],
+    brief:"Assess seismic hazard from fault maps, catalogs, site conditions, and building exposure.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"OpenQuake + QGIS",
+    required:[
+      {name:"Seismic catalog (USGS / EMSC)",q:"USGS seismic"},
+      {name:"Fault maps (GEM)",q:"GEM"},
+      {name:"VS30 site conditions",q:"VS30"},
+      {name:"Building exposure (GHSL)",q:"GHSL"}
+    ],
+    optional:[
+      {name:"InSAR deformation (EGMS)",q:"EGMS",commercial:false},
+      {name:"GPS velocity (EUREF)",q:"EUREF",commercial:false},
+      {name:"Historical macroseismic data",q:"macroseismic",commercial:false}
+    ]
+  },
+  {
+    id:"forest-carbon",
+    icon:"\uD83C\uDF32",
+    name:"Forest Carbon Stock Estimation",
+    tags:["forestry","ecology","climate"],
+    brief:"Estimate above- and below-ground carbon using biomass maps, soil data, and LiDAR.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"R / Python + QGIS",
+    required:[
+      {name:"Forest cover (Global Forest Watch)",q:"Global Forest Watch"},
+      {name:"Biomass (ESA CCI Biomass)",q:"CCI Biomass"},
+      {name:"Soil carbon (SoilGrids / GSOCmap)",q:"SoilGrids"},
+      {name:"DEM (Copernicus GLO-30)",q:"DEM"}
+    ],
+    optional:[
+      {name:"LiDAR canopy height (GEDI / ICESat-2)",q:"GEDI",commercial:false},
+      {name:"National forest inventory",q:"forest inventory",commercial:false},
+      {name:"Sentinel-2 for phenology",q:"Sentinel-2",commercial:false}
+    ]
+  },
+  {
+    id:"drought",
+    icon:"\u2600\uFE0F",
+    name:"Drought Monitoring",
+    tags:["climate","hydrology","agriculture"],
+    brief:"Composite drought indices from precipitation, soil moisture, vegetation, and temperature.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"Google Earth Engine + Python (xarray)",
+    required:[
+      {name:"Precipitation (CHIRPS / ERA5)",q:"CHIRPS"},
+      {name:"Soil moisture (SMAP / ERA5-Land)",q:"SMAP"},
+      {name:"Vegetation index (MODIS NDVI)",q:"MODIS"},
+      {name:"Temperature (ERA5)",q:"ERA5"}
+    ],
+    optional:[
+      {name:"Groundwater (GRACE)",q:"GRACE",commercial:false},
+      {name:"Evapotranspiration (MODIS)",q:"MODIS",commercial:false},
+      {name:"Crop yield data (FAOSTAT)",q:"FAOSTAT",commercial:false}
+    ]
+  },
+  {
+    id:"geological-mapping",
+    icon:"\uD83E\uDEA8",
+    name:"Geological Mapping",
+    tags:["geology","remote-sensing"],
+    brief:"Map lithology and structure using multispectral imagery, DEM, and existing geological maps.",
+    cost:"0",
+    costLabel:"\u20AC0\u2013commercial for hyperspectral",
+    processing:"QGIS + ENVI / Google Earth Engine",
+    required:[
+      {name:"Satellite imagery (Sentinel-2 for lithology)",q:"Sentinel-2"},
+      {name:"DEM (for geomorphology)",q:"DEM"},
+      {name:"Existing geological maps (national survey / OneGeology)",q:"OneGeology"}
+    ],
+    optional:[
+      {name:"Hyperspectral (EnMAP / PRISMA)",q:"EnMAP",commercial:true},
+      {name:"SAR (structure mapping)",q:"Sentinel-1",commercial:false},
+      {name:"Gravity / magnetics",q:"gravity magnetics",commercial:true},
+      {name:"Field survey data",q:"field survey",commercial:false}
+    ]
+  },
+  {
+    id:"wildfire",
+    icon:"\uD83D\uDD25",
+    name:"Wildfire Risk & Burn Area Mapping",
+    tags:["hazard","ecology","climate"],
+    brief:"Assess fire risk and map post-fire burn severity using vegetation, weather, and terrain data.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"Google Earth Engine + QGIS",
+    required:[
+      {name:"Satellite imagery (Sentinel-2 / Landsat for NBR)",q:"Sentinel-2"},
+      {name:"DEM / slope / aspect",q:"DEM"},
+      {name:"Land cover (CORINE / ESA WorldCover)",q:"CORINE"},
+      {name:"Weather / fire weather index (ERA5)",q:"ERA5"}
+    ],
+    optional:[
+      {name:"Active fire detections (FIRMS / MODIS)",q:"FIRMS",commercial:false},
+      {name:"Fuel type maps",q:"fuel type",commercial:false},
+      {name:"Population / WUI interface (GHSL)",q:"GHSL",commercial:false}
+    ]
+  },
+  {
+    id:"transport",
+    icon:"\uD83D\uDE8C",
+    name:"Transport Network Analysis",
+    tags:["urban"],
+    brief:"Analyze road and transit networks for accessibility, congestion, and planning.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"QGIS + pgRouting or Python (osmnx, networkx)",
+    required:[
+      {name:"Road network (OpenStreetMap)",q:"OpenStreetMap"},
+      {name:"Population (WorldPop / census)",q:"WorldPop"},
+      {name:"Points of interest (OSM)",q:"OpenStreetMap"},
+      {name:"Admin boundaries",q:"admin boundaries"}
+    ],
+    optional:[
+      {name:"GTFS transit feeds",q:"GTFS",commercial:false},
+      {name:"Traffic count data",q:"traffic",commercial:true},
+      {name:"Satellite imagery for verification",q:"Sentinel-2",commercial:false}
+    ]
+  },
+  {
+    id:"water-quality",
+    icon:"\uD83E\uDDEA",
+    name:"Water Quality Monitoring",
+    tags:["hydrology","ecology"],
+    brief:"Estimate chlorophyll, turbidity, and other water quality parameters from satellite and in-situ data.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"SNAP + Python (ACOLITE) + QGIS",
+    required:[
+      {name:"Satellite imagery (Sentinel-2 / Landsat)",q:"Sentinel-2"},
+      {name:"In-situ measurements (national monitoring / EEA)",q:"water quality"},
+      {name:"Catchment boundaries (HydroSHEDS / national)",q:"HydroSHEDS"},
+      {name:"Land cover (CORINE / ESA WorldCover)",q:"CORINE"}
+    ],
+    optional:[
+      {name:"Ocean colour (Sentinel-3 OLCI)",q:"Sentinel-3",commercial:false},
+      {name:"Precipitation / runoff (ERA5)",q:"ERA5",commercial:false},
+      {name:"Point source emissions (E-PRTR)",q:"E-PRTR",commercial:false}
+    ]
+  },
+  {
+    id:"solar-energy",
+    icon:"\u2600\uFE0F",
+    name:"Solar Energy Potential Mapping",
+    tags:["climate","urban"],
+    brief:"Map solar irradiance and rooftop potential using radiation data, DEM, and building models.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"GRASS GIS (r.sun) + QGIS",
+    required:[
+      {name:"Solar irradiance (PVGIS / CMSAF / ERA5)",q:"PVGIS"},
+      {name:"DEM / DSM (for slope and shading)",q:"DEM"},
+      {name:"Building footprints (OSM / Microsoft)",q:"building footprints"},
+      {name:"Cloud cover climatology (ERA5)",q:"ERA5"}
+    ],
+    optional:[
+      {name:"High-res DSM (LiDAR for rooftop detail)",q:"LiDAR",commercial:true},
+      {name:"Electricity grid data",q:"electricity grid",commercial:true},
+      {name:"Albedo (MODIS)",q:"MODIS",commercial:false}
+    ]
+  },
+  {
+    id:"noise-mapping",
+    icon:"\uD83D\uDD0A",
+    name:"Environmental Noise Mapping",
+    tags:["urban"],
+    brief:"Model and map environmental noise from roads, rail, and industry using terrain and building data.",
+    cost:"0",
+    costLabel:"\u20AC0 (all free)",
+    processing:"NoiseModelling (open-source) + QGIS",
+    required:[
+      {name:"Road network with traffic (OSM)",q:"OpenStreetMap"},
+      {name:"Building footprints with height (OSM / national)",q:"building footprints"},
+      {name:"DEM / DSM",q:"DEM"},
+      {name:"Land cover (for ground absorption)",q:"CORINE"}
+    ],
+    optional:[
+      {name:"Noise measurement stations",q:"noise monitoring",commercial:false},
+      {name:"Population (for exposure assessment)",q:"WorldPop",commercial:false},
+      {name:"Railway network",q:"railway",commercial:false}
+    ]
+  }
+];
+
+/* ── Collect all unique tags for filter buttons ──────── */
+var allTags = [];
+METHODS.forEach(function(m){
+  m.tags.forEach(function(t){
+    if(allTags.indexOf(t)===-1) allTags.push(t);
+  });
+});
+allTags.sort();
+
+var activeFilters = [];
+
+/* ── Render filter tag buttons ───────────────────────── */
+var filterContainer = document.getElementById("filterTags");
+allTags.forEach(function(tag){
+  var btn = document.createElement("button");
+  btn.className = "filter-tag";
+  btn.textContent = tag;
+  btn.setAttribute("data-tag",tag);
+  btn.addEventListener("click",function(){
+    var idx = activeFilters.indexOf(tag);
+    if(idx===-1){activeFilters.push(tag);btn.classList.add("active")}
+    else{activeFilters.splice(idx,1);btn.classList.remove("active")}
+    renderGrid();
+  });
+  filterContainer.appendChild(btn);
+});
+
+/* ── Build a single method card HTML ─────────────────── */
+function buildCard(m){
+  var tagHtml = m.tags.map(function(t){return '<span class="card-tag tag-'+t+'">'+t+'</span>'}).join("");
+  var hasCost = m.cost !== "0";
+
+  var reqChips = m.required.map(function(d){
+    return '<a class="dataset-chip chip-required-free" href="index.html#q='+encodeURIComponent(d.q)+'" target="_blank" title="Required (free) \u2014 click to find in Catalog"><span class="chip-dot dot-green"></span>'+escHtml(d.name)+'</a>';
+  }).join("");
+
+  var optChips = m.optional.map(function(d){
+    var cls = d.commercial ? "chip-optional-commercial" : "chip-optional-free";
+    var dotCls = d.commercial ? "dot-orange" : "dot-blue";
+    var label = d.commercial ? "Optional (commercial)" : "Optional (free)";
+    return '<a class="dataset-chip '+cls+'" href="index.html#q='+encodeURIComponent(d.q)+'" target="_blank" title="'+label+' \u2014 click to find in Catalog"><span class="chip-dot '+dotCls+'"></span>'+escHtml(d.name)+'</a>';
+  }).join("");
+
+  var allQ = m.required.map(function(d){return d.q}).concat(m.optional.map(function(d){return d.q}));
+  var catalogLink = "index.html#q="+encodeURIComponent(allQ[0]);
+
+  return '<div class="method-card" data-id="'+m.id+'" data-tags="'+m.tags.join(",")+'" data-search="'+escAttr(m.name+" "+m.brief+" "+m.tags.join(" ")+" "+m.required.map(function(d){return d.name}).join(" ")+" "+m.optional.map(function(d){return d.name}).join(" "))+'">'
+    +'<div class="card-front" onclick="toggleCard(\''+m.id+'\')">'
+    +'<span class="card-icon">'+m.icon+'</span>'
+    +'<div class="card-name">'+escHtml(m.name)+'</div>'
+    +'<div class="card-tags">'+tagHtml+'</div>'
+    +'<div class="card-brief">'+escHtml(m.brief)+'</div>'
+    +'<div class="card-cost'+(hasCost?" has-cost":"")+'">Est. annual cost: <strong>'+escHtml(m.costLabel)+'</strong></div>'
+    +'</div>'
+    +'<div class="card-detail">'
+    +'<div class="detail-section"><h4>Required Datasets</h4><div class="dataset-list">'+reqChips+'</div></div>'
+    +'<div class="detail-section"><h4>Optional / Enhanced Datasets</h4><div class="dataset-list">'+optChips+'</div></div>'
+    +'<div class="detail-footer">'
+    +'<span class="cost-badge '+(hasCost?"cost-paid":"cost-free")+'">'+escHtml(m.costLabel)+'</span>'
+    +'<span class="processing-info"><strong>Processing:</strong> '+escHtml(m.processing)+'</span>'
+    +'<a class="btn-open-catalog" href="'+catalogLink+'" target="_blank">Open in Catalog \u2192</a>'
+    +'<button class="btn-collapse" onclick="event.stopPropagation();collapseCard(\''+m.id+'\')">Collapse</button>'
+    +'</div>'
+    +'</div>'
+    +'</div>';
+}
+
+function escHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function escAttr(s){return s.replace(/"/g,"&quot;").toLowerCase()}
+
+/* ── Render grid with search & filter ────────────────── */
+function renderGrid(){
+  var query = document.getElementById("methodSearch").value.toLowerCase().trim();
+  var grid = document.getElementById("methodsGrid");
+  var count = 0;
+  var html = "";
+
+  METHODS.forEach(function(m){
+    // Filter by tags
+    if(activeFilters.length > 0){
+      var match = false;
+      for(var i=0;i<activeFilters.length;i++){
+        if(m.tags.indexOf(activeFilters[i])!==-1){match=true;break}
+      }
+      if(!match) return;
+    }
+    // Filter by search
+    var searchStr = (m.name+" "+m.brief+" "+m.tags.join(" ")+" "+m.required.map(function(d){return d.name}).join(" ")+" "+m.optional.map(function(d){return d.name}).join(" ")).toLowerCase();
+    if(query && searchStr.indexOf(query)===-1) return;
+
+    html += buildCard(m);
+    count++;
+  });
+
+  grid.innerHTML = html;
+  document.getElementById("resultsCount").textContent = count+" method"+(count!==1?"s":"")+" shown";
+}
+
+/* ── Toggle card expand/collapse ─────────────────────── */
+window.toggleCard = function(id){
+  var card = document.querySelector('.method-card[data-id="'+id+'"]');
+  if(!card) return;
+  if(card.classList.contains("expanded")){
+    card.classList.remove("expanded");
+  } else {
+    // Collapse any other expanded card
+    var prev = document.querySelector(".method-card.expanded");
+    if(prev) prev.classList.remove("expanded");
+    card.classList.add("expanded");
+    setTimeout(function(){card.scrollIntoView({behavior:"smooth",block:"nearest"})},50);
+  }
+};
+
+window.collapseCard = function(id){
+  var card = document.querySelector('.method-card[data-id="'+id+'"]');
+  if(card) card.classList.remove("expanded");
+};
+
+/* ── Search listener ─────────────────────────────────── */
+document.getElementById("methodSearch").addEventListener("input",renderGrid);
+
+/* ── Dark mode ───────────────────────────────────────── */
+function applyTheme(t){
+  document.documentElement.setAttribute("data-theme",t);
+  var btn = document.getElementById("darkBtn");
+  if(btn) btn.textContent = t==="dark"?"Light":"Dark";
+}
+window.toggleDark = function(){
+  var current = document.documentElement.getAttribute("data-theme")||"light";
+  var next = current==="dark"?"light":"dark";
+  localStorage.setItem("dc-theme",next);
+  applyTheme(next);
+};
+var saved = localStorage.getItem("dc-theme");
+if(saved) applyTheme(saved);
+
+/* ── Initial render ──────────────────────────────────── */
+renderGrid();
+
+})();
+</script>
+</body>
+</html>

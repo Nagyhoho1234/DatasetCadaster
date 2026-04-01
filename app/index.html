@@ -4,36 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dataset Cadaster — Geospatial &amp; Environmental Data Catalog</title>
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
 <style>
-/* ── Reset & Base ─────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --hdr:#1a2634;
-  --hdr-accent:#2e4057;
-  --body-bg:#f0f2f5;
-  --card-bg:#fff;
-  --text:#2c3e50;
-  --text-light:#5a6a7a;
-  --border:#dce1e8;
-  --accent:#2980b9;
-  --accent-hover:#1f6da0;
-  --green:#27ae60;
-  --green-bg:#e8f8f0;
-  --yellow:#e67e22;
-  --yellow-bg:#fdf3e6;
-  --red:#c0392b;
-  --red-bg:#fbeaea;
-  --blue:#2980b9;
-  --blue-bg:#e4f0fa;
-  --teal:#16a085;
-  --sidebar-w:300px;
-  --radius:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.1);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --nav-h:44px;
-  --header-h:56px;
-}
+:root{--sidebar-w:300px}
 /* ── Price Update Modal ───────────────────────────────── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;display:none;align-items:center;justify-content:center}
 .modal-overlay.visible{display:flex}
@@ -55,28 +29,7 @@
 .price-update-btn{background:none;border:1px dashed var(--yellow);color:var(--yellow);padding:2px 8px;border-radius:var(--radius);cursor:pointer;font-size:.75rem;white-space:nowrap}
 .price-update-btn:hover{background:var(--yellow-bg);border-style:solid}
 .pending-badge{display:inline-block;background:var(--yellow-bg);color:var(--yellow);font-size:.7rem;padding:1px 6px;border-radius:3px;margin-left:6px}
-/* ── Dark Mode ────────────────────────────────────────── */
-[data-theme="dark"]{
-  --hdr:#0d1520;
-  --hdr-accent:#1a2a3e;
-  --body-bg:#181e26;
-  --card-bg:#1e2733;
-  --text:#d0d8e0;
-  --text-light:#8899aa;
-  --border:#2a3545;
-  --accent:#4ba3d9;
-  --accent-hover:#3a8ec4;
-  --green:#2ecc71;
-  --green-bg:#1a3328;
-  --yellow:#f39c12;
-  --yellow-bg:#332a14;
-  --red:#e74c3c;
-  --red-bg:#331a1a;
-  --blue:#4ba3d9;
-  --blue-bg:#1a2a3e;
-  --shadow:0 1px 3px rgba(0,0,0,.3);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
-}
+/* ── Dark Mode (page-specific overrides) ─────────────── */
 [data-theme="dark"] .badge-category{background:#2a3a52;color:#8ab4e0}
 [data-theme="dark"] .badge-scope{background:#1a3530;color:#5cc5a8}
 [data-theme="dark"] .badge-cat-satellite-eo{background:#1e2e4a;color:#6a9ad4}
@@ -118,25 +71,7 @@
 .health-dot:hover .health-tooltip{display:block}
 [data-theme="dark"] .health-tooltip{background:#1a1a2e;color:#d0d8e0}
 
-html{font-size:15px}
-body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
-
-/* ── Navigation Bar ──────────────────────────────────── */
-.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
-.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
-.navbar-links{display:flex;gap:4px}
-.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
-.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
-.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
-
-/* ── Header ───────────────────────────────────────────── */
-.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
-.header h1 span{color:#5dade2;margin-right:6px}
-.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
-.header-right .subtitle{font-size:.82rem;color:#a0b4c8}
-.btn-dark-toggle{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:5px}
-.btn-dark-toggle:hover{border-color:#5a7a9a;color:#fff}
+/* ── Export Button (page-specific) ────────────────────── */
 .btn-export{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s}
 .btn-export:hover{border-color:#5a7a9a;color:#fff}
 
@@ -236,8 +171,6 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
 .card-extra .m-license::before{content:"License: "}
 .tags{display:flex;flex-wrap:wrap;gap:4px}
 .tag{padding:1px 7px;background:#f0f2f5;color:var(--text-light);border-radius:8px;font-size:.7rem}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:8px 18px;border-radius:var(--radius);font-size:.82rem;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
-.toast.show{opacity:1}
 
 /* ── Comparison Tray ─────────────────────────────────── */
 .comparison-tray{
@@ -444,6 +377,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     <a href="index.html" class="active">Catalog</a>
     <a href="estimator.html">GeoEstimator</a>
     <a href="recipes.html">Recipes</a>
+    <a href="methods.html">Methods</a>
     <a href="guide.html">Guide</a>
     <a href="compare.html">Comparisons</a>
     <a href="map.html">Map</a>
@@ -458,6 +392,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <div class="header-right">
     <span class="subtitle">Geospatial &amp; Environmental Data Catalog</span>
     <button class="btn-export" id="btnExport" title="Export filtered results as CSV">Export CSV</button>
+    <button class="btn-export" id="btnResearchPack" title="Generate a comprehensive research dossier" style="border-color:#27ae60;color:#27ae60">&#9998; Research Pack</button>
     <button class="btn-dark-toggle" id="btnDarkToggle" title="Toggle dark/light mode">
       <span id="darkToggleIcon">&#9789;</span> <span id="darkToggleLabel">Dark</span>
     </button>
@@ -740,6 +675,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   const btnClearCompare= $("btnClearCompare");
   const btnCloseCompare= $("btnCloseCompare");
   const btnExport      = $("btnExport");
+  const btnResearchPack= $("btnResearchPack");
   const btnDarkToggle  = $("btnDarkToggle");
   const catChart       = $("catChart");
   const catChartSection= $("catChartSection");
@@ -1240,6 +1176,271 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
     showToast("Exported " + filtered.length + " datasets");
   });
 
+  /* ── Research Pack Export ───────────────────────── */
+  btnResearchPack.addEventListener("click", function(){
+    // 1. Determine selected datasets
+    var selected = [];
+    var bookmarkedDs = allData.filter(function(d){ return bookmarks.includes(d.id); });
+    var compareDs = compareList.slice();
+    // merge bookmarked + comparison, dedupe
+    var idsSeen = {};
+    bookmarkedDs.concat(compareDs).forEach(function(d){
+      if(!idsSeen[d.id]){ idsSeen[d.id] = true; selected.push(d); }
+    });
+    // fallback to current filtered view
+    if(!selected.length) selected = filtered.slice();
+    if(!selected.length){ showToast("No datasets to export"); return; }
+
+    var today = new Date().toISOString().slice(0,10);
+    var e = function(s){ return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); };
+
+    // 2. Build citations
+    var citationsPlain = [];
+    var citationsBibtex = [];
+    selected.forEach(function(d){
+      var year = d.temporalCoverage ? d.temporalCoverage.replace(/.*(\d{4}).*/, "$1") : new Date().getFullYear();
+      citationsPlain.push((d.operator||"Unknown") + " (" + year + "). " + d.name + ". Available at: " + (d.url||"N/A") + ". Accessed: " + today + ".");
+      var sid = (d.id||d.name||"dataset").replace(/[^a-zA-Z0-9_-]/g, "-");
+      citationsBibtex.push("@misc{" + sid + ",\n  title={" + (d.name||"") + "},\n  author={" + (d.operator||"") + "},\n  url={" + (d.url||"") + "},\n  year={" + year + "}\n}");
+    });
+
+    // 3. Group for access instructions
+    var groupFree = selected.filter(function(d){ return d.cost === "free"; });
+    var groupReg = selected.filter(function(d){ return d.cost === "freemium"; });
+    var groupComm = selected.filter(function(d){ return d.cost === "commercial"; });
+
+    // 4. Recipe tag mapping
+    var catToRecipeTag = {
+      "satellite-eo": "satellite", "climate-weather": "climate", "soil": "terrain",
+      "hydrology": "climate", "dem-elevation": "terrain", "land-use-land-cover": "land",
+      "biosphere-ecology": "vector", "population-urban": "population",
+      "admin-boundaries": "vector", "ocean-marine": "climate",
+      "air-quality": "climate", "geodesy-insar": "satellite",
+      "geology-geophysics": "terrain", "data-platform": "satellite"
+    };
+    var recipeDB = [
+      {tag:"satellite",title:"Sentinel-2 Download via Copernicus Data Space",desc:"Search and download Sentinel-2 L2A scenes using cdsetool.",prereq:"pip install cdsetool",code:"from cdsetool.query import query_features\nfrom cdsetool.credentials import Credentials\nfrom cdsetool.download import download_features\n\ncredentials = Credentials(\"your_username\", \"your_password\")\n\nfeatures = query_features(\n    \"Sentinel2\",\n    {\"startDate\": \"2025-06-01\", \"completionDate\": \"2025-08-31\",\n     \"processingLevel\": \"S2MSI2A\",\n     \"box\": [16.8, 46.6, 17.2, 46.9],\n     \"cloudCover\": \"[0,30]\"}\n)\nfeature_list = list(features)\nprint(f\"Found {len(feature_list)} scenes\")\n\ndownload_features(feature_list, \"./sentinel2_data\", credentials)"},
+      {tag:"satellite",title:"Landsat Download via USGS M2M API",desc:"Search and download Landsat 8/9 Collection 2 Level-2 scenes.",prereq:"pip install landsatxplore",code:"from landsatxplore.api import API\nfrom landsatxplore.earthexplorer import EarthExplorer\n\napi = API(\"your_usgs_username\", \"your_usgs_password\")\nscenes = api.search(\n    dataset=\"landsat_ot_c2_l2\",\n    latitude=47.5, longitude=19.0,\n    start_date=\"2025-06-01\", end_date=\"2025-08-31\",\n    max_cloud_cover=20\n)\nprint(f\"Found {len(scenes)} Landsat scenes\")\napi.logout()"},
+      {tag:"climate",title:"ERA5 Climate Reanalysis via CDS API",desc:"Download ERA5 reanalysis data from the Copernicus Climate Data Store.",prereq:"pip install cdsapi",code:"import cdsapi\n\nclient = cdsapi.Client()\nclient.retrieve(\"reanalysis-era5-single-levels\", {\n    \"product_type\": \"reanalysis\",\n    \"variable\": [\"2m_temperature\", \"total_precipitation\"],\n    \"year\": \"2024\",\n    \"month\": [f\"{m:02d}\" for m in range(1, 13)],\n    \"day\": [f\"{d:02d}\" for d in range(1, 32)],\n    \"time\": [\"00:00\", \"06:00\", \"12:00\", \"18:00\"],\n    \"area\": [48, 16, 46, 23],\n    \"format\": \"netcdf\"\n}, \"era5_hungary_2024.nc\")"},
+      {tag:"terrain",title:"SRTM / Copernicus DEM via OpenTopography",desc:"Download DEM data through the OpenTopography API.",prereq:"pip install requests",code:"import requests\n\nAPI_KEY = \"your_opentopography_api_key\"\nparams = {\n    \"demtype\": \"COP30\",\n    \"south\": 46.5, \"north\": 47.0,\n    \"west\": 18.5, \"east\": 19.5,\n    \"outputFormat\": \"GTiff\",\n    \"API_Key\": API_KEY\n}\nr = requests.get(\"https://portal.opentopography.org/API/globaldem\",\n                  params=params, stream=True)\nr.raise_for_status()\nwith open(\"dem.tif\", \"wb\") as f:\n    for chunk in r.iter_content(chunk_size=8192):\n        f.write(chunk)"},
+      {tag:"terrain",title:"SoilGrids via WCS",desc:"Download global soil property maps from ISRIC SoilGrids at 250m.",prereq:"pip install owslib rasterio",code:"from owslib.wcs import WebCoverageService\nimport rasterio\nfrom rasterio.io import MemoryFile\n\nwcs = WebCoverageService(\n    \"https://maps.isric.org/mapserv?map=/map/ocs.map\", version=\"2.0.1\")\nresponse = wcs.getCoverage(\n    identifier=[\"ocs_0-30cm_mean\"],\n    subsets=[(\"X\", 18.5, 19.5), (\"Y\", 46.5, 47.0)],\n    format=\"image/tiff\"\n)\nwith MemoryFile(response.read()) as memfile:\n    with memfile.open() as ds:\n        data = ds.read(1)\n        print(f\"Shape: {data.shape}, CRS: {ds.crs}\")"},
+      {tag:"vector",title:"OpenStreetMap Extract via Overpass API",desc:"Query and download OSM vector data for a bounding box.",prereq:"pip install osmnx geopandas",code:"import osmnx as ox\nimport geopandas as gpd\n\nbuildings = ox.features_from_place(\"Budapest, Hungary\",\n                                    tags={\"building\": True})\nprint(f\"Buildings: {len(buildings)}\")\nbuildings.to_file(\"budapest_buildings.gpkg\", driver=\"GPKG\")"},
+      {tag:"vector",title:"GBIF Species Occurrences via pygbif",desc:"Download species occurrence records from GBIF.",prereq:"pip install pygbif pandas geopandas shapely",code:"from pygbif import occurrences, species\nimport pandas as pd\nimport geopandas as gpd\nfrom shapely.geometry import Point\n\nresult = species.name_backbone(name=\"Bufo bufo\", rank=\"species\")\ntaxon_key = result[\"usageKey\"]\nrecords = occurrences.search(taxonKey=taxon_key, country=\"HU\",\n                              hasCoordinate=True, limit=300)\ndf = pd.json_normalize(records[\"results\"])"},
+      {tag:"population",title:"WorldPop Population Grid via API",desc:"Download high-resolution gridded population estimates from WorldPop.",prereq:"pip install requests rasterio",code:"import requests, rasterio\n\niso3 = \"HUN\"\nyear = 2020\nurl = (f\"https://data.worldpop.org/GIS/Population/Global_2000_2020_Constrained/\"\n       f\"2020/maxar_v1/{iso3}/{iso3.lower()}_ppp_{year}_UNadj_constrained.tif\")\nr = requests.get(url, stream=True)\nr.raise_for_status()\nfname = f\"worldpop_{iso3}_{year}.tif\"\nwith open(fname, \"wb\") as f:\n    for chunk in r.iter_content(chunk_size=8192):\n        f.write(chunk)"},
+      {tag:"climate",title:"GloFAS Flood Data via CDS API",desc:"Download GloFAS river discharge data from CDS.",prereq:"pip install cdsapi xarray netCDF4",code:"import cdsapi\nimport xarray as xr\n\nclient = cdsapi.Client()\nclient.retrieve(\"cems-glofas-historical\", {\n    \"system_version\": \"version_4_0\",\n    \"hydrological_model\": \"lisflood\",\n    \"product_type\": \"consolidated\",\n    \"variable\": \"river_discharge_in_the_last_24_hours\",\n    \"hyear\": \"2023\",\n    \"hmonth\": [\"january\", \"february\", \"march\"],\n    \"hday\": [f\"{d:02d}\" for d in range(1, 32)],\n    \"area\": [48, 16, 46, 23],\n    \"format\": \"grib\"\n}, \"glofas_discharge_2023.grib\")"},
+      {tag:"land",title:"CORINE Land Cover via Copernicus CLMS",desc:"Download CORINE Land Cover raster or vector data.",prereq:"pip install requests rasterio geopandas",code:"import rasterio\nfrom rasterio.mask import mask\nimport geopandas as gpd\nfrom shapely.geometry import box\n\naoi = gpd.GeoDataFrame(geometry=[box(18.5, 46.5, 19.5, 47.5)],\n                         crs=\"EPSG:4326\").to_crs(\"EPSG:3035\")\nwith rasterio.open(\"U2018_CLC2018_V2020_20u1.tif\") as src:\n    clipped, transform = mask(src, aoi.geometry, crop=True)\n    meta = src.meta.copy()\n    meta.update({\"height\": clipped.shape[1], \"width\": clipped.shape[2],\n                 \"transform\": transform})\n    with rasterio.open(\"corine_clipped.tif\", \"w\", **meta) as dst:\n        dst.write(clipped)"}
+    ];
+
+    // 5. Find matching recipes
+    var matchedTags = {};
+    selected.forEach(function(d){
+      var tag = catToRecipeTag[d.category];
+      if(tag) matchedTags[tag] = true;
+    });
+    var matchedRecipes = recipeDB.filter(function(r){ return matchedTags[r.tag]; });
+
+    // 6. Find related datasets
+    var relatedSection = "";
+    if(relatedData){
+      var relatedItems = [];
+      selected.forEach(function(d){
+        var suggestions = [];
+        // check specific first
+        if(relatedData.specific && relatedData.specific[d.id]){
+          suggestions = relatedData.specific[d.id].slice(0, 3);
+        } else if(relatedData.rules){
+          // match by category
+          var rule = relatedData.rules.find(function(r){ return r.if_category === d.category; });
+          if(rule && rule.suggest_specific) suggestions = rule.suggest_specific.slice(0, 3);
+        }
+        if(suggestions.length){
+          var resolved = suggestions.map(function(sid){
+            var found = allData.find(function(x){ return x.id === sid; });
+            return found ? found : null;
+          }).filter(Boolean);
+          if(resolved.length){
+            relatedItems.push({source: d, related: resolved});
+          }
+        }
+      });
+      if(relatedItems.length){
+        relatedSection = '<h2>7. Related Datasets</h2><p style="color:#5a6a7a;margin-bottom:16px">You might also need these complementary datasets:</p>';
+        relatedItems.forEach(function(item){
+          relatedSection += '<h3 style="font-size:.95rem;margin:14px 0 6px;color:#2c3e50">Related to: ' + e(item.source.name) + '</h3>';
+          relatedSection += '<table class="rp-table"><thead><tr><th>Dataset</th><th>Category</th><th>Cost</th><th>URL</th></tr></thead><tbody>';
+          item.related.forEach(function(r){
+            relatedSection += '<tr><td>' + e(r.name) + '</td><td>' + e(r.category) + '</td><td>' + e(r.cost) + '</td><td><a href="' + e(r.url) + '" target="_blank">' + e(r.url).substring(0,50) + '...</a></td></tr>';
+          });
+          relatedSection += '</tbody></table>';
+        });
+      }
+    }
+
+    // 7. Build access instructions helper
+    function accessGroup(title, datasets, color){
+      if(!datasets.length) return "";
+      var h = '<h3 style="color:' + color + ';margin:14px 0 8px">' + e(title) + ' (' + datasets.length + ')</h3>';
+      h += '<table class="rp-table"><thead><tr><th>Dataset</th><th>URL</th><th>API Protocol</th><th>Formats</th><th>License</th></tr></thead><tbody>';
+      datasets.forEach(function(d){
+        h += '<tr><td>' + e(d.name) + '</td><td><a href="' + e(d.url) + '" target="_blank">' + e(d.url) + '</a></td><td>' + e(d.apiProtocol||"N/A") + '</td><td>' + e(d.formats||"N/A") + '</td><td>' + e(d.license||"N/A") + '</td></tr>';
+      });
+      h += '</tbody></table>';
+      return h;
+    }
+
+    // 8. Cost estimate
+    var costSection = "";
+    if(groupComm.length){
+      costSection = '<h2>5. Cost Estimate</h2>';
+      costSection += '<table class="rp-table"><thead><tr><th>Dataset</th><th>Price Model</th><th>Estimated Cost</th></tr></thead><tbody>';
+      groupComm.forEach(function(d){
+        costSection += '<tr><td>' + e(d.name) + '</td><td>Commercial license</td><td>Contact vendor</td></tr>';
+      });
+      costSection += '</tbody></table>';
+    }
+
+    // 9. Build markdown version
+    var md = "# Dataset Research Pack\\n\\nGenerated: " + today + "\\nDatasets selected: " + bookmarkedDs.length + " bookmarked, " + compareDs.length + " in comparison\\nTotal in pack: " + selected.length + "\\n\\n";
+    md += "## Selected Datasets\\n\\n";
+    md += "| Name | Category | Scope | Cost | Resolution | API | Formats | License |\\n";
+    md += "| --- | --- | --- | --- | --- | --- | --- | --- |\\n";
+    selected.forEach(function(d){
+      md += "| " + (d.name||"") + " | " + (d.category||"") + " | " + (d.scope||"") + " | " + (d.cost||"") + " | " + (d.spatialResolution||"N/A") + " | " + (d.apiSupport?"Yes":"No") + " | " + (d.formats||"N/A") + " | " + (d.license||"N/A") + " |\\n";
+    });
+    md += "\\n## Citations\\n\\n";
+    citationsPlain.forEach(function(c){ md += c + "\\n\\n"; });
+    md += "## BibTeX\\n\\n```bibtex\\n" + citationsBibtex.join("\\n\\n") + "\\n```\\n\\n";
+    md += "## Access Instructions\\n\\n";
+    selected.forEach(function(d){
+      md += "- **" + d.name + "**: " + (d.url||"N/A") + " | API: " + (d.apiProtocol||"N/A") + " | Format: " + (d.formats||"N/A") + "\\n";
+    });
+    md += "\\n---\\nGenerated by Dataset Cadaster | " + allData.length + " datasets\\n";
+
+    // 10. Build the HTML document
+    var h = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">';
+    h += '<title>Dataset Research Pack \\u2014 ' + today + '</title>';
+    h += '<style>';
+    h += 'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:#2c3e50;background:#fff;max-width:1000px;margin:0 auto;padding:24px 32px;line-height:1.5}';
+    h += 'h1{color:#1a2634;font-size:1.6rem;border-bottom:3px solid #2980b9;padding-bottom:10px;margin-bottom:6px}';
+    h += 'h2{color:#2980b9;font-size:1.2rem;margin:32px 0 12px;border-bottom:1px solid #dce1e8;padding-bottom:6px}';
+    h += 'h3{color:#2c3e50;font-size:.95rem;margin:16px 0 8px}';
+    h += '.rp-subtitle{font-size:.9rem;color:#5a6a7a;margin-bottom:20px}';
+    h += '.rp-table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:16px}';
+    h += '.rp-table th{text-align:left;padding:8px 10px;background:#f0f2f5;font-weight:600;color:#5a6a7a;font-size:.75rem;text-transform:uppercase;letter-spacing:.4px;border-bottom:2px solid #dce1e8}';
+    h += '.rp-table td{padding:7px 10px;border-bottom:1px solid #eef1f5;vertical-align:top}';
+    h += '.rp-table tr:hover td{background:#f8f9fb}';
+    h += '.rp-table a{color:#2980b9;text-decoration:none} .rp-table a:hover{text-decoration:underline}';
+    h += '.badge-free{background:#e8f8f0;color:#27ae60;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:600}';
+    h += '.badge-freemium{background:#fdf3e6;color:#e67e22;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:600}';
+    h += '.badge-commercial{background:#fbeaea;color:#c0392b;padding:2px 8px;border-radius:10px;font-size:.72rem;font-weight:600}';
+    h += '.citation-block{background:#f8f9fb;border:1px solid #dce1e8;border-radius:6px;padding:14px 16px;margin-bottom:8px;font-size:.85rem;line-height:1.5}';
+    h += '.bibtex-block{background:#1a2634;color:#a0b4c8;border-radius:6px;padding:16px 18px;font-family:Consolas,Monaco,monospace;font-size:.78rem;line-height:1.45;white-space:pre-wrap;overflow-x:auto;margin-bottom:16px}';
+    h += '.recipe-box{background:#f8f9fb;border:1px solid #dce1e8;border-radius:6px;padding:16px 18px;margin-bottom:16px}';
+    h += '.recipe-box h4{margin:0 0 6px;font-size:.92rem;color:#2c3e50}';
+    h += '.recipe-box .rdesc{font-size:.82rem;color:#5a6a7a;margin-bottom:10px}';
+    h += '.recipe-box .prereq{font-size:.78rem;color:#e67e22;background:#fdf3e6;padding:4px 10px;border-radius:4px;display:inline-block;margin-bottom:8px}';
+    h += '.recipe-code{background:#1a2634;color:#a0b4c8;border-radius:6px;padding:14px 16px;font-family:Consolas,Monaco,monospace;font-size:.76rem;line-height:1.4;white-space:pre-wrap;overflow-x:auto}';
+    h += '.rp-actions{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}';
+    h += '.rp-actions button{padding:8px 18px;border-radius:6px;border:1px solid #dce1e8;cursor:pointer;font-size:.85rem;font-family:inherit;transition:all .15s}';
+    h += '.btn-pdf{background:#2980b9;color:#fff;border-color:#2980b9} .btn-pdf:hover{background:#1f6da0}';
+    h += '.btn-md{background:#fff;color:#2c3e50;border-color:#dce1e8} .btn-md:hover{background:#f0f2f5}';
+    h += '.rp-footer{margin-top:40px;padding-top:16px;border-top:1px solid #dce1e8;font-size:.78rem;color:#5a6a7a}';
+    h += '@media print{.rp-actions{display:none!important}.rp-footer{page-break-before:auto}body{padding:12px}h2{page-break-after:avoid}.rp-table{page-break-inside:avoid}.recipe-box{page-break-inside:avoid}}';
+    h += '@page{size:A4;margin:18mm 16mm}';
+    h += '</style></head><body>';
+
+    // Actions bar
+    h += '<div class="rp-actions">';
+    h += '<button class="btn-pdf" onclick="window.print()">Save as PDF</button>';
+    h += '<button class="btn-md" id="rpCopyMd">Copy as Markdown</button>';
+    h += '</div>';
+
+    // Header
+    h += '<h1>Dataset Research Pack</h1>';
+    h += '<div class="rp-subtitle">Generated: ' + today + ' &mdash; Datasets selected: ' + bookmarkedDs.length + ' bookmarked, ' + compareDs.length + ' in comparison &mdash; Total: ' + selected.length + '</div>';
+
+    // Section 1: Selected Datasets Table
+    h += '<h2>1. Selected Datasets</h2>';
+    h += '<table class="rp-table"><thead><tr><th>Name</th><th>URL</th><th>Category</th><th>Scope</th><th>Cost</th><th>Resolution</th><th>API</th><th>Formats</th><th>License</th></tr></thead><tbody>';
+    selected.forEach(function(d){
+      var costBadge = d.cost === "free" ? '<span class="badge-free">Free</span>' : d.cost === "freemium" ? '<span class="badge-freemium">Freemium</span>' : '<span class="badge-commercial">Commercial</span>';
+      h += '<tr>';
+      h += '<td><strong>' + e(d.name) + '</strong></td>';
+      h += '<td><a href="' + e(d.url) + '" target="_blank">Link</a></td>';
+      h += '<td>' + e(d.category) + '</td>';
+      h += '<td>' + e(d.scope) + '</td>';
+      h += '<td>' + costBadge + '</td>';
+      h += '<td>' + e(d.spatialResolution||"N/A") + '</td>';
+      h += '<td>' + (d.apiSupport ? "Yes (" + e(d.apiProtocol||"") + ")" : "No") + '</td>';
+      h += '<td>' + e(d.formats||"N/A") + '</td>';
+      h += '<td>' + e(d.license||"N/A") + '</td>';
+      h += '</tr>';
+    });
+    h += '</tbody></table>';
+
+    // Section 2: Citations
+    h += '<h2>2. Citations</h2>';
+    h += '<h3 style="font-size:.88rem;color:#5a6a7a">Plain Text (copy-paste into your paper)</h3>';
+    citationsPlain.forEach(function(c){
+      h += '<div class="citation-block">' + e(c) + '</div>';
+    });
+    h += '<h3 style="font-size:.88rem;color:#5a6a7a;margin-top:16px">BibTeX</h3>';
+    h += '<div class="bibtex-block">' + e(citationsBibtex.join("\n\n")) + '</div>';
+
+    // Section 3: Access Instructions
+    h += '<h2>3. Access Instructions</h2>';
+    h += accessGroup("Free & Open", groupFree, "#27ae60");
+    h += accessGroup("Registration Required (Freemium)", groupReg, "#e67e22");
+    h += accessGroup("Commercial", groupComm, "#c0392b");
+
+    // Section 4: Cost Estimate (conditional)
+    if(costSection) h += costSection;
+
+    // Section 5: Processing Recipes
+    if(matchedRecipes.length){
+      h += '<h2>6. Relevant Processing Recipes</h2>';
+      h += '<p style="color:#5a6a7a;font-size:.85rem;margin-bottom:14px">Python code recipes matching your selected dataset categories:</p>';
+      matchedRecipes.forEach(function(r){
+        h += '<div class="recipe-box">';
+        h += '<h4>' + e(r.title) + '</h4>';
+        h += '<div class="rdesc">' + e(r.desc) + '</div>';
+        h += '<div class="prereq">' + e(r.prereq) + '</div>';
+        h += '<div class="recipe-code">' + e(r.code) + '</div>';
+        h += '</div>';
+      });
+    }
+
+    // Section 6: Related Datasets
+    if(relatedSection) h += relatedSection;
+
+    // Section 7: Metadata Footer
+    h += '<div class="rp-footer">';
+    h += '<p>Generated by <strong>Dataset Cadaster</strong> &mdash; <a href="' + location.href + '">Open Catalog</a></p>';
+    h += '<p>Database version: ' + allData.length.toLocaleString() + ' datasets</p>';
+    h += '<p>Data verified as of: March 2026</p>';
+    h += '</div>';
+
+    // Copy as Markdown script
+    h += '<script>document.getElementById("rpCopyMd").addEventListener("click",function(){';
+    h += 'var md="' + md.replace(/\\/g,"\\\\").replace(/"/g,'\\"') + '";';
+    h += 'md=md.replace(/\\\\n/g,"\\n");';
+    h += 'navigator.clipboard.writeText(md).then(function(){alert("Markdown copied to clipboard!")}).catch(function(){';
+    h += 'var ta=document.createElement("textarea");ta.value=md;document.body.appendChild(ta);ta.select();document.execCommand("copy");document.body.removeChild(ta);alert("Markdown copied!");});});';
+    h += '<\/script>';
+
+    h += '</body></html>';
+
+    // Open in new window
+    var w = window.open("", "_blank");
+    if(w){
+      w.document.write(h);
+      w.document.close();
+      showToast("Research Pack generated with " + selected.length + " datasets");
+    } else {
+      showToast("Please allow popups to generate the Research Pack");
+    }
+  });
+
   /* ── Keyboard Shortcuts ─────────────────────────── */
   document.addEventListener("keydown", e => {
     // "/" to focus search (unless already in an input)
@@ -1695,6 +1896,163 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   recentlyAddedHeader.addEventListener("click", () => {
     recentlyAddedSection.classList.toggle("collapsed");
   });
+
+  /* ── FEATURE: Find Alternatives ──────────────────── */
+  let relatedData = null;
+  fetch("../related.json")
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){ relatedData = data; })
+    .catch(function(){});
+
+  function parseResolution(s){
+    if(!s) return null;
+    var m = s.match(/([\d.]+)\s*m\b/i);
+    if(m) return parseFloat(m[1]);
+    m = s.match(/([\d.]+)\s*km/i);
+    if(m) return parseFloat(m[1]) * 1000;
+    m = s.match(/([\d.]+)\s*degree/i);
+    if(m) return parseFloat(m[1]) * 111000;
+    m = s.match(/([\d.]+)\s*arc\s*sec/i);
+    if(m) return parseFloat(m[1]) * 30;
+    m = s.match(/([\d.]+)\s*"/);
+    if(m) return parseFloat(m[1]) * 30;
+    m = s.match(/([\d.]+)/);
+    if(m) return parseFloat(m[1]);
+    return null;
+  }
+
+  var costRank = {"free":0, "freemium":1, "commercial":2, "regulated":2};
+
+  function findAlternatives(datasetId){
+    var d = allData.find(function(x){ return x.id === datasetId; });
+    if(!d) return [];
+    var candidates = [];
+    allData.forEach(function(c){
+      if(c.id === d.id) return;
+      var score = 0;
+      var matchLabel = "";
+      if(d.subcategory && c.subcategory && d.subcategory === c.subcategory){
+        score += 15; matchLabel = "same subcategory";
+      } else if(d.category && c.category && d.category === c.category){
+        score += 10; matchLabel = "same category";
+      }
+      if(d.tags && c.tags){
+        var overlap = 0;
+        d.tags.forEach(function(t){ if(c.tags.indexOf(t) >= 0) overlap++; });
+        score += Math.min(overlap, 5);
+        if(overlap > 0 && !matchLabel) matchLabel = "shared tags";
+      }
+      if(d.scope && c.scope && d.scope === c.scope) score += 3;
+      if(relatedData && relatedData.specific){
+        var rels = relatedData.specific[d.id];
+        if(rels && rels.indexOf(c.id) >= 0){ score += 20; matchLabel = "recommended"; }
+        var relsC = relatedData.specific[c.id];
+        if(relsC && relsC.indexOf(d.id) >= 0){ score += 10; if(matchLabel !== "recommended") matchLabel = matchLabel || "related"; }
+      }
+      if(relatedData && relatedData.rules){
+        relatedData.rules.forEach(function(rule){
+          if(rule.if_category === d.category){
+            if(rule.if_subcategory && d.subcategory !== rule.if_subcategory) return;
+            if(rule.suggest_specific && rule.suggest_specific.indexOf(c.id) >= 0){ score += 8; if(matchLabel !== "recommended") matchLabel = matchLabel || "suggested"; }
+            if(rule.suggest_categories && rule.suggest_categories.indexOf(c.category) >= 0) score += 3;
+          }
+        });
+      }
+      if(score > 0) candidates.push({dataset: c, score: score, matchLabel: matchLabel});
+    });
+    candidates.sort(function(a,b){ return b.score - a.score; });
+    return candidates.slice(0, 5);
+  }
+
+  function compareCost(orig, alt){
+    var oR = costRank[orig.cost] !== undefined ? costRank[orig.cost] : 1;
+    var aR = costRank[alt.cost] !== undefined ? costRank[alt.cost] : 1;
+    if(aR < oR) return "cheaper"; if(aR > oR) return "pricier"; return "same";
+  }
+
+  function compareResolution(orig, alt){
+    var oRes = parseResolution(orig.spatialResolution);
+    var aRes = parseResolution(alt.spatialResolution);
+    if(oRes === null || aRes === null) return "unknown";
+    if(aRes < oRes * 0.8) return "better";
+    if(aRes > oRes * 1.2) return "worse";
+    return "same";
+  }
+
+  function generateTradeoff(orig, alt){
+    var phrases = [];
+    var oCost = costRank[orig.cost] !== undefined ? costRank[orig.cost] : 1;
+    var aCost = costRank[alt.cost] !== undefined ? costRank[alt.cost] : 1;
+    if(alt.cost === "free" && orig.cost !== "free") phrases.push("Free alternative");
+    var resCmp = compareResolution(orig, alt);
+    if(resCmp === "better") phrases.push("Higher resolution");
+    if(alt.apiSupport && !orig.apiSupport) phrases.push("Has API access");
+    var scopeRank = {"global":3, "europe":2, "regional":1, "national":0};
+    var oScope = scopeRank[orig.scope] !== undefined ? scopeRank[orig.scope] : 0;
+    var aScope = scopeRank[alt.scope] !== undefined ? scopeRank[alt.scope] : 0;
+    if(aScope > oScope) phrases.push("Wider geographic coverage");
+    if(aCost > oCost && phrases.length === 0) phrases.push("Commercial but specialized");
+    if(resCmp === "worse" && phrases.length > 0) phrases.push("Lower resolution");
+    if(!alt.apiSupport && orig.apiSupport && phrases.length > 0 && phrases.length < 2) phrases.push("No API");
+    if(phrases.length === 0){
+      if(alt.category === orig.category) phrases.push("Similar dataset");
+      else phrases.push("Complementary data");
+    }
+    return phrases.slice(0,2).join(", ");
+  }
+
+  function renderAlternativesPanel(datasetId){
+    var panel = document.getElementById("alt-panel-" + datasetId);
+    if(!panel) return;
+    var d = allData.find(function(x){ return x.id === datasetId; });
+    if(!d) return;
+    var alts = findAlternatives(datasetId);
+    var html = '<div class="alt-panel-header"><span>Alternatives for ' + esc(d.name) + '</span>' +
+      '<button class="alt-panel-close" onclick="window._toggleAlternatives(\'' + esc(datasetId).replace(/'/g,"\\'") + '\')">&times;</button></div>';
+    if(alts.length === 0){
+      html += '<div class="alt-empty">No alternative datasets found in the catalog.</div>';
+    } else {
+      alts.forEach(function(item){
+        var alt = item.dataset;
+        var costCmp = compareCost(d, alt);
+        var resCmp = compareResolution(d, alt);
+        var tradeoff = generateTradeoff(d, alt);
+        var safeAltId = esc(alt.id||"").replace(/'/g,"\\'");
+        var costInd = costCmp === "cheaper" ? '<span class="alt-indicator alt-ind-cheaper">&darr; Cheaper</span>' :
+          costCmp === "pricier" ? '<span class="alt-indicator alt-ind-pricier">&uarr; Pricier</span>' :
+          '<span class="alt-indicator alt-ind-same-cost">= Cost</span>';
+        var resInd = resCmp === "better" ? '<span class="alt-indicator alt-ind-better-res">&uarr; Better res</span>' :
+          resCmp === "worse" ? '<span class="alt-indicator alt-ind-worse-res">&darr; Worse res</span>' :
+          resCmp === "same" ? '<span class="alt-indicator alt-ind-same-res">= Resolution</span>' :
+          '<span class="alt-indicator alt-ind-same-res">? Resolution</span>';
+        var apiInd = alt.apiSupport ?
+          '<span class="alt-indicator alt-ind-has-api">API</span>' :
+          '<span class="alt-indicator alt-ind-no-api">No API</span>';
+        html += '<div class="alt-row">' +
+          '<a class="alt-name" onclick="window._scrollToDataset(\'' + safeAltId + '\')">' + esc(alt.name) + '</a>' +
+          '<div class="alt-indicators">' + costInd + resInd + apiInd + '</div>' +
+          '<span class="alt-tradeoff">' + esc(tradeoff) + '</span>' +
+          '<span class="alt-match">' + esc(item.matchLabel) + '</span>' +
+          '<a class="alt-view-link" onclick="window._scrollToDataset(\'' + safeAltId + '\')">View in catalog</a>' +
+        '</div>';
+      });
+    }
+    panel.innerHTML = html;
+  }
+
+  window._toggleAlternatives = function(datasetId){
+    var panel = document.getElementById("alt-panel-" + datasetId);
+    if(!panel) return;
+    var isVisible = panel.classList.contains("visible");
+    document.querySelectorAll(".alt-panel.visible").forEach(function(p){ p.classList.remove("visible"); });
+    document.querySelectorAll(".alt-btn.alt-open").forEach(function(b){ b.classList.remove("alt-open"); });
+    if(!isVisible){
+      renderAlternativesPanel(datasetId);
+      panel.classList.add("visible");
+      var card = panel.closest(".card");
+      if(card){ var btn = card.querySelector(".alt-btn"); if(btn) btn.classList.add("alt-open"); }
+    }
+  };
 
   window._scrollToDataset = function(datasetId){
     const card = document.querySelector('.card[data-id="' + datasetId + '"]');
