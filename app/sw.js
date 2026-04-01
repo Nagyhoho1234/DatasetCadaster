@@ -1,12 +1,15 @@
 /* Service Worker — Dataset Cadaster PWA */
-var CACHE_NAME = 'dataset-cadaster-v1';
+var CACHE_NAME = 'dataset-cadaster-v2';
 var HTML_ASSETS = [
   'index.html',
   'landing.html',
-  'estimator.html'
+  'estimator.html',
+  'shared.css',
+  'shared.js'
 ];
 var JSON_ASSETS = [
-  '../datasets.json'
+  '../datasets.json',
+  '../datasets-summary.json'
 ];
 var ALL_ASSETS = HTML_ASSETS.concat(JSON_ASSETS);
 

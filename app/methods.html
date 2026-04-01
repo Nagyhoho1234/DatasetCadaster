@@ -4,75 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dataset Cadaster — Method-to-Data Lookup</title>
+<link rel="stylesheet" href="shared.css">
+<script src="shared.js"></script>
 <style>
-/* ── Reset & Base ─────────────────────────────────────── */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --hdr:#1a2634;
-  --hdr-accent:#2e4057;
-  --body-bg:#f0f2f5;
-  --card-bg:#fff;
-  --text:#2c3e50;
-  --text-light:#5a6a7a;
-  --border:#dce1e8;
-  --accent:#2980b9;
-  --accent-hover:#1f6da0;
-  --green:#27ae60;
-  --green-bg:#e8f8f0;
-  --yellow:#e67e22;
-  --yellow-bg:#fdf3e6;
-  --red:#c0392b;
-  --red-bg:#fbeaea;
-  --blue:#2980b9;
-  --blue-bg:#e4f0fa;
-  --teal:#16a085;
-  --radius:6px;
-  --shadow:0 1px 3px rgba(0,0,0,.1);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.12);
-  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --nav-h:44px;
-  --header-h:56px;
-}
-/* ── Dark Mode ────────────────────────────────────────── */
-[data-theme="dark"]{
-  --hdr:#0d1520;
-  --hdr-accent:#1a2a3e;
-  --body-bg:#181e26;
-  --card-bg:#1e2733;
-  --text:#d0d8e0;
-  --text-light:#8899aa;
-  --border:#2a3545;
-  --accent:#4ba3d9;
-  --accent-hover:#3a8ec4;
-  --green:#2ecc71;
-  --green-bg:#1a3328;
-  --yellow:#f39c12;
-  --yellow-bg:#332a14;
-  --red:#e74c3c;
-  --red-bg:#331a1a;
-  --blue:#4ba3d9;
-  --blue-bg:#1a2a3e;
-  --shadow:0 1px 3px rgba(0,0,0,.3);
-  --shadow-hover:0 4px 12px rgba(0,0,0,.4);
-}
-body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-height:100vh;display:flex;flex-direction:column}
-
-/* ── Navbar ───────────────────────────────────────────── */
-.navbar{background:#111820;display:flex;align-items:center;height:var(--nav-h);padding:0 24px;font-size:.82rem;border-bottom:1px solid #222e3c}
-.navbar-brand{color:#5dade2;font-weight:700;font-size:.95rem;text-decoration:none;margin-right:28px;letter-spacing:.3px}
-.navbar-links{display:flex;gap:4px;flex-wrap:wrap}
-.navbar-links a{color:#a0b4c8;text-decoration:none;padding:6px 14px;border-radius:var(--radius);transition:all .15s}
-.navbar-links a:hover{color:#fff;background:rgba(255,255,255,.08)}
-.navbar-links a.active{color:#fff;background:rgba(93,173,226,.18)}
-
-/* ── Header ───────────────────────────────────────────── */
-.header{background:var(--hdr);color:#fff;padding:0 24px;display:flex;align-items:center;height:var(--header-h);position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.25)}
-.header h1{font-size:1.25rem;font-weight:600;letter-spacing:.3px}
-.header h1 span{color:#5dade2;margin-right:6px}
-.header-right{margin-left:auto;display:flex;align-items:center;gap:12px}
-.header-right .subtitle{font-size:.82rem;color:#a0b4c8}
-.btn-dark-toggle{background:none;border:1px solid #3a4f63;color:#a0b4c8;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:.78rem;font-family:var(--font);transition:all .15s;display:flex;align-items:center;gap:5px}
-.btn-dark-toggle:hover{border-color:#5a7a9a;color:#fff}
+.navbar-links{flex-wrap:wrap}
 
 /* ── Main Content ─────────────────────────────────────── */
 .main{max-width:1280px;margin:0 auto;padding:24px;width:100%}
@@ -189,7 +124,7 @@ body{font-family:var(--font);color:var(--text);background:var(--body-bg);min-hei
   <h1><span>&#9670;</span>Method-to-Data Lookup</h1>
   <div class="header-right">
     <span class="subtitle">Start from your research task, find the datasets you need</span>
-    <button class="btn-dark-toggle" onclick="toggleDark()" id="darkBtn">Dark</button>
+    <button class="btn-dark-toggle" onclick="dcToggleDark()" id="darkBtn">Dark</button>
   </div>
 </header>
 
@@ -703,20 +638,7 @@ window.collapseCard = function(id){
 /* ── Search listener ─────────────────────────────────── */
 document.getElementById("methodSearch").addEventListener("input",renderGrid);
 
-/* ── Dark mode ───────────────────────────────────────── */
-function applyTheme(t){
-  document.documentElement.setAttribute("data-theme",t);
-  var btn = document.getElementById("darkBtn");
-  if(btn) btn.textContent = t==="dark"?"Light":"Dark";
-}
-window.toggleDark = function(){
-  var current = document.documentElement.getAttribute("data-theme")||"light";
-  var next = current==="dark"?"light":"dark";
-  localStorage.setItem("dc-theme",next);
-  applyTheme(next);
-};
-var saved = localStorage.getItem("dc-theme");
-if(saved) applyTheme(saved);
+/* Dark mode handled by shared.js (dcToggleDark) */
 
 /* ── Initial render ──────────────────────────────────── */
 renderGrid();
