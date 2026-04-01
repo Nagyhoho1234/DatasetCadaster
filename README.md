@@ -27,7 +27,7 @@
 
 Dataset Cadaster is a curated, searchable catalog of **1,230+ geospatial and environmental data sources** spanning **116 countries** and every major domain -- from satellite imagery and elevation models to air quality, hydrology, and cadastral boundaries. It is a pure client-side web application backed by a JSON database, with automated price monitoring, API health checks, and link validation via GitHub Actions.
 
-Whether you are a researcher looking for free LiDAR data in Romania, a GIS analyst comparing European cadastral portals, or a student trying to find the right climate dataset for your thesis -- Dataset Cadaster helps you discover, compare, and evaluate your options in seconds.
+Whether you are a researcher looking for free LiDAR data in Hungary, a GIS analyst comparing European cadastral portals, or a student trying to find the right climate dataset for your thesis -- Dataset Cadaster helps you discover, compare, and evaluate your options in seconds.
 
 ***
 
