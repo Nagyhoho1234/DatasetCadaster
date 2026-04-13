@@ -1,16 +1,16 @@
 {
-  "checkDate": "2026-04-06T07:26:29",
+  "checkDate": "2026-04-13T07:59:34",
   "totalProviders": 10,
-  "checked": 9,
-  "changed": 6,
-  "errors": 1,
+  "checked": 10,
+  "changed": 7,
+  "errors": 0,
   "unchanged": 3,
   "changes": [
     {
       "datasetId": "maxar-worldview-3",
       "provider": "Maxar",
-      "oldHash": "30cfedc77aa508ea",
-      "newHash": "e5127ce9e144e8d1",
+      "oldHash": "e5127ce9e144e8d1",
+      "newHash": "145f1654c5050116",
       "extractedPrices": [
         "$50,000 - $250,000",
         "$15,000 - $50,000"
@@ -20,10 +20,20 @@
       ]
     },
     {
+      "datasetId": "planetscope",
+      "provider": "Planet Labs",
+      "oldHash": "25105581a51797f8",
+      "newHash": "29238ca35b2a424f",
+      "extractedPrices": [],
+      "urls": [
+        "https://www.planet.com/pricing/"
+      ]
+    },
+    {
       "datasetId": "iceye-sar",
       "provider": "ICEYE",
-      "oldHash": "0bac2506c328f00d",
-      "newHash": "a1372b1dd3272ca4",
+      "oldHash": "a1372b1dd3272ca4",
+      "newHash": "bfe1b8030dc14e6d",
       "extractedPrices": [],
       "urls": [
         "https://www.iceye.com/"
@@ -32,8 +42,8 @@
     {
       "datasetId": "capella-space-sar",
       "provider": "Capella Space",
-      "oldHash": "c2e590f8ee7d9361",
-      "newHash": "52f09d1bb7014267",
+      "oldHash": "52f09d1bb7014267",
+      "newHash": "2abb4d9d6b47da51",
       "extractedPrices": [],
       "urls": [
         "https://www.capellaspace.com/"
@@ -42,8 +52,8 @@
     {
       "datasetId": "google-earth-engine",
       "provider": "Google",
-      "oldHash": "4c24a9728d8cb26e",
-      "newHash": "1a23a899dd653b14",
+      "oldHash": "1a23a899dd653b14",
+      "newHash": "774d4987a0bc5514",
       "extractedPrices": [
         "$2000 per month",
         "$500 per month"
@@ -55,8 +65,8 @@
     {
       "datasetId": "ecmwf-archive",
       "provider": "ECMWF",
-      "oldHash": "ecbf4c572fac5ff4",
-      "newHash": "a762e33fc3e5324b",
+      "oldHash": "a762e33fc3e5324b",
+      "newHash": "e32c432d15258ee8",
       "extractedPrices": [],
       "urls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
@@ -65,20 +75,13 @@
     {
       "datasetId": "up42",
       "provider": "UP42",
-      "oldHash": "74b67c62d5416644",
-      "newHash": "b5bb1398acebc1f6",
+      "oldHash": "b5bb1398acebc1f6",
+      "newHash": "00ec6bcdf728a197",
       "extractedPrices": [],
       "urls": [
         "https://up42.com/pricing"
       ]
     }
   ],
-  "errors_detail": [
-    {
-      "datasetId": "planetscope",
-      "url": "https://www.planet.com/pricing/",
-      "status": 0,
-      "error": "The read operation timed out"
-    }
-  ]
+  "errors_detail": []
 }
