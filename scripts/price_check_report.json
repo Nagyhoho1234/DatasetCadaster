@@ -1,16 +1,16 @@
 {
-  "checkDate": "2026-05-04T08:26:14",
+  "checkDate": "2026-05-11T09:35:03",
   "totalProviders": 10,
-  "checked": 9,
-  "changed": 6,
-  "errors": 1,
-  "unchanged": 3,
+  "checked": 10,
+  "changed": 8,
+  "errors": 0,
+  "unchanged": 2,
   "changes": [
     {
       "datasetId": "maxar-worldview-3",
       "provider": "Maxar",
-      "oldHash": "88de8701a6e42902",
-      "newHash": "cc5af4e4b31cd867",
+      "oldHash": "cc5af4e4b31cd867",
+      "newHash": "96ce174240816fd6",
       "extractedPrices": [
         "$50,000 - $250,000",
         "$15,000 - $50,000"
@@ -20,10 +20,30 @@
       ]
     },
     {
+      "datasetId": "pleiades-neo",
+      "provider": "Airbus",
+      "oldHash": "865e38962c26b117",
+      "newHash": "9bfbfe5766ea1c1c",
+      "extractedPrices": [],
+      "urls": [
+        "https://www.intelligence-airbusds.com/imagery/oneatlas/"
+      ]
+    },
+    {
+      "datasetId": "spot-6-7",
+      "provider": "Airbus",
+      "oldHash": "865e38962c26b117",
+      "newHash": "9bfbfe5766ea1c1c",
+      "extractedPrices": [],
+      "urls": [
+        "https://www.intelligence-airbusds.com/imagery/oneatlas/"
+      ]
+    },
+    {
       "datasetId": "planetscope",
       "provider": "Planet Labs",
-      "oldHash": "f91e9196a2c65b25",
-      "newHash": "8bf3961e793c576a",
+      "oldHash": "8bf3961e793c576a",
+      "newHash": "1e79524fee79adcf",
       "extractedPrices": [],
       "urls": [
         "https://www.planet.com/pricing/"
@@ -32,8 +52,8 @@
     {
       "datasetId": "iceye-sar",
       "provider": "ICEYE",
-      "oldHash": "3ce02029f577f8ff",
-      "newHash": "bbb6d72415027cba",
+      "oldHash": "bbb6d72415027cba",
+      "newHash": "3407be5dd34829d5",
       "extractedPrices": [],
       "urls": [
         "https://www.iceye.com/"
@@ -42,8 +62,8 @@
     {
       "datasetId": "capella-space-sar",
       "provider": "Capella Space",
-      "oldHash": "c1244748f9e3f198",
-      "newHash": "5798ad66b97e1865",
+      "oldHash": "5798ad66b97e1865",
+      "newHash": "60787a5f1cff508d",
       "extractedPrices": [],
       "urls": [
         "https://www.capellaspace.com/"
@@ -52,11 +72,11 @@
     {
       "datasetId": "google-earth-engine",
       "provider": "Google",
-      "oldHash": "0490be11122477f1",
-      "newHash": "e6bdac2618f9d5e5",
+      "oldHash": "e6bdac2618f9d5e5",
+      "newHash": "62f2538e91e0963d",
       "extractedPrices": [
-        "$2000 per month",
-        "$500 per month"
+        "$500 per month",
+        "$2000 per month"
       ],
       "urls": [
         "https://cloud.google.com/earth-engine/pricing"
@@ -65,20 +85,13 @@
     {
       "datasetId": "ecmwf-archive",
       "provider": "ECMWF",
-      "oldHash": "e8c6e3b93ae60c2a",
-      "newHash": "fed8978799f2d206",
+      "oldHash": "fed8978799f2d206",
+      "newHash": "b639490cb80c1178",
       "extractedPrices": [],
       "urls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
       ]
     }
   ],
-  "errors_detail": [
-    {
-      "datasetId": "pleiades-neo",
-      "url": "https://www.intelligence-airbusds.com/imagery/oneatlas/",
-      "status": 0,
-      "error": "The read operation timed out"
-    }
-  ]
+  "errors_detail": []
 }
