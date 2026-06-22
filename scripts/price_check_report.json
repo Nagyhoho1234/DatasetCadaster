@@ -1,5 +1,5 @@
 {
-  "checkDate": "2026-06-15T11:58:08",
+  "checkDate": "2026-06-22T11:48:22",
   "totalProviders": 10,
   "checked": 10,
   "changed": 7,
@@ -9,11 +9,11 @@
     {
       "datasetId": "maxar-worldview-3",
       "provider": "Maxar",
-      "oldHash": "f4290e067bed34e0",
-      "newHash": "0c037fab3bbfb4e4",
+      "oldHash": "0c037fab3bbfb4e4",
+      "newHash": "1cea4966972ef7b0",
       "extractedPrices": [
-        "$15,000 - $50,000",
-        "$50,000 - $250,000"
+        "$50,000 - $250,000",
+        "$15,000 - $50,000"
       ],
       "urls": [
         "https://www.maxar.com/products/imagery"
@@ -22,8 +22,8 @@
     {
       "datasetId": "pleiades-neo",
       "provider": "Airbus",
-      "oldHash": "db9b1be566883911",
-      "newHash": "b1681b5f62268fe5",
+      "oldHash": "b1681b5f62268fe5",
+      "newHash": "26214a20e5c716e0",
       "extractedPrices": [],
       "urls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
@@ -32,8 +32,8 @@
     {
       "datasetId": "spot-6-7",
       "provider": "Airbus",
-      "oldHash": "db9b1be566883911",
-      "newHash": "b1681b5f62268fe5",
+      "oldHash": "b1681b5f62268fe5",
+      "newHash": "26214a20e5c716e0",
       "extractedPrices": [],
       "urls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
@@ -42,8 +42,8 @@
     {
       "datasetId": "planetscope",
       "provider": "Planet Labs",
-      "oldHash": "f0e7d4e5a9cc7c78",
-      "newHash": "93078dd39b87e072",
+      "oldHash": "93078dd39b87e072",
+      "newHash": "6a71111b75f3df7e",
       "extractedPrices": [],
       "urls": [
         "https://www.planet.com/pricing/"
@@ -52,8 +52,8 @@
     {
       "datasetId": "iceye-sar",
       "provider": "ICEYE",
-      "oldHash": "9c5f9b1165f3d1a2",
-      "newHash": "a05911f92c5c6e80",
+      "oldHash": "a05911f92c5c6e80",
+      "newHash": "e42fd8b25b4bcc1c",
       "extractedPrices": [],
       "urls": [
         "https://www.iceye.com/"
@@ -62,11 +62,11 @@
     {
       "datasetId": "google-earth-engine",
       "provider": "Google",
-      "oldHash": "cafc5235f9ab767a",
-      "newHash": "6372f58ede8cb161",
+      "oldHash": "6372f58ede8cb161",
+      "newHash": "0e19f0da6b3a0399",
       "extractedPrices": [
-        "$500 per month",
-        "$2000 per month"
+        "$2000 per month",
+        "$500 per month"
       ],
       "urls": [
         "https://cloud.google.com/earth-engine/pricing"
@@ -75,8 +75,8 @@
     {
       "datasetId": "ecmwf-archive",
       "provider": "ECMWF",
-      "oldHash": "f0d6f0e8c1fc6b13",
-      "newHash": "39121bfc14042370",
+      "oldHash": "39121bfc14042370",
+      "newHash": "967fff3d36e91b26",
       "extractedPrices": [],
       "urls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
