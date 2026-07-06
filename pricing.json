@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastAutoCheck": "2026-06-29",
-  "nextCheckDue": "2026-07-06",
+  "lastAutoCheck": "2026-07-06",
+  "nextCheckDue": "2026-07-13",
   "providers": [
     {
       "datasetId": "maxar-worldview-3",
@@ -28,15 +28,15 @@
       "monitorUrls": [
         "https://www.maxar.com/products/imagery"
       ],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": "2024-12-05",
       "confidence": "published",
-      "pageHash": "0b107e1ea91c7298",
+      "pageHash": "d2cbcefd99b8e52d",
       "_extractedPrices": [
         "$50,000 - $250,000",
         "$15,000 - $50,000"
       ],
-      "_changeDetected": "2026-06-29"
+      "_changeDetected": "2026-07-06"
     },
     {
       "datasetId": "pleiades-neo",
@@ -63,10 +63,10 @@
       "monitorUrls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
       ],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "d2b560142ba8347d"
+      "pageHash": "34338e4206cbeb1b"
     },
     {
       "datasetId": "spot-6-7",
@@ -86,10 +86,10 @@
       "monitorUrls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
       ],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "d2b560142ba8347d"
+      "pageHash": "34338e4206cbeb1b"
     },
     {
       "datasetId": "planetscope",
@@ -116,10 +116,10 @@
       "monitorUrls": [
         "https://www.planet.com/pricing/"
       ],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "estimate",
-      "pageHash": "21eac9f5e85bf23b"
+      "pageHash": "18b30d60f98e383b"
     },
     {
       "datasetId": "sentinel-hub",
@@ -153,7 +153,7 @@
       "monitorUrls": [
         "https://www.sentinel-hub.com/pricing/"
       ],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "published",
       "pageHash": "d00683fea0c74afa"
@@ -174,10 +174,10 @@
       ],
       "pricingUrl": "https://www.iceye.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "c3cd465ae1288e4c"
+      "pageHash": "9a27e1fdc59e9617"
     },
     {
       "datasetId": "capella-space-sar",
@@ -195,10 +195,10 @@
       ],
       "pricingUrl": "https://www.capellaspace.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "31fc31f9e28dc8ba"
+      "pageHash": "9874266aa2ceab26"
     },
     {
       "datasetId": "google-earth-engine",
@@ -232,15 +232,15 @@
       "monitorUrls": [
         "https://cloud.google.com/earth-engine/pricing"
       ],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "44f012d887b2f6f7",
+      "pageHash": "fb5732d5286e465d",
       "_extractedPrices": [
         "$500 per month",
         "$2000 per month"
       ],
-      "_changeDetected": "2026-06-29"
+      "_changeDetected": "2026-07-06"
     },
     {
       "datasetId": "ecmwf-archive",
@@ -274,10 +274,10 @@
       "monitorUrls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
       ],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "323faaa9115a1a73"
+      "pageHash": "5c2c136a62ba0827"
     },
     {
       "datasetId": "up42",
@@ -297,7 +297,7 @@
       "monitorUrls": [
         "https://up42.com/pricing"
       ],
-      "lastVerified": "2026-06-29",
+      "lastVerified": "2026-07-06",
       "lastChanged": null,
       "confidence": "published",
       "pageHash": "a36471eb385abbf5"
