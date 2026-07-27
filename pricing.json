@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastAutoCheck": "2026-07-20",
-  "nextCheckDue": "2026-07-27",
+  "lastAutoCheck": "2026-07-27",
+  "nextCheckDue": "2026-08-03",
   "providers": [
     {
       "datasetId": "maxar-worldview-3",
@@ -63,10 +63,10 @@
       "monitorUrls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
       ],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "34338e4206cbeb1b"
+      "pageHash": "fc76c1c1a49f4846"
     },
     {
       "datasetId": "spot-6-7",
@@ -86,10 +86,10 @@
       "monitorUrls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
       ],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "34338e4206cbeb1b"
+      "pageHash": "c69a158d10b4a274"
     },
     {
       "datasetId": "planetscope",
@@ -116,10 +116,10 @@
       "monitorUrls": [
         "https://www.planet.com/pricing/"
       ],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "estimate",
-      "pageHash": "38ccfa1aaeae2632"
+      "pageHash": "67361221a0359205"
     },
     {
       "datasetId": "sentinel-hub",
@@ -153,7 +153,7 @@
       "monitorUrls": [
         "https://www.sentinel-hub.com/pricing/"
       ],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "published",
       "pageHash": "d00683fea0c74afa"
@@ -174,10 +174,10 @@
       ],
       "pricingUrl": "https://www.iceye.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "3fe68d74b7b2b489"
+      "pageHash": "8f23fe603b95abef"
     },
     {
       "datasetId": "capella-space-sar",
@@ -195,10 +195,10 @@
       ],
       "pricingUrl": "https://www.capellaspace.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "746a9e9ad0df700c"
+      "pageHash": "de3057d3d196f837"
     },
     {
       "datasetId": "google-earth-engine",
@@ -232,15 +232,15 @@
       "monitorUrls": [
         "https://cloud.google.com/earth-engine/pricing"
       ],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "9bbae07667229451",
+      "pageHash": "f48aff276d433d1c",
       "_extractedPrices": [
         "$2000 per month",
         "$500 per month"
       ],
-      "_changeDetected": "2026-07-20"
+      "_changeDetected": "2026-07-27"
     },
     {
       "datasetId": "ecmwf-archive",
@@ -274,10 +274,10 @@
       "monitorUrls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
       ],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "af56ba05be0feb3f"
+      "pageHash": "ecc2f383ebf89d21"
     },
     {
       "datasetId": "up42",
@@ -297,10 +297,10 @@
       "monitorUrls": [
         "https://up42.com/pricing"
       ],
-      "lastVerified": "2026-07-20",
+      "lastVerified": "2026-07-27",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "053ca0ea5d264ffb"
+      "pageHash": "797fea6f6d731b17"
     }
   ]
 }
