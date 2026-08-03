@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastAutoCheck": "2026-07-27",
-  "nextCheckDue": "2026-08-03",
+  "lastAutoCheck": "2026-08-03",
+  "nextCheckDue": "2026-08-10",
   "providers": [
     {
       "datasetId": "maxar-worldview-3",
@@ -28,15 +28,15 @@
       "monitorUrls": [
         "https://www.maxar.com/products/imagery"
       ],
-      "lastVerified": "2026-07-13",
+      "lastVerified": "2026-08-03",
       "lastChanged": "2024-12-05",
       "confidence": "published",
-      "pageHash": "bd99e1a03efc8be5",
+      "pageHash": "cd4fc52644e4b5ad",
       "_extractedPrices": [
-        "$50,000 - $250,000",
-        "$15,000 - $50,000"
+        "$15,000 - $50,000",
+        "$50,000 - $250,000"
       ],
-      "_changeDetected": "2026-07-13"
+      "_changeDetected": "2026-08-03"
     },
     {
       "datasetId": "pleiades-neo",
@@ -63,10 +63,10 @@
       "monitorUrls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
       ],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "fc76c1c1a49f4846"
+      "pageHash": "5d052813e74a9fef"
     },
     {
       "datasetId": "spot-6-7",
@@ -86,10 +86,10 @@
       "monitorUrls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
       ],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "c69a158d10b4a274"
+      "pageHash": "6cdfe0368defd604"
     },
     {
       "datasetId": "planetscope",
@@ -116,10 +116,10 @@
       "monitorUrls": [
         "https://www.planet.com/pricing/"
       ],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "estimate",
-      "pageHash": "67361221a0359205"
+      "pageHash": "642730e5900bf17f"
     },
     {
       "datasetId": "sentinel-hub",
@@ -153,7 +153,7 @@
       "monitorUrls": [
         "https://www.sentinel-hub.com/pricing/"
       ],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "published",
       "pageHash": "d00683fea0c74afa"
@@ -174,10 +174,10 @@
       ],
       "pricingUrl": "https://www.iceye.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "8f23fe603b95abef"
+      "pageHash": "d205a2dd21881c62"
     },
     {
       "datasetId": "capella-space-sar",
@@ -195,10 +195,10 @@
       ],
       "pricingUrl": "https://www.capellaspace.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "de3057d3d196f837"
+      "pageHash": "d77fa3c99ae196ae"
     },
     {
       "datasetId": "google-earth-engine",
@@ -232,15 +232,15 @@
       "monitorUrls": [
         "https://cloud.google.com/earth-engine/pricing"
       ],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "f48aff276d433d1c",
+      "pageHash": "2e8c7a8143db6174",
       "_extractedPrices": [
         "$2000 per month",
         "$500 per month"
       ],
-      "_changeDetected": "2026-07-27"
+      "_changeDetected": "2026-08-03"
     },
     {
       "datasetId": "ecmwf-archive",
@@ -274,10 +274,10 @@
       "monitorUrls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
       ],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "ecc2f383ebf89d21"
+      "pageHash": "6dea86aad7d34cf9"
     },
     {
       "datasetId": "up42",
@@ -297,10 +297,10 @@
       "monitorUrls": [
         "https://up42.com/pricing"
       ],
-      "lastVerified": "2026-07-27",
+      "lastVerified": "2026-08-03",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "797fea6f6d731b17"
+      "pageHash": "ddd7417d8cb7e36d"
     }
   ]
 }
