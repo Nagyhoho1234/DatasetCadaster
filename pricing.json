@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastAutoCheck": "2026-08-10",
-  "nextCheckDue": "2026-08-17",
+  "lastAutoCheck": "2026-08-17",
+  "nextCheckDue": "2026-08-24",
   "providers": [
     {
       "datasetId": "maxar-worldview-3",
@@ -28,15 +28,15 @@
       "monitorUrls": [
         "https://www.maxar.com/products/imagery"
       ],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": "2024-12-05",
       "confidence": "published",
-      "pageHash": "a31308a0f4b1bf6c",
+      "pageHash": "7e4a66ce54ced79a",
       "_extractedPrices": [
         "$50,000 - $250,000",
         "$15,000 - $50,000"
       ],
-      "_changeDetected": "2026-08-10"
+      "_changeDetected": "2026-08-17"
     },
     {
       "datasetId": "pleiades-neo",
@@ -63,10 +63,10 @@
       "monitorUrls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
       ],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "2256c075180c4adc"
+      "pageHash": "ab08996072304a2c"
     },
     {
       "datasetId": "spot-6-7",
@@ -86,10 +86,10 @@
       "monitorUrls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
       ],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "4e3574856e854c74"
+      "pageHash": "7839fa6d9fc9aeec"
     },
     {
       "datasetId": "planetscope",
@@ -116,10 +116,10 @@
       "monitorUrls": [
         "https://www.planet.com/pricing/"
       ],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "estimate",
-      "pageHash": "edaa0f9a3ffe63ea"
+      "pageHash": "90de139c914af410"
     },
     {
       "datasetId": "sentinel-hub",
@@ -153,7 +153,7 @@
       "monitorUrls": [
         "https://www.sentinel-hub.com/pricing/"
       ],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "published",
       "pageHash": "d00683fea0c74afa"
@@ -174,10 +174,10 @@
       ],
       "pricingUrl": "https://www.iceye.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "60a0f1be9e8bbcee"
+      "pageHash": "6da940b66a64209d"
     },
     {
       "datasetId": "capella-space-sar",
@@ -195,7 +195,7 @@
       ],
       "pricingUrl": "https://www.capellaspace.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "unavailable",
       "pageHash": "d75079110e2d15f5"
@@ -232,15 +232,15 @@
       "monitorUrls": [
         "https://cloud.google.com/earth-engine/pricing"
       ],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "30d5d281b93c202a",
+      "pageHash": "afb57dc059cc85dd",
       "_extractedPrices": [
         "$500 per month",
         "$2000 per month"
       ],
-      "_changeDetected": "2026-08-10"
+      "_changeDetected": "2026-08-17"
     },
     {
       "datasetId": "ecmwf-archive",
@@ -274,10 +274,10 @@
       "monitorUrls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
       ],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "b0e45db2a8bd44d8"
+      "pageHash": "c6f5f81c9a1df8c7"
     },
     {
       "datasetId": "up42",
@@ -297,10 +297,10 @@
       "monitorUrls": [
         "https://up42.com/pricing"
       ],
-      "lastVerified": "2026-08-10",
+      "lastVerified": "2026-08-17",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "e9a168171b08611f"
+      "pageHash": "db948cefa711cc3b"
     }
   ]
 }
