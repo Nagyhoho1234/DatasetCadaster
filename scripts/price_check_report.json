@@ -1,29 +1,16 @@
 {
-  "checkDate": "2026-10-05T13:32:45",
+  "checkDate": "2026-10-12T14:22:05",
   "totalProviders": 10,
-  "checked": 10,
+  "checked": 9,
   "changed": 8,
-  "errors": 0,
-  "unchanged": 2,
+  "errors": 1,
+  "unchanged": 1,
   "changes": [
-    {
-      "datasetId": "maxar-worldview-3",
-      "provider": "Maxar",
-      "oldHash": "110ea1933f4a1db8",
-      "newHash": "674f9cfd6bf46762",
-      "extractedPrices": [
-        "$15,000 - $50,000",
-        "$50,000 - $250,000"
-      ],
-      "urls": [
-        "https://www.maxar.com/products/imagery"
-      ]
-    },
     {
       "datasetId": "pleiades-neo",
       "provider": "Airbus",
-      "oldHash": "c09c5fec228b08f5",
-      "newHash": "fc36e673b2ee7e3b",
+      "oldHash": "fc36e673b2ee7e3b",
+      "newHash": "338749560f6b1f47",
       "extractedPrices": [],
       "urls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
@@ -32,8 +19,8 @@
     {
       "datasetId": "spot-6-7",
       "provider": "Airbus",
-      "oldHash": "c09c5fec228b08f5",
-      "newHash": "0a1cf66b0d37f8d1",
+      "oldHash": "0a1cf66b0d37f8d1",
+      "newHash": "338749560f6b1f47",
       "extractedPrices": [],
       "urls": [
         "https://www.intelligence-airbusds.com/imagery/oneatlas/"
@@ -42,8 +29,8 @@
     {
       "datasetId": "planetscope",
       "provider": "Planet Labs",
-      "oldHash": "19740a9fbabdfbb9",
-      "newHash": "74ef0f662c68ce2b",
+      "oldHash": "74ef0f662c68ce2b",
+      "newHash": "cf71b5017ee9f24b",
       "extractedPrices": [],
       "urls": [
         "https://www.planet.com/pricing/"
@@ -52,18 +39,28 @@
     {
       "datasetId": "iceye-sar",
       "provider": "ICEYE",
-      "oldHash": "a6ae90da2f3999a4",
-      "newHash": "c2d8e5366cf9a6da",
+      "oldHash": "c2d8e5366cf9a6da",
+      "newHash": "f33c1eeab14dec84",
       "extractedPrices": [],
       "urls": [
         "https://www.iceye.com/"
       ]
     },
     {
+      "datasetId": "capella-space-sar",
+      "provider": "Capella Space",
+      "oldHash": "90c5aeee1d00185d",
+      "newHash": "1b9a9a627154dd30",
+      "extractedPrices": [],
+      "urls": [
+        "https://www.capellaspace.com/"
+      ]
+    },
+    {
       "datasetId": "google-earth-engine",
       "provider": "Google",
-      "oldHash": "0d98200f75996412",
-      "newHash": "00ed01e24ab406ca",
+      "oldHash": "00ed01e24ab406ca",
+      "newHash": "db90535adebd3525",
       "extractedPrices": [
         "$2000 per month",
         "$500 per month"
@@ -75,8 +72,8 @@
     {
       "datasetId": "ecmwf-archive",
       "provider": "ECMWF",
-      "oldHash": "5d39c4e33e3ff9f1",
-      "newHash": "71037b48c6534c16",
+      "oldHash": "71037b48c6534c16",
+      "newHash": "471f6bb9af659941",
       "extractedPrices": [],
       "urls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
@@ -85,13 +82,20 @@
     {
       "datasetId": "up42",
       "provider": "UP42",
-      "oldHash": "fad2add58a3ceae4",
-      "newHash": "bcd46f2801481df4",
+      "oldHash": "bcd46f2801481df4",
+      "newHash": "f638a9b142123e23",
       "extractedPrices": [],
       "urls": [
         "https://up42.com/pricing"
       ]
     }
   ],
-  "errors_detail": []
+  "errors_detail": [
+    {
+      "datasetId": "maxar-worldview-3",
+      "url": "https://www.maxar.com/products/imagery",
+      "status": 0,
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1010)>"
+    }
+  ]
 }
