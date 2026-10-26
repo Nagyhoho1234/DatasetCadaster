@@ -1,36 +1,16 @@
 {
-  "checkDate": "2026-10-19T12:03:37",
+  "checkDate": "2026-10-26T12:13:07",
   "totalProviders": 10,
-  "checked": 9,
-  "changed": 7,
-  "errors": 1,
-  "unchanged": 2,
+  "checked": 7,
+  "changed": 6,
+  "errors": 3,
+  "unchanged": 1,
   "changes": [
-    {
-      "datasetId": "pleiades-neo",
-      "provider": "Airbus",
-      "oldHash": "338749560f6b1f47",
-      "newHash": "4e79e112bd695beb",
-      "extractedPrices": [],
-      "urls": [
-        "https://www.intelligence-airbusds.com/imagery/oneatlas/"
-      ]
-    },
-    {
-      "datasetId": "spot-6-7",
-      "provider": "Airbus",
-      "oldHash": "338749560f6b1f47",
-      "newHash": "724b64e4105216bd",
-      "extractedPrices": [],
-      "urls": [
-        "https://www.intelligence-airbusds.com/imagery/oneatlas/"
-      ]
-    },
     {
       "datasetId": "planetscope",
       "provider": "Planet Labs",
-      "oldHash": "cf71b5017ee9f24b",
-      "newHash": "d399047da51a8ca6",
+      "oldHash": "d399047da51a8ca6",
+      "newHash": "15203d0f4a475586",
       "extractedPrices": [],
       "urls": [
         "https://www.planet.com/pricing/"
@@ -39,18 +19,28 @@
     {
       "datasetId": "iceye-sar",
       "provider": "ICEYE",
-      "oldHash": "f33c1eeab14dec84",
-      "newHash": "c6096af122ab93ea",
+      "oldHash": "c6096af122ab93ea",
+      "newHash": "c93e5b0c06b2e2fb",
       "extractedPrices": [],
       "urls": [
         "https://www.iceye.com/"
       ]
     },
     {
+      "datasetId": "capella-space-sar",
+      "provider": "Capella Space",
+      "oldHash": "1b9a9a627154dd30",
+      "newHash": "15fd6be6cfe29903",
+      "extractedPrices": [],
+      "urls": [
+        "https://www.capellaspace.com/"
+      ]
+    },
+    {
       "datasetId": "google-earth-engine",
       "provider": "Google",
-      "oldHash": "db90535adebd3525",
-      "newHash": "9bd83b4d579d7a0b",
+      "oldHash": "9bd83b4d579d7a0b",
+      "newHash": "bfee016b270b2a99",
       "extractedPrices": [
         "$500 per month",
         "$2000 per month"
@@ -62,8 +52,8 @@
     {
       "datasetId": "ecmwf-archive",
       "provider": "ECMWF",
-      "oldHash": "471f6bb9af659941",
-      "newHash": "dbc92c633cf0b81a",
+      "oldHash": "dbc92c633cf0b81a",
+      "newHash": "a5c3c3aa347498bf",
       "extractedPrices": [],
       "urls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
@@ -72,8 +62,8 @@
     {
       "datasetId": "up42",
       "provider": "UP42",
-      "oldHash": "f638a9b142123e23",
-      "newHash": "0afeef2ddb4bcb1a",
+      "oldHash": "0afeef2ddb4bcb1a",
+      "newHash": "503b27ca4a597276",
       "extractedPrices": [],
       "urls": [
         "https://up42.com/pricing"
@@ -86,6 +76,18 @@
       "url": "https://www.maxar.com/products/imagery",
       "status": 0,
       "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1010)>"
+    },
+    {
+      "datasetId": "pleiades-neo",
+      "url": "https://www.intelligence-airbusds.com/imagery/oneatlas/",
+      "status": 502,
+      "error": "HTTP Error 502: Bad Gateway"
+    },
+    {
+      "datasetId": "spot-6-7",
+      "url": "https://www.intelligence-airbusds.com/imagery/oneatlas/",
+      "status": 502,
+      "error": "HTTP Error 502: Bad Gateway"
     }
   ]
 }

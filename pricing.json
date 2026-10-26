@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastAutoCheck": "2026-10-19",
-  "nextCheckDue": "2026-10-26",
+  "lastAutoCheck": "2026-10-26",
+  "nextCheckDue": "2026-11-02",
   "providers": [
     {
       "datasetId": "maxar-worldview-3",
@@ -116,10 +116,10 @@
       "monitorUrls": [
         "https://www.planet.com/pricing/"
       ],
-      "lastVerified": "2026-10-19",
+      "lastVerified": "2026-10-26",
       "lastChanged": null,
       "confidence": "estimate",
-      "pageHash": "d399047da51a8ca6"
+      "pageHash": "15203d0f4a475586"
     },
     {
       "datasetId": "sentinel-hub",
@@ -153,7 +153,7 @@
       "monitorUrls": [
         "https://www.sentinel-hub.com/pricing/"
       ],
-      "lastVerified": "2026-10-19",
+      "lastVerified": "2026-10-26",
       "lastChanged": null,
       "confidence": "published",
       "pageHash": "d00683fea0c74afa"
@@ -174,10 +174,10 @@
       ],
       "pricingUrl": "https://www.iceye.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-10-19",
+      "lastVerified": "2026-10-26",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "c6096af122ab93ea"
+      "pageHash": "c93e5b0c06b2e2fb"
     },
     {
       "datasetId": "capella-space-sar",
@@ -195,10 +195,10 @@
       ],
       "pricingUrl": "https://www.capellaspace.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-10-19",
+      "lastVerified": "2026-10-26",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "1b9a9a627154dd30"
+      "pageHash": "15fd6be6cfe29903"
     },
     {
       "datasetId": "google-earth-engine",
@@ -232,15 +232,15 @@
       "monitorUrls": [
         "https://cloud.google.com/earth-engine/pricing"
       ],
-      "lastVerified": "2026-10-19",
+      "lastVerified": "2026-10-26",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "9bd83b4d579d7a0b",
+      "pageHash": "bfee016b270b2a99",
       "_extractedPrices": [
         "$500 per month",
         "$2000 per month"
       ],
-      "_changeDetected": "2026-10-19"
+      "_changeDetected": "2026-10-26"
     },
     {
       "datasetId": "ecmwf-archive",
@@ -274,10 +274,10 @@
       "monitorUrls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
       ],
-      "lastVerified": "2026-10-19",
+      "lastVerified": "2026-10-26",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "dbc92c633cf0b81a"
+      "pageHash": "a5c3c3aa347498bf"
     },
     {
       "datasetId": "up42",
@@ -297,10 +297,10 @@
       "monitorUrls": [
         "https://up42.com/pricing"
       ],
-      "lastVerified": "2026-10-19",
+      "lastVerified": "2026-10-26",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "0afeef2ddb4bcb1a"
+      "pageHash": "503b27ca4a597276"
     }
   ]
 }
