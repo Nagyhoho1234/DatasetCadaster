@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastAutoCheck": "2026-11-16",
-  "nextCheckDue": "2026-11-23",
+  "lastAutoCheck": "2026-11-23",
+  "nextCheckDue": "2026-11-30",
   "providers": [
     {
       "datasetId": "maxar-worldview-3",
@@ -28,15 +28,15 @@
       "monitorUrls": [
         "https://www.maxar.com/products/imagery"
       ],
-      "lastVerified": "2026-11-16",
+      "lastVerified": "2026-11-23",
       "lastChanged": "2024-12-05",
       "confidence": "published",
-      "pageHash": "ebc52e7bb9ad4ea6",
+      "pageHash": "0b4b6c7d2fabbabc",
       "_extractedPrices": [
         "$50,000 - $250,000",
         "$15,000 - $50,000"
       ],
-      "_changeDetected": "2026-11-16"
+      "_changeDetected": "2026-11-23"
     },
     {
       "datasetId": "pleiades-neo",
@@ -116,10 +116,10 @@
       "monitorUrls": [
         "https://www.planet.com/pricing/"
       ],
-      "lastVerified": "2026-11-16",
+      "lastVerified": "2026-11-23",
       "lastChanged": null,
       "confidence": "estimate",
-      "pageHash": "53e16ec27015555e"
+      "pageHash": "b425726862cb7279"
     },
     {
       "datasetId": "sentinel-hub",
@@ -153,7 +153,7 @@
       "monitorUrls": [
         "https://www.sentinel-hub.com/pricing/"
       ],
-      "lastVerified": "2026-11-16",
+      "lastVerified": "2026-11-23",
       "lastChanged": null,
       "confidence": "published",
       "pageHash": "d00683fea0c74afa"
@@ -174,10 +174,10 @@
       ],
       "pricingUrl": "https://www.iceye.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-11-16",
+      "lastVerified": "2026-11-23",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "44291976004373bd"
+      "pageHash": "78d2306c3832a4ff"
     },
     {
       "datasetId": "capella-space-sar",
@@ -195,10 +195,10 @@
       ],
       "pricingUrl": "https://www.capellaspace.com/",
       "monitorUrls": [],
-      "lastVerified": "2026-11-16",
+      "lastVerified": "2026-11-23",
       "lastChanged": null,
       "confidence": "unavailable",
-      "pageHash": "47caf90d854e89a7"
+      "pageHash": "38acec6e6148a500"
     },
     {
       "datasetId": "google-earth-engine",
@@ -232,15 +232,15 @@
       "monitorUrls": [
         "https://cloud.google.com/earth-engine/pricing"
       ],
-      "lastVerified": "2026-11-16",
+      "lastVerified": "2026-11-23",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "19f4aecc78fb0b26",
+      "pageHash": "42d2eadb82d75578",
       "_extractedPrices": [
         "$500 per month",
         "$2000 per month"
       ],
-      "_changeDetected": "2026-11-16"
+      "_changeDetected": "2026-11-23"
     },
     {
       "datasetId": "ecmwf-archive",
@@ -274,10 +274,10 @@
       "monitorUrls": [
         "https://www.ecmwf.int/en/forecasts/accessing-forecasts"
       ],
-      "lastVerified": "2026-11-16",
+      "lastVerified": "2026-11-23",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "f657ddc857a83c79"
+      "pageHash": "a07ee7640d555928"
     },
     {
       "datasetId": "up42",
@@ -297,23 +297,23 @@
       "monitorUrls": [
         "https://up42.com/pricing"
       ],
-      "lastVerified": "2026-11-16",
+      "lastVerified": "2026-11-23",
       "lastChanged": null,
       "confidence": "published",
-      "pageHash": "91518abec7fe16f8",
+      "pageHash": "1693e5fe46b0369d",
       "_extractedPrices": [
-        "€47.00/km²",
-        "from €5",
+        "from €875",
+        "€6.80/km²",
+        "€5.00/km²",
         "€875.00/scene",
-        "€7.00/km²",
+        "€47.00/km²",
+        "€1.60/km²",
         "from €6",
+        "from €12",
         "from €32",
-        "€286.00/scene",
-        "€6.40/km²",
-        "from €2",
-        "from €1"
+        "from €8"
       ],
-      "_changeDetected": "2026-11-16"
+      "_changeDetected": "2026-11-23"
     }
   ]
 }
